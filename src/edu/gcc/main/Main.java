@@ -1,4 +1,4 @@
-package application;
+package edu.gcc.main;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
