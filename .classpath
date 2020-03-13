@@ -5,5 +5,15 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk 8"/>
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="lib/vtd-xml-2.13.4/vtd-xml-2.13.4.jar" sourcepath="lib/vtd-xml-2.13.4/vtd-xml-2.13.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/vtd-xml-2.13.4/vtd-xml-2.13.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/mockito-all-1.10.19/mockito-all-1.10.19.jar" sourcepath="lib/mockito-all-1.10.19/mockito-all-1.10.19-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/mockito-all-1.10.19/mockito-all-1.10.19-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
