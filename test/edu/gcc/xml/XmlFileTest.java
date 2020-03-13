@@ -244,7 +244,7 @@ class XmlFileTest {
 	
 	@Test
 	public void removeElementRemovesCorrectElement() throws IOException {
-		boolean result = xml.removeElement("//book[@id=\"bk102\"]");
+		boolean result = xml.removeElement("//book[author[text()='Ralls, Kim']]");
 		xml.flush();
 		
 		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));

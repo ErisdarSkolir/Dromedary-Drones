@@ -101,8 +101,7 @@ public class XmlFile {
 
 			if (autopilot.evalXPath() == -1)
 				return false;
-
-			// nav.toElement(VTDNav.PARENT);
+			
 			xmlModifier.remove();
 
 			write();
@@ -134,7 +133,6 @@ public class XmlFile {
 			if (autopilot.evalXPath() == -1)
 				return false;
 
-			nav.toElement(VTDNav.PARENT);
 			xmlModifier.remove();
 			xmlModifier.insertAfterElement(element);
 
