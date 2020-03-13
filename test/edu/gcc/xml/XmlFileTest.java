@@ -4,9 +4,9 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,14 +18,17 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.Whitebox;
+import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ximpleware.ModifyException;
-import com.ximpleware.NavException;
 
 import edu.gcc.xml.exception.XmlWriteException;
 
+@ExtendWith(MockitoExtension.class)
 class XmlFileTest {
 	private static final String FILE_PATH = "test/res/XmlFileTest.xml";
 	private static final String NON_EXISTING_FILE_PATH = "test/res/XmlNonExistingFile.xml";
@@ -53,162 +56,106 @@ class XmlFileTest {
 			"   </book>\r\n" +
 			"</catalog>";
 	
+	@Mock
+	private CompletableFuture<Void> future;
+	
+	private XmlFile xml;
+	private Field futureField;
+	
 	@BeforeEach
-	public void setup() throws IOException {
+	public void setup() throws IOException, ModifyException, NoSuchFieldException {
 		Path path = Paths.get(FILE_PATH);
 		
 		Files.deleteIfExists(path);
-		
 		Files.write(path, CONTENTS.getBytes(), StandardOpenOption.CREATE);
+		
+		xml = new XmlFile(FILE_PATH);
+		assertNotNull(xml);
+		
+		futureField = XmlFile.class.getDeclaredField("writeFuture");
+	}
+	
+	@AfterAll
+	public static void cleanup() throws IOException {
+		Files.delete(Paths.get(FILE_PATH));
+		Files.deleteIfExists(Paths.get(NON_EXISTING_FILE_PATH));
 	}
 	
 	@Test
-	public void xmlFileconstructorOnNonExistingFile() {
-		try {
-			XmlFile xml = new XmlFile(NON_EXISTING_FILE_PATH);
-			assertNotNull(xml);
-			
-			Path path = Paths.get(NON_EXISTING_FILE_PATH);
-			assertThat(Files.exists(path), is(true));
-			
-		} catch (ModifyException | IOException e) {
-			fail("XmlFile constructor failed " + e.getMessage());
-		}
+	public void xmlFileconstructorOnNonExistingFile() throws ModifyException, IOException {
+		XmlFile file = new XmlFile(NON_EXISTING_FILE_PATH);
+		assertNotNull(file);
+		
+		Path path = Paths.get(NON_EXISTING_FILE_PATH);
+		assertThat(Files.exists(path), is(true));
 	}
 	
 	@Test
-	public void xmlFileConstructorOnExistingFile() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
-		} catch (ModifyException | IOException e) {
-			fail("XmlFile constructor failed " + e.getMessage());
-		}
+	public void xmlFileConstructorOnExistingFile() throws ModifyException, IOException {
+		XmlFile file = new XmlFile(FILE_PATH);
+		assertNotNull(file);
 	}
 	
 	@Test
 	public void isWritingReturnsFalseWhenFutureIsNull() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
-			
-			assertThat(xml.isWriting(), is(false));
-		} catch (ModifyException | IOException e) {
-			fail("XmlFile constructor failed " + e.getMessage());
-		}
+		assertThat(xml.isWriting(), is(false));
 	}
 	
 	@Test
 	public void isWritingReturnsFalseWhenFutureIsDone() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
-			
-			@SuppressWarnings("unchecked")
-			CompletableFuture<Void> future = Mockito.mock(CompletableFuture.class);
-			Mockito.when(future.isDone()).thenReturn(true);
-			Whitebox.setInternalState(xml, "writeFuture", future);
-			
-			assertThat(xml.isWriting(), is(false));
-		} catch (ModifyException | IOException e) {
-			fail("XmlFile constructor failed " + e.getMessage());
-		}
+		Mockito.when(future.isDone()).thenReturn(true);
+		FieldSetter.setField(xml, futureField, future);
+		
+		assertThat(xml.isWriting(), is(false));
 	}
 	
 	@Test
 	public void isWritingReturnsTrueWhenFutureIsNotDone() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
-			
-			@SuppressWarnings("unchecked")
-			CompletableFuture<Void> future = Mockito.mock(CompletableFuture.class);
-			Mockito.when(future.isDone()).thenReturn(false);
-			Whitebox.setInternalState(xml, "writeFuture", future);
-			
-			assertThat(xml.isWriting(), is(true));
-		} catch (ModifyException | IOException e) {
-			fail("XmlFile constructor failed " + e.getMessage());
-		}
+		Mockito.when(future.isDone()).thenReturn(false);
+		FieldSetter.setField(xml, futureField, future);
+		
+		assertThat(xml.isWriting(), is(true));
 	}
 	
 	@Test
-	public void flushReturnsIfIsWritingIsFalse() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
+	public void flushReturnsIfIsWritingIsFalse() throws InterruptedException, ExecutionException {
+		Mockito.when(future.isDone()).thenReturn(true);
+		FieldSetter.setField(xml, futureField, future);
+		
+		xml.flush();
 			
-			@SuppressWarnings("unchecked")
-			CompletableFuture<Void> future = Mockito.mock(CompletableFuture.class);
-			Mockito.when(future.isDone()).thenReturn(true);
-			Whitebox.setInternalState(xml, "writeFuture", future);
-			
-			xml.flush();
-			
-			Mockito.verify(future, Mockito.times(0)).get();
-		} catch (ModifyException | IOException | InterruptedException | ExecutionException e) {
-			fail("XmlFile constructor failed " + e.getMessage());
-		}
+		Mockito.verify(future, Mockito.times(0)).get();
 	}
 	
 	@Test
-	public void flushCallsGetIfIsWritingIsTrue() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
-			
-			@SuppressWarnings("unchecked")
-			CompletableFuture<Void> future = Mockito.mock(CompletableFuture.class);
-			Mockito.when(future.isDone()).thenReturn(false);
-			Whitebox.setInternalState(xml, "writeFuture", future);
-			
-			xml.flush();
-			
-			Mockito.verify(future, Mockito.times(1)).get();
-		} catch (ModifyException | IOException | InterruptedException | ExecutionException e) {
-			fail("XmlFile constructor failed " + e.getMessage());
-		}
+	public void flushCallsGetIfIsWritingIsTrue() throws InterruptedException, ExecutionException {
+		Mockito.when(future.isDone()).thenReturn(false);
+		FieldSetter.setField(xml, futureField, future);
+		
+		xml.flush();
+		
+		Mockito.verify(future, Mockito.times(1)).get();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void flushThrowsExceptionIfGetThrowsInterruptedException() {
 		Assertions.assertThrows(XmlWriteException.class, () -> {
-			try {
-				XmlFile xml = new XmlFile(FILE_PATH);
-				assertNotNull(xml);
-				
-				
-				CompletableFuture<Void> future = Mockito.mock(CompletableFuture.class);
-				Mockito.when(future.isDone()).thenReturn(false);
-				Mockito.when(future.get()).thenThrow(InterruptedException.class);
-				Whitebox.setInternalState(xml, "writeFuture", future);
-				
-				xml.flush();
-			} catch (ModifyException | IOException | InterruptedException | ExecutionException e) {
-				fail("XmlFile constructor failed " + e.getMessage());
-			}
+			Mockito.when(future.isDone()).thenReturn(false);
+			Mockito.when(future.get()).thenThrow(InterruptedException.class);
+			FieldSetter.setField(xml, futureField, future);
+			
+			xml.flush();
 		});
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void flushThrowsExceptionIfGetThrowsExecutionException() {
 		Assertions.assertThrows(XmlWriteException.class, () -> {
-			try {
-				XmlFile xml = new XmlFile(FILE_PATH);
-				assertNotNull(xml);
-				
-				
-				CompletableFuture<Void> future = Mockito.mock(CompletableFuture.class);
-				Mockito.when(future.isDone()).thenReturn(false);
-				Mockito.when(future.get()).thenThrow(ExecutionException.class);
-				Whitebox.setInternalState(xml, "writeFuture", future);
-				
-				xml.flush();
-			} catch (ModifyException | IOException | InterruptedException | ExecutionException e) {
-				fail("XmlFile constructor failed " + e.getMessage());
-			}
+			Mockito.when(future.isDone()).thenReturn(false);
+			Mockito.when(future.get()).thenThrow(ExecutionException.class);
+			FieldSetter.setField(xml, futureField, future);
+			
+			xml.flush();
 		});
 	}
 	
@@ -257,50 +204,79 @@ class XmlFileTest {
 			"</catalog>";
 	
 	@Test
-	public void insertAfterElement() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
-			
-			@SuppressWarnings("unchecked")
-			CompletableFuture<Void> future = Mockito.mock(CompletableFuture.class);
-			Mockito.when(future.isDone()).thenReturn(false);
-			Whitebox.setInternalState(xml, "writeFuture", future);
-			
-			xml.insertElementAtEnd(toInsert);
-			xml.flush();
-			
-			String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
-			
-			Mockito.verify(future, Mockito.times(1)).get();
-			assertThat(newContents, is(equalTo(afterInsert)));
-			
-		} catch (ModifyException | IOException | NavException | InterruptedException | ExecutionException e) {
-			fail("XmlFile failed " + e.getMessage());
-		}
+	public void insertAfterElementWaitsForFutureIfWriting() throws IOException, 
+		InterruptedException, ExecutionException {
+		Mockito.when(future.isDone()).thenReturn(false);
+		FieldSetter.setField(xml, futureField, future);
+		
+		xml.insertElementAtEnd(toInsert);
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		Mockito.verify(future, Mockito.times(1)).get();
+		assertThat(newContents, is(equalTo(afterInsert)));
 	}
 	
 	@Test
-	public void insertAfterElementWaitsForFutureIfWriting() {
-		try {
-			XmlFile xml = new XmlFile(FILE_PATH);
-			assertNotNull(xml);
-			
-			xml.insertElementAtEnd(toInsert);
-			xml.flush();
-			
-			String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
-			
-			assertThat(newContents, is(equalTo(afterInsert)));
-			
-		} catch (ModifyException | IOException | NavException | InterruptedException | ExecutionException e) {
-			fail("XmlFile failed " + e.getMessage());
-		}
+	public void insertAfterElement() throws IOException {
+		xml.insertElementAtEnd(toInsert);
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		assertThat(newContents, is(equalTo(afterInsert)));
 	}
 	
-	@AfterAll
-	public static void cleanup() throws IOException {
-		Files.delete(Paths.get(FILE_PATH));
-		Files.deleteIfExists(Paths.get(NON_EXISTING_FILE_PATH));
+	private final String afterRemove = "<?xml version=\"1.0\"?>\r\n" + 
+			"<catalog>\r\n" + 
+			"   <book id=\"bk101\">\r\n" + 
+			"      <author>Gambardella, Matthew</author>\r\n" + 
+			"      <title>XML Developer's Guide</title>\r\n" + 
+			"      <genre>Computer</genre>\r\n" + 
+			"      <price>44.95</price>\r\n" + 
+			"      <publish_date>2000-10-01</publish_date>\r\n" + 
+			"      <description>An in-depth look at creating applications \r\n" + 
+			"      with XML.</description>\r\n" + 
+			"   </book>\r\n" +
+			"   \r\n" +
+			"</catalog>";
+	
+	@Test
+	public void removeElementRemovesCorrectElement() throws IOException {
+		boolean result = xml.removeElement("//book[@id=\"bk102\"]");
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		assertThat(result, is(true));
+		assertThat(newContents, is(equalTo(afterRemove)));
+	}
+	
+	@Test
+	public void removeElementReturnsFalseIfElementDoesNotExist() throws IOException {
+		boolean result = xml.removeElement("//book[@id=\"bk102354678\"]");
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		assertThat(result, is(false));
+		assertThat(newContents, is(equalTo(CONTENTS)));
+	}
+	
+	@Test
+	public void removeElementWaitsForFutureIfWriting() throws InterruptedException, 
+		ExecutionException, IOException {
+		Mockito.when(future.isDone()).thenReturn(false);
+		FieldSetter.setField(xml, futureField, future);
+		
+		boolean result = xml.removeElement("//book[@id=\"bk102\"]");
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		Mockito.verify(future, Mockito.times(1)).get();
+		assertThat(result, is(true));
+		assertThat(newContents, is(equalTo(afterRemove)));
 	}
 }

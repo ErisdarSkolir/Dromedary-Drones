@@ -1,25 +1,22 @@
 package edu.gcc.xml;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import com.ximpleware.AutoPilot;
 import com.ximpleware.ModifyException;
-import com.ximpleware.NavException;
-import com.ximpleware.TranscodeException;
 import com.ximpleware.VTDGen;
 import com.ximpleware.VTDNav;
 import com.ximpleware.XMLModifier;
-import com.ximpleware.XPathEvalException;
-import com.ximpleware.XPathParseException;
 
+import edu.gcc.xml.exception.XmlInsertElementException;
+import edu.gcc.xml.exception.XmlRemoveElementException;
+import edu.gcc.xml.exception.XmlUpdateElementException;
 import edu.gcc.xml.exception.XmlWriteException;
 
 /**
@@ -33,10 +30,10 @@ import edu.gcc.xml.exception.XmlWriteException;
  */
 public class XmlFile {
 	private static final String HEADER = "<?xml version=\"1.0\"?>\r\n";
-	
-	private CompletableFuture<Void> writeFuture;
 
 	private String filepath;
+	
+	private CompletableFuture<Void> writeFuture;
 
 	private VTDGen gen = new VTDGen();
 	private XMLModifier xmlModifier = new XMLModifier();
@@ -47,12 +44,13 @@ public class XmlFile {
 	 * Main constructor. If the file does not exist, one will be created.
 	 * 
 	 * @param filepath the path to the XML file
+	 * 
 	 * @throws ModifyException
 	 * @throws IOException
 	 */
 	public XmlFile(final String filepath) throws ModifyException, IOException {
 		this.filepath = filepath;
-		
+
 		Path path = Paths.get(filepath);
 		if (Files.notExists(path, LinkOption.NOFOLLOW_LINKS)) {
 			Files.write(path, HEADER.getBytes(), StandardOpenOption.CREATE);
@@ -65,21 +63,23 @@ public class XmlFile {
 	 * Inserts an XML element at the end of the XML file within the root tag.
 	 * 
 	 * @param element the XML element to add as a string.
-	 * @throws NavException
-	 * @throws ModifyException
-	 * @throws UnsupportedEncodingException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
+	 * 
+	 * @throws XmlInsertElementException
 	 */
-	public final void insertElementAtEnd(final String element) throws NavException, ModifyException,
-			UnsupportedEncodingException, InterruptedException, ExecutionException {
-		if(isWriting())
-			writeFuture.get();
+	public final void insertElementAtEnd(final String element) {
+		try {
+			if (isWriting())
+				writeFuture.get();
 
-		nav.toElement(VTDNav.ROOT);
-		xmlModifier.insertBeforeTail(element);
+			nav.toElement(VTDNav.ROOT);
 
-		write();
+			xmlModifier.insertBeforeTail(element);
+
+			write();
+		} catch (Exception e) {
+			throw new XmlInsertElementException(
+					String.format("Could not insert element %s into file %s", element, filepath), e);
+		}
 	}
 
 	/**
@@ -87,23 +87,29 @@ public class XmlFile {
 	 * was removed or false if no such element existed.
 	 * 
 	 * @param xPath the path to the element to be removed as specified by an XPath
+	 * 
 	 * @return true if the element was successfully removed, otherwise false
-	 * @throws XPathParseException
-	 * @throws XPathEvalException
-	 * @throws NavException
-	 * @throws ModifyException
+	 * 
+	 * @throws XmlRemoveElementException
 	 */
-	public final boolean removeElement(final String xPath)
-			throws XPathParseException, XPathEvalException, NavException, ModifyException {
-		autopilot.selectXPath(xPath);
+	public final boolean removeElement(final String xPath) {
+		try {
+			if (isWriting())
+				writeFuture.get();
 
-		if (autopilot.evalXPath() == -1)
-			return false;
+			autopilot.selectXPath(xPath);
 
-		nav.toElement(VTDNav.PARENT);
-		xmlModifier.remove();
+			if (autopilot.evalXPath() == -1)
+				return false;
 
-		write();
+			// nav.toElement(VTDNav.PARENT);
+			xmlModifier.remove();
+
+			write();
+		} catch (Exception e) {
+			throw new XmlRemoveElementException(
+					String.format("Could not remove element at %s from %s", xPath, filepath), e);
+		}
 
 		return true;
 	}
@@ -113,25 +119,30 @@ public class XmlFile {
 	 * 
 	 * @param xPath   the element to replace
 	 * @param element the string to be inserted
+	 * 
 	 * @return true if the update was successful, otherwise false
-	 * @throws XPathParseException
-	 * @throws XPathEvalException
-	 * @throws NavException
-	 * @throws ModifyException
-	 * @throws UnsupportedEncodingException
+	 * 
+	 * @throws XmlUpdateElementException
 	 */
-	public final boolean updateElement(final String xPath, final String element) throws XPathParseException,
-			XPathEvalException, NavException, ModifyException, UnsupportedEncodingException {
-		autopilot.selectXPath(xPath);
+	public final boolean updateElement(final String xPath, final String element) {
+		try {
+			if (isWriting())
+				writeFuture.get();
 
-		if (autopilot.evalXPath() == -1)
-			return false;
+			autopilot.selectXPath(xPath);
 
-		nav.toElement(VTDNav.PARENT);
-		xmlModifier.remove();
-		xmlModifier.insertAfterElement(element);
+			if (autopilot.evalXPath() == -1)
+				return false;
 
-		write();
+			nav.toElement(VTDNav.PARENT);
+			xmlModifier.remove();
+			xmlModifier.insertAfterElement(element);
+
+			write();
+		} catch (Exception e) {
+			throw new XmlUpdateElementException(
+					String.format("Could not update element at %s to %s in file %s", xPath, element, filepath), e);
+		}
 
 		return true;
 	}
@@ -148,6 +159,8 @@ public class XmlFile {
 	/**
 	 * Blocks until the current write operation is complete. If no write operation
 	 * is in progress this method returns immediately.
+	 * 
+	 * @throws XmlWriteException
 	 */
 	public final void flush() {
 		if (!isWriting())
@@ -155,7 +168,7 @@ public class XmlFile {
 
 		try {
 			writeFuture.get();
-		} catch (InterruptedException |ExecutionException e) {
+		} catch (Exception e) {
 			throw new XmlWriteException("Could not flush xml write " + filepath, e);
 		}
 	}
@@ -171,12 +184,14 @@ public class XmlFile {
 	/**
 	 * Writes and re-parses any changes to the XML file. If an error occurs, this
 	 * method will throw an unchecked exception.
+	 * 
+	 * @throws XmlWriteException
 	 */
 	private final void outputAndReparse() {
 		try {
 			xmlModifier.output(filepath);
 			parse(filepath);
-		} catch (IOException | ModifyException | TranscodeException e) {
+		} catch (Exception e) {
 			throw new XmlWriteException("Could not output and reparse XML file " + filepath, e);
 		}
 	}
