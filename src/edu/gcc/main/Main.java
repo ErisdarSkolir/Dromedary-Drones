@@ -17,7 +17,7 @@ public class Main extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new Location().test();
+		new Location(0,0).test();
 	}
 
 	public static void main(String[] args) {
