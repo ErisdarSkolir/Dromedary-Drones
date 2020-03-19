@@ -159,7 +159,7 @@ class XmlFileTest {
 		});
 	}
 	
-	private final String toInsert = "   <book id=\"bk103\">\r\n" + 
+	private static final String toInsert = "   <book id=\"bk103\">\r\n" + 
 			"      <author>Corets, Eva</author>\r\n" + 
 			"      <title>Maeve Ascendant</title>\r\n" + 
 			"      <genre>Fantasy</genre>\r\n" + 
@@ -170,7 +170,7 @@ class XmlFileTest {
 			"      foundation for a new society.</description>\r\n" + 
 			"   </book>\r\n";
 	
-	private final String afterInsert = "<?xml version=\"1.0\"?>\r\n" + 
+	private static final String afterInsert = "<?xml version=\"1.0\"?>\r\n" + 
 			"<catalog>\r\n" + 
 			"   <book id=\"bk101\">\r\n" + 
 			"      <author>Gambardella, Matthew</author>\r\n" + 
