@@ -13,10 +13,23 @@ public abstract class MapLocation {
 	private int yCoord;
 	private String name;
 	
+	public MapLocation() {
+		xCoord = 0;
+		yCoord = 0;
+		name = "n/a";
+	}
+	
+	MapLocation(int x, int y, String n) {
+		xCoord = x;
+		yCoord = y;
+		name = n;
+	}
+	
+	//calculates the length of a vector between 2 points on Map
 	public double distance(MapLocation l) {
-		int xSum = xCoord - l.xCoord;
-		int ySum = yCoord - l.yCoord;
-		double pythagorean = Math.sqrt(	Math.abs((xSum * xSum) - (ySum * ySum)));
+		int xSum = Math.abs(xCoord - l.xCoord);
+		int ySum = Math.abs(yCoord - l.yCoord);
+		double pythagorean = Math.sqrt((xSum * xSum) + (ySum * ySum));
 		
 		return pythagorean;
 	}
@@ -47,7 +60,7 @@ public abstract class MapLocation {
 
 	@Override
 	public String toString() {
-		return "xCoord: " + xCoord + "\n yCoord: " + yCoord + "\n name: " + name+ "\n";
+		return "xCoord: " + xCoord + "\nyCoord: " + yCoord + "\nname: " + name+ "\n";
 	}
 	
 	

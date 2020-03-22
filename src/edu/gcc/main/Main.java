@@ -4,8 +4,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javax.tools.DocumentationTool.Location;
-import edu.gcc.maplocation.MapLocation;
+import edu.gcc.maplocation.*;
+
 public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
@@ -25,6 +25,18 @@ public class Main extends Application {
 	}
 
 	public static void main(String[] args) {
-		launch(args);
+		//launch(args);
+		
+		PickupLocation pick = new PickupLocation();
+		PickupLocation pick2 = new PickupLocation(0, 10, "2");
+		DropoffLocation drop = new DropoffLocation(24, 2, "3");
+		DropoffLocation drop2 = new DropoffLocation();
+		
+		System.out.println(pick);
+		System.out.println(pick2);
+		System.out.println(pick.distance(pick2));
+		System.out.println(pick.distance(drop));
+		System.out.println(drop.distance(pick2));
+		
 	}
 }
