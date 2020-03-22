@@ -4,9 +4,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-
-
-import edu.gcc.location.Location;
+import javax.tools.DocumentationTool.Location;
+import edu.gcc.maplocation.MapLocation;
 public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
@@ -19,7 +18,10 @@ public class Main extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
+	
+		
+	
 	}
 
 	public static void main(String[] args) {
