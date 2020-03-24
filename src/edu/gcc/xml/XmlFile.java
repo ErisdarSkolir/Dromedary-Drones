@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.ximpleware.AutoPilot;
 import com.ximpleware.ModifyException;
@@ -15,6 +16,7 @@ import com.ximpleware.VTDNav;
 import com.ximpleware.XMLModifier;
 
 import edu.gcc.xml.exception.XmlInsertElementException;
+import edu.gcc.xml.exception.XmlReadException;
 import edu.gcc.xml.exception.XmlRemoveElementException;
 import edu.gcc.xml.exception.XmlUpdateElementException;
 import edu.gcc.xml.exception.XmlWriteException;
@@ -32,7 +34,7 @@ public class XmlFile {
 	private static final String HEADER = "<?xml version=\"1.0\"?>\r\n";
 
 	private String filepath;
-	
+
 	private CompletableFuture<Void> writeFuture;
 
 	private VTDGen gen = new VTDGen();
@@ -101,7 +103,7 @@ public class XmlFile {
 
 			if (autopilot.evalXPath() == -1)
 				return false;
-			
+
 			xmlModifier.remove();
 
 			write();
@@ -168,6 +170,24 @@ public class XmlFile {
 			writeFuture.get();
 		} catch (Exception e) {
 			throw new XmlWriteException("Could not flush xml write " + filepath, e);
+		}
+	}
+
+	/**
+	 * Get an iterator that contains the elements matched by the given xPath
+	 * expression.
+	 * 
+	 * @param xPath the expression the elements must match.
+	 * @return an {@link XmlElementIterator} containing the matched elements.
+	 */
+	public final XmlElementIterator iterator(final String xPath) {
+		try {
+			if (isWriting())
+				writeFuture.get();
+
+			return new XmlElementIterator(nav, xPath);
+		} catch (InterruptedException | ExecutionException e) {
+			throw new XmlReadException(String.format("Could not get iterator for xml file %s", filepath), e);
 		}
 	}
 

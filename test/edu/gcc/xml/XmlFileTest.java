@@ -25,7 +25,10 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ximpleware.ModifyException;
+import com.ximpleware.NavException;
+import com.ximpleware.VTDNav;
 
+import edu.gcc.xml.exception.XmlInsertElementException;
 import edu.gcc.xml.exception.XmlWriteException;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,8 +62,12 @@ class XmlFileTest {
 	@Mock
 	private CompletableFuture<Void> future;
 	
+	@Mock
+	private VTDNav nav;
+	
 	private XmlFile xml;
 	private Field futureField;
+	private Field navField;
 	
 	@BeforeEach
 	public void setup() throws IOException, ModifyException, NoSuchFieldException {
@@ -73,6 +80,7 @@ class XmlFileTest {
 		assertNotNull(xml);
 		
 		futureField = XmlFile.class.getDeclaredField("writeFuture");
+		navField = XmlFile.class.getDeclaredField("nav");
 	}
 	
 	@AfterAll
@@ -278,5 +286,75 @@ class XmlFileTest {
 		Mockito.verify(future, Mockito.times(1)).get();
 		assertThat(result, is(true));
 		assertThat(newContents, is(equalTo(afterRemove)));
+	}
+	
+	private static final String afterEdit = "<?xml version=\"1.0\"?>\r\n" + 
+			"<catalog>\r\n" + 
+			"   <book id=\"bk101\">\r\n" + 
+			"      <author>Gambardella, Matthew</author>\r\n" + 
+			"      <title>XML Developer's Guide</title>\r\n" + 
+			"      <genre>Computer</genre>\r\n" + 
+			"      <price>44.95</price>\r\n" + 
+			"      <publish_date>2000-10-01</publish_date>\r\n" + 
+			"      <description>An in-depth look at creating applications \r\n" + 
+			"      with XML.</description>\r\n" + 
+			"   </book>\r\n   " + 
+			"	<book id=\"bk103\">\r\n" + 
+			"      <author>Smith, John</author>\r\n" + 
+			"      <title>Some random title</title>\r\n" + 
+			"      <genre>Fantasy</genre>\r\n" + 
+			"      <price>1000.00</price>\r\n" + 
+			"      <publish_date>2020-11-17</publish_date>\r\n" + 
+			"      <description>After the collapse of a nanotechnology \r\n" + 
+			"      society in England, the young survivors lay the \r\n" + 
+			"      foundation for a new society.</description>\r\n" + 
+			"   </book>\r\n" +
+			"</catalog>";
+	
+	private static final String edit = "	<book id=\"bk103\">\r\n" + 
+			"      <author>Smith, John</author>\r\n" + 
+			"      <title>Some random title</title>\r\n" + 
+			"      <genre>Fantasy</genre>\r\n" + 
+			"      <price>1000.00</price>\r\n" + 
+			"      <publish_date>2020-11-17</publish_date>\r\n" + 
+			"      <description>After the collapse of a nanotechnology \r\n" + 
+			"      society in England, the young survivors lay the \r\n" + 
+			"      foundation for a new society.</description>\r\n" + 
+			"   </book>";
+	
+	@Test
+	public void updateElementCorrectlyUpdatesElement() throws IOException {
+		boolean result = xml.updateElement("//book[@id=\"bk102\"]", edit);
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		assertThat(result, is(true));
+		assertThat(newContents, is(equalTo(afterEdit)));
+	}
+	
+	@Test
+	public void updateElementReturnsFalseIfXPathIsInvalid() throws IOException {
+		boolean result = xml.updateElement("//book[@id='99999']", edit);
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		assertThat(result, is(false));
+		assertThat(newContents, is(equalTo(CONTENTS)));
+	}
+	
+	@Test
+	public void updateElementWaitsForFutureIfWriting() throws IOException {
+		Mockito.when(future.isDone()).thenReturn(false);
+		FieldSetter.setField(xml, futureField, future);
+		
+		boolean result = xml.updateElement("//book[@id=\"bk102\"]", edit);
+		xml.flush();
+		
+		String newContents = new String(Files.readAllBytes(Paths.get(FILE_PATH)));
+		
+		assertThat(result, is(true));
+		assertThat(newContents, is(equalTo(afterEdit)));
 	}
 }
