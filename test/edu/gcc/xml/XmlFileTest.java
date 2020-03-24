@@ -25,10 +25,8 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ximpleware.ModifyException;
-import com.ximpleware.NavException;
 import com.ximpleware.VTDNav;
 
-import edu.gcc.xml.exception.XmlInsertElementException;
 import edu.gcc.xml.exception.XmlWriteException;
 
 @ExtendWith(MockitoExtension.class)

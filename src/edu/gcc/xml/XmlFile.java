@@ -147,6 +147,19 @@ public class XmlFile {
 		return true;
 	}
 
+	public final boolean containsElement(final String xPath) {
+		try {
+			if (isWriting())
+				writeFuture.get();
+
+			autopilot.selectXPath(xPath);
+
+			return autopilot.evalXPath() != -1;
+		} catch (Exception e) {
+			throw new XmlReadException(String.format("Could not check if xml file contains %s", xPath), e);
+		}
+	}
+
 	/**
 	 * Checks to see if there is a write operation currently running.
 	 * 

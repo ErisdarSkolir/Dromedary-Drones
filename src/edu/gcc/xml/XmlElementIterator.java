@@ -23,7 +23,7 @@ public class XmlElementIterator implements Iterator<Map<String, String>> {
 		this.vn = vn.cloneNav();
 		this.ap = new AutoPilot();
 		this.ap.bind(this.vn);
-
+		
 		try {
 			this.vn.toElement(VTDNav.ROOT);
 			this.ap.selectXPath(xPath);
@@ -41,10 +41,11 @@ public class XmlElementIterator implements Iterator<Map<String, String>> {
 	@Override
 	public Map<String, String> next() {
 		Map<String, String> result = new HashMap<>();
-
+		
 		try {
 			ap.selectElement("*");
-
+			vn.toElement(VTDNav.FIRST_CHILD);
+			
 			while (ap.iterate()) {
 				int value = vn.getText();
 
@@ -54,6 +55,7 @@ public class XmlElementIterator implements Iterator<Map<String, String>> {
 					throw new NavException("This element does not have text");
 			}
 
+			vn.toElement(VTDNav.PARENT);
 			nextNode = ap.evalXPath();
 		} catch (NavException | XPathEvalException e) {
 			throw new XmlReadException("Could not get next element ", e);
