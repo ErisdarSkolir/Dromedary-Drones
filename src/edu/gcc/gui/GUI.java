@@ -1,5 +1,10 @@
 package edu.gcc.gui;
 
+import java.io.File;
+import java.io.FileWriter;
+
+import javax.swing.JFileChooser;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -151,7 +156,7 @@ public class GUI extends Application {
 			delivery_button_form.getChildren().add(delivery_submit_button);
 			/* End Add Delivery Location Modal */
 			
-			/* Run Simulation Modal */
+			/* Run Simulation Modal
 			GridPane run_simulation = new GridPane();
 			run_simulation.setId("modal");
 			Scene run_simulation_scene = new Scene(run_simulation);
@@ -208,7 +213,7 @@ public class GUI extends Application {
 				}
 			});
 			simulation_button_form.getChildren().add(run_submit_button);
-			/* End Run Simulation Modal */
+			End Run Simulation Modal */
 			
 			
 			
@@ -272,9 +277,8 @@ public class GUI extends Application {
 			run_button.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					modal.setTitle("Simulation Data");
-					modal.setScene(run_simulation_scene);
-					modal.showAndWait();
+					System.out.println("Ran");
+					primaryStage.setScene(statistics_scene);
 				}
 			});
 			simulation_menu.getChildren().add(run_button);
@@ -296,7 +300,7 @@ public class GUI extends Application {
 			button.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					/*
+					
 				    String sb = "TEST CONTENT";
 				    JFileChooser chooser = new JFileChooser();
 				    chooser.setCurrentDirectory(new File("/home/me/Desktop"));
@@ -310,7 +314,7 @@ public class GUI extends Application {
 				            ex.printStackTrace();
 				        }
 				    }
-				    */
+				    
 				}
 			});
 			statistics.add(button,0,2);
@@ -324,7 +328,7 @@ public class GUI extends Application {
 			
 			add_campus_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			add_delivery_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			run_simulation_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			//run_simulation_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			overview_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			statistics_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(overview_scene);
