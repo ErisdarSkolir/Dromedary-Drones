@@ -43,6 +43,10 @@ public class Schema<T> {
 
 	private XmlFile xmlFile;
 
+	public static <A> Schema<A> of(final Class<A> clazz){
+		return new Schema<>(clazz);
+	}
+	
 	public Schema(final Class<T> clazz) {
 		if (!clazz.isAnnotationPresent(XmlSerializable.class))
 			throw new IllegalArgumentException("Class must be annotated with XmlSerializable");
@@ -101,17 +105,12 @@ public class Schema<T> {
 	}
 
 	public final List<T> getList(final String xPath) {
-		XmlElementIterator iterator = xmlFile.iterator(xPath);
-		
-		while(iterator.hasNext())
-			System.out.println(iterator.next());
-		
 		Iterable<Map<String, String>> iterable = () -> xmlFile.iterator(xPath);
 
 		return StreamSupport.stream(iterable.spliterator(), false).map(funXmlToObject::apply)
 				.collect(Collectors.toList());
 	}
-	
+
 	public final void flush() {
 		xmlFile.flush();
 	}
