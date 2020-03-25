@@ -10,25 +10,28 @@ import edu.gcc.xml.annotation.XmlInsert;
 import edu.gcc.xml.annotation.XmlUpdate;
 
 @XmlDao(TestObject.class)
-public interface TestDao{
+public interface TestDao {
 	@XmlInsert
 	void insertObject(final TestObject object);
-	
+
 	@XmlDelete
 	boolean deleteObject(final TestObject object);
-	
+
 	@XmlUpdate
 	boolean updateObject(final TestObject object);
-	
+
+	@XmlUpdate(async = true)
+	CompletableFuture<Boolean> updateAsync(final TestObject object);
+
 	@XPathQuery("//TestObject[id[text()='{0}']]")
 	TestObject getById(final int id);
-	
+
 	@XPathQuery(value = "//TestObject[id[text()='{0}']]", list = true)
 	List<TestObject> getByIdList(final int id);
-	
-	@XPathQuery(value = "//TestObject[id[text()='{0}']]", asynchronous = true)
+
+	@XPathQuery(value = "//TestObject[id[text()='{0}']]", async = true)
 	CompletableFuture<TestObject> getByIdAsync(final int id);
-	
-	@XPathQuery(value = "//TestObject[id[text()='{0}']]", list = true, asynchronous = true)
+
+	@XPathQuery(value = "//TestObject", list = true, async = true)
 	CompletableFuture<List<TestObject>> getByIdAsyncList(final int id);
 }

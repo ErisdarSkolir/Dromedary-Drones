@@ -19,18 +19,19 @@ public class QueryInterceptor<T> {
 	@RuntimeType
 	public Object get(@Origin Method method, @AllArguments Object[] args) {
 		XPathQuery annotation = method.getAnnotation(XPathQuery.class);
+		String query = replaceArguments(annotation.value(), args);
 		
-		if(annotation.asynchronous()) {
+		if(annotation.async()) {
 			if(annotation.list()) 
-				return CompletableFuture.supplyAsync(() -> schema.getList(replaceArguments(annotation.value(), args)));
+				return CompletableFuture.supplyAsync(() -> schema.getList(query));
 			
-			return CompletableFuture.supplyAsync(() -> schema.get(replaceArguments(annotation.value(), args)));
+			return CompletableFuture.supplyAsync(() -> schema.get(query));
 		}
 		
 		if(annotation.list())
-			return schema.getList(replaceArguments(annotation.value(), args));
+			return schema.getList(query);
 		
-		return schema.get(replaceArguments(annotation.value(), args));
+		return schema.get(query);
 	}
 	
 	private String replaceArguments(final String xPath, final Object[] args) {

@@ -14,5 +14,9 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface XmlUpdate {
-
+	/**
+	 * Denotes whether this query is asynchronous. If true the method will return a
+	 * {@link java.util.concurrent.CompletableFuture} with a boolean.
+	 */
+	boolean async() default false;
 }

@@ -30,7 +30,7 @@ public @interface XPathQuery {
 	 * {@link java.util.concurrent.CompletableFuture} with either a list of or a
 	 * single object.
 	 */
-	boolean asynchronous() default false;
+	boolean async() default false;
 
 	/**
 	 * Denotes whether this query returns a list or a single object. Can be combined

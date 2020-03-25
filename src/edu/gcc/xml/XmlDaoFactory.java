@@ -14,6 +14,10 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 
+/**
+ * @author Luke Donmoyer
+ *
+ */
 public class XmlDaoFactory {
 	private XmlDaoFactory() {
 		throw new UnsupportedOperationException("Cannot create instance of static utiltiy class");
@@ -26,8 +30,7 @@ public class XmlDaoFactory {
 		if (!clazz.isAnnotationPresent(XmlDao.class))
 			throw new DaoCreationException(String.format("%s does not ahve XmlDao annotation", clazz));
 
-		XmlDao annotation = clazz.getAnnotation(XmlDao.class);
-		Schema<?> schema = Schema.of(annotation.value());
+		Schema<?> schema = Schema.of(clazz.getAnnotation(XmlDao.class).value());
 
 		Class<? extends T> proxy = new ByteBuddy()
 				.subclass(clazz)
