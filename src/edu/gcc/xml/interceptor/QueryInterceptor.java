@@ -1,14 +1,13 @@
 package edu.gcc.xml.interceptor;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 import edu.gcc.xml.Schema;
 import edu.gcc.xml.annotation.XPathQuery;
-import net.bytebuddy.asm.Advice.AllArguments;
-import net.bytebuddy.asm.Advice.Origin;
+import net.bytebuddy.implementation.bind.annotation.AllArguments;
+import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import net.bytebuddy.implementation.bind.annotation.SuperCall;
 
 public class QueryInterceptor<T> {
 	private Schema<T> schema;
@@ -18,17 +17,29 @@ public class QueryInterceptor<T> {
 	}
 	
 	@RuntimeType
-	public T get(@Origin Method method, @AllArguments Object... args) {
-		String xPath = method.getAnnotation(XPathQuery.class).value();
+	public Object get(@Origin Method method, @AllArguments Object[] args) {
+		XPathQuery annotation = method.getAnnotation(XPathQuery.class);
 		
-		for(int i = 0; i < args.length; i++) {
-			xPath = xPath.replaceAll(String.format("(\\{%d\\})", i), args[i].toString());
+		if(annotation.asynchronous()) {
+			if(annotation.list()) 
+				return CompletableFuture.supplyAsync(() -> schema.getList(replaceArguments(annotation.value(), args)));
+			
+			return CompletableFuture.supplyAsync(() -> schema.get(replaceArguments(annotation.value(), args)));
 		}
 		
-		return schema.get(xPath);
+		if(annotation.list())
+			return schema.getList(replaceArguments(annotation.value(), args));
+		
+		return schema.get(replaceArguments(annotation.value(), args));
 	}
 	
-	/*public CompletableFuture<T> getAsyn(@Origin Method method, @AllArguments Object... args){
-		return CompletableFuture.supplyAsync(() -> get(method, args));
-	}*/
+	private String replaceArguments(final String xPath, final Object[] args) {
+		String query = xPath;
+		
+		for(int i = 0; i < args.length; i++) {
+			query = query.replaceAll(String.format("(\\{%d\\})", i), args[i].toString());
+		}
+		
+		return query;
+	}
 }

@@ -1,7 +1,7 @@
 package edu.gcc.xml.interceptor;
 
 import edu.gcc.xml.Schema;
-import net.bytebuddy.asm.Advice.Argument;
+import net.bytebuddy.implementation.bind.annotation.Argument;
 
 public class InsertInterceptor<T> {
 	private Schema<T> schema;

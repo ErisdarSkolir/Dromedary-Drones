@@ -34,5 +34,9 @@ public class XmlDaoFactoryTest {
 		dao.insertObject(obj2);
 		
 		System.out.println(dao.getById(0));
+		System.out.println(dao.getByIdList(0));
+		
+		dao.getByIdAsync(1).thenAccept(System.out::println);
+		dao.getByIdAsyncList(1).thenAccept(System.out::println);
 	}
 }
