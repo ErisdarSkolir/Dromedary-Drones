@@ -2,6 +2,7 @@ package edu.gcc.xml;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ public class XmlDaoFactoryTest {
 		System.out.println(dao.getByIdList(0));
 		
 		dao.getByIdAsync(1).thenAccept(System.out::println);
-		dao.getByIdAsyncList(1).thenAccept(System.out::println);
+		dao.getByIdAsyncList().thenAccept(System.out::println);
 		
 		obj2.x = 10;
 		
@@ -47,5 +48,14 @@ public class XmlDaoFactoryTest {
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
+		
+		XmlReactive<List<TestObject>> rx = dao.getListRx();
+		rx.addListener(System.out::println);
+		
+		obj2.x = 1039;
+		dao.updateObject(obj2);
+		
+		obj1.y = 1938;
+		dao.updateObject(obj1);
 	}
 }

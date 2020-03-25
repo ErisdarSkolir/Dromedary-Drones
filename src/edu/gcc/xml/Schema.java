@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import edu.gcc.util.ReflectionUtils;
 import edu.gcc.xml.annotation.XmlSerializable;
 
 public class Schema<T> {
-	private static String DATABASE_FOLDER = String.format("%s/DromedaryDrones/db/",
+	private static final String DATABASE_FOLDER = String.format("%s/DromedaryDrones/db/",
 			SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : System.getProperty("user.home"));
 
 	private String elementName;
@@ -41,12 +42,15 @@ public class Schema<T> {
 	private Function<T, String> funObjectToXml;
 	private Function<Map<String, String>, T> funXmlToObject;
 
+	private List<XmlReactive<T>> singleReactives = new ArrayList<>();
+	private List<XmlReactive<List<T>>> listReactives = new ArrayList<>();
+
 	private XmlFile xmlFile;
 
-	public static <A> Schema<A> of(final Class<A> clazz){
+	public static <A> Schema<A> of(final Class<A> clazz) {
 		return new Schema<>(clazz);
 	}
-	
+
 	public Schema(final Class<T> clazz) {
 		if (!clazz.isAnnotationPresent(XmlSerializable.class))
 			throw new IllegalArgumentException("Class must be annotated with XmlSerializable");
@@ -84,17 +88,41 @@ public class Schema<T> {
 		if (xmlFile.containsElement(getPrimaryKeyQuery(value)))
 			throw new RuntimeException("Cannot insert element that already exists");
 
-		xmlFile.insertElementAtEnd(funObjectToXml.apply(value));
+		String element = funObjectToXml.apply(value);
+		xmlFile.insertElementAtEnd(element);
+		
+		checkReactives(element);
 	}
 
 	public final boolean update(final T value) {
-		return xmlFile.updateElement(getPrimaryKeyQuery(value), funObjectToXml.apply(value));
+		String element = funObjectToXml.apply(value);
+		boolean result = xmlFile.updateElement(getPrimaryKeyQuery(value), element);
+		
+		checkReactives(element);
+		
+		return result;
 	}
 
 	public final boolean delete(final T value) {
-		return xmlFile.removeElement(getPrimaryKeyQuery(value));
+		boolean result = xmlFile.removeElement(getPrimaryKeyQuery(value));
+		
+		checkReactives(funObjectToXml.apply(value));
+		
+		return result;
 	}
 
+	public final XmlReactive<T> getSingleReactive(final String xPath){
+		XmlReactive<T> rx = new XmlReactive<>(this::get, xPath);
+		singleReactives.add(rx);
+		return rx;
+	}
+	
+	public final XmlReactive<List<T>> getListReactive(final String xPath){
+		XmlReactive<List<T>> rx = new XmlReactive<>(this::getList, xPath);
+		listReactives.add(rx);
+		return rx;
+	}
+	
 	public final T get(final String xPath) {
 		XmlElementIterator iterator = xmlFile.iterator(xPath);
 
@@ -113,6 +141,18 @@ public class Schema<T> {
 
 	public final void flush() {
 		xmlFile.flush();
+	}
+
+	private final void checkReactives(final String element) {
+		for (XmlReactive<T> rx : singleReactives) {
+			if (rx.matches(element))
+				rx.notifyListeners();
+		}
+
+		for (XmlReactive<List<T>> rx : listReactives) {
+			if (rx.matches(element))
+				rx.notifyListeners();
+		}
 	}
 
 	private final String getPrimaryKeyQuery(final T value) {

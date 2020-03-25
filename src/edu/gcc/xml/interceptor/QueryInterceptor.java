@@ -11,36 +11,38 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 
 public class QueryInterceptor<T> {
 	private Schema<T> schema;
-	
+
 	public QueryInterceptor(final Schema<T> schema) {
 		this.schema = schema;
 	}
-	
+
 	@RuntimeType
 	public Object get(@Origin Method method, @AllArguments Object[] args) {
 		XPathQuery annotation = method.getAnnotation(XPathQuery.class);
 		String query = replaceArguments(annotation.value(), args);
-		
-		if(annotation.async()) {
-			if(annotation.list()) 
-				return CompletableFuture.supplyAsync(() -> schema.getList(query));
-			
-			return CompletableFuture.supplyAsync(() -> schema.get(query));
+
+		if (annotation.async()) {
+			if (annotation.list())
+				return CompletableFuture.supplyAsync(
+						() -> annotation.reactive() ? schema.getListReactive(query) : schema.getList(query));
+
+			return CompletableFuture
+					.supplyAsync(() -> annotation.reactive() ? schema.getSingleReactive(query) : schema.get(query));
 		}
-		
-		if(annotation.list())
-			return schema.getList(query);
-		
-		return schema.get(query);
+
+		if (annotation.list())
+			return annotation.reactive() ? schema.getListReactive(query) : schema.getList(query);
+
+		return annotation.reactive() ? schema.getSingleReactive(query) : schema.get(query);
 	}
-	
+
 	private String replaceArguments(final String xPath, final Object[] args) {
 		String query = xPath;
-		
-		for(int i = 0; i < args.length; i++) {
+
+		for (int i = 0; i < args.length; i++) {
 			query = query.replaceAll(String.format("(\\{%d\\})", i), args[i].toString());
 		}
-		
+
 		return query;
 	}
 }

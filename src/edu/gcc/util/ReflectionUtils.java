@@ -10,7 +10,7 @@ public class ReflectionUtils {
 	}
 
 	public static final MethodHandle getFieldGetter(final Class<?> clazz, final String name,
-			final MethodHandles.Lookup lookup) throws IllegalAccessException, NoSuchFieldException, SecurityException {
+			final MethodHandles.Lookup lookup) throws IllegalAccessException, NoSuchFieldException {
 		Field field = clazz.getDeclaredField(name);
 		field.setAccessible(true);
 
@@ -22,7 +22,7 @@ public class ReflectionUtils {
 	}
 
 	public static final MethodHandle getFieldSetter(final Class<?> clazz, final String name,
-			final MethodHandles.Lookup lookup) throws NoSuchFieldException, SecurityException, IllegalAccessException {
+			final MethodHandles.Lookup lookup) throws NoSuchFieldException, IllegalAccessException {
 		Field field = clazz.getDeclaredField(name);
 		field.setAccessible(true);
 

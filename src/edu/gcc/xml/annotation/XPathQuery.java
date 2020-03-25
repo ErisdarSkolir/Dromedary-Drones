@@ -19,9 +19,7 @@ public @interface XPathQuery {
 	 * method are denoted in the query with "{x}" where x denotes the ordinal
 	 * position of parameters starting with 0.
 	 * 
-	 * Example:
-	 * 		@XPathQuery("//book[@id='{0}']") 
-	 * 		public Book getBookWhereID(int id);
+	 * Example: @XPathQuery("//book[@id='{0}']") public Book getBookWhereID(int id);
 	 */
 	String value();
 
@@ -37,4 +35,11 @@ public @interface XPathQuery {
 	 * with asynchronous.
 	 */
 	boolean list() default false;
+
+	/**
+	 * Denotes whether this query returns a reactive object. A reactive object will
+	 * be automatically updated whenever an element matching this query is inserted,
+	 * updated, or removed from the XML file.
+	 */
+	boolean reactive() default false;
 }

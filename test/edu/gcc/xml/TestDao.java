@@ -33,5 +33,8 @@ public interface TestDao {
 	CompletableFuture<TestObject> getByIdAsync(final int id);
 
 	@XPathQuery(value = "//TestObject", list = true, async = true)
-	CompletableFuture<List<TestObject>> getByIdAsyncList(final int id);
+	CompletableFuture<List<TestObject>> getByIdAsyncList();
+	
+	@XPathQuery(value = "//TestObject", list = true, reactive = true)
+	XmlReactive<List<TestObject>> getListRx();
 }
