@@ -31,7 +31,7 @@ import edu.gcc.xml.exception.XmlWriteException;
  *
  */
 public class XmlFile {
-	private static final String HEADER = "<?xml version=\"1.0\"?>\r\n";
+	private static final String HEADER = "<?xml version=\"1.0\"?>\r\n<root></root>";
 
 	private String filepath;
 
@@ -147,6 +147,12 @@ public class XmlFile {
 		return true;
 	}
 
+	/**
+	 * Checks whether there is an element at the given xPath.
+	 * 
+	 * @param xPath The xPath expression to evaluate.
+	 * @return True if there is an element at the specified xPath otherwise false.
+	 */
 	public final boolean containsElement(final String xPath) {
 		try {
 			if (isWriting())

@@ -3,6 +3,7 @@ package edu.gcc.xml;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import com.ximpleware.AutoPilot;
 import com.ximpleware.NavException;
@@ -12,6 +13,11 @@ import com.ximpleware.XPathParseException;
 
 import edu.gcc.xml.exception.XmlReadException;
 
+/**
+ * @author Luke Donmoyer
+ * 
+ *         A wrapper class for an iterator over an XML file.
+ */
 public class XmlElementIterator implements Iterator<Map<String, String>> {
 
 	private int nextNode = -1;
@@ -19,11 +25,17 @@ public class XmlElementIterator implements Iterator<Map<String, String>> {
 	private VTDNav vn;
 	private AutoPilot ap;
 
+	/**
+	 * Main constructor. Sets up VTD-XML objects and primes the first element.
+	 * 
+	 * @param vn    The VTD Navigator to copy.
+	 * @param xPath The xPath query to select elements.
+	 */
 	public XmlElementIterator(final VTDNav vn, final String xPath) {
 		this.vn = vn.cloneNav();
 		this.ap = new AutoPilot();
 		this.ap.bind(this.vn);
-		
+
 		try {
 			this.vn.toElement(VTDNav.ROOT);
 			this.ap.selectXPath(xPath);
@@ -40,12 +52,16 @@ public class XmlElementIterator implements Iterator<Map<String, String>> {
 
 	@Override
 	public Map<String, String> next() {
+		if (nextNode == -1)
+			throw new NoSuchElementException();
+
 		Map<String, String> result = new HashMap<>();
-		
+
+		// Iterator over object elements and store them in a map
 		try {
 			ap.selectElement("*");
 			vn.toElement(VTDNav.FIRST_CHILD);
-			
+
 			while (ap.iterate()) {
 				int value = vn.getText();
 

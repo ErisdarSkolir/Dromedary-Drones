@@ -17,15 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ximpleware.AutoPilot;
-import com.ximpleware.NavException;
-import com.ximpleware.VTDGen;
-import com.ximpleware.VTDNav;
-import com.ximpleware.XPathEvalException;
-import com.ximpleware.XPathParseException;
-
-import edu.gcc.xml.annotation.XmlSerializable;
-
 
 
 @ExtendWith(MockitoExtension.class)
@@ -33,11 +24,11 @@ public class SchemaTest {
 	private Path path = Paths.get(String.format("%s\\DromedaryDrones\\db\\%s.xml", System.getenv("APPDATA"),
 			TestObject.class.getSimpleName()));
 
-	private Schema<TestObject> schema;
+	private XmlSchema<TestObject> schema;
 
 	@BeforeEach
 	public void setup() {
-		schema = new Schema<>(TestObject.class);
+		schema = XmlSchema.of(TestObject.class);
 	}
 
 	@AfterEach
