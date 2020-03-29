@@ -7,10 +7,9 @@ import edu.gcc.packing.order;
 
 public class knapsack {
 	//return the index of the best order to put in next
-	static order nextFit(ArrayList<order> ords, ArrayList<order> filled, int capWeight, int capTime) 
+	static order nextFit(ArrayList<order> ords, ArrayList<order> filled, int capWeight) 
 	{ 
 		int totalFilledWeight = 0;
-		int totalFilledTime = 0;
 		order result = null;
 
 		//order by times
@@ -27,12 +26,11 @@ public class knapsack {
 		//calculate totalFilledWeight and totalFilledTime
 		for (int i = 0; i < filled.size(); i++) {
 			totalFilledWeight += filled.get(i).getWeight();
-			totalFilledTime += filled.get(i).getTime();
 		}
 
 		//look for the largest item that will fit and set result to that order
 		for (int i = ords.size() - 1; i >= 0; i--) {
-			if (ords.get(i).getWeight() + totalFilledWeight <= capWeight && ords.get(i).getTime() + totalFilledTime <= capTime) {
+			if (ords.get(i).getWeight() + totalFilledWeight <= capWeight) {
 				result = ords.get(i);
 			}
 		}
@@ -60,7 +58,7 @@ public class knapsack {
 
 		//		System.out.println(nextFit(orders, filled, 12, 20).getTime());
 		for (int i = 0; i < 3; i++) {
-			order temp = nextFit(orders, filled, 12, 20);
+			order temp = nextFit(orders, filled, 12);
 			orders.remove(temp);
 			if (temp != null) {
 				filled.add(temp);
