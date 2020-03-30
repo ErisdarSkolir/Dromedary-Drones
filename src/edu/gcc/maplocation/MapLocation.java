@@ -3,6 +3,7 @@
  */
 package edu.gcc.maplocation;
 import java.lang.Math;
+import java.util.List;
 /**
  * @author zack
  *
@@ -62,7 +63,5 @@ public abstract class MapLocation {
 	public String toString() {
 		return "xCoord: " + xCoord + "\nyCoord: " + yCoord + "\nname: " + name+ "\n";
 	}
-	
-	
 	
 }

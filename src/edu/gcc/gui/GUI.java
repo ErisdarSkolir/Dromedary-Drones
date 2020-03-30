@@ -35,24 +35,37 @@ public class GUI extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			ArrayList<PickupLocation> Pickup = new ArrayList<PickupLocation>();
-			PickupLocation Pick_one = new PickupLocation(2, 3, "pick_one");
-			PickupLocation Pick_two = new PickupLocation(2, 3, "pick_two");
-			Pickup.add(Pick_one);
-			Pickup.add(Pick_two);
 			
-			List<MapLocation> Dropoff = new ArrayList<>();
-			DropoffLocation Drop_one = new DropoffLocation(-2, 5, "drop_one");
-			DropoffLocation Drop_two = new DropoffLocation(4, 5, "drop_two");
-			DropoffLocation Drop_three = new DropoffLocation(6, -8, "drop_three");
-			DropoffLocation Drop_four = new DropoffLocation(7, 8, "drop_four");
-			Dropoff.add(Drop_one);
-			Dropoff.add(Drop_two);
-			Dropoff.add(Drop_three);
+			/* Get map data */
+			List<MapLocation> dropoff_1 = new ArrayList<>();
+			List<MapLocation> dropoff_2 = new ArrayList<>();
+			DropoffLocation drop_1 = new DropoffLocation(-2, 5, "drop_one");
+			DropoffLocation drop_2 = new DropoffLocation(4, 5, "drop_two");
+			DropoffLocation drop_3 = new DropoffLocation(6, -8, "drop_three");
+			DropoffLocation drop_4 = new DropoffLocation(7, 8, "drop_four");
+			DropoffLocation drop_5 = new DropoffLocation(-2, 5, "drop_one");
+			DropoffLocation drop_6 = new DropoffLocation(4, 5, "drop_two");
+			DropoffLocation drop_7 = new DropoffLocation(6, -8, "drop_three");
+			DropoffLocation drop_8 = new DropoffLocation(7, 8, "drop_four");
+			dropoff_1.add(drop_1);
+			dropoff_1.add(drop_2);
+			dropoff_1.add(drop_3);
+			dropoff_1.add(drop_4);
+			dropoff_1.add(drop_5);
+			dropoff_1.add(drop_6);
+			dropoff_2.add(drop_7);
+			dropoff_2.add(drop_8);
+			
+			ArrayList<PickupLocation> all_campuses = new ArrayList<PickupLocation>();
+			PickupLocation pick_1 = new PickupLocation(2, 3, "pick_one", dropoff_1);
+			PickupLocation pick_2 = new PickupLocation(2, 3, "pick_two", dropoff_2);
+			all_campuses.add(pick_1);
+			all_campuses.add(pick_2);
+			/* End get map data */
 
-			// Data variables
+			// Fill drop down of pickup locations
 			ObservableList<String> data = FXCollections.observableArrayList();
-			for(MapLocation location : Pickup) {
+			for(MapLocation location : all_campuses) {
 				data.add(location.getName());
 			}
 			ComboBox<String> location_drop_down = new ComboBox<String>();
@@ -93,7 +106,7 @@ public class GUI extends Application {
 			campus_button_form.setId("form");
 
 			// Add text boxes
-			campus_name_form.getChildren().add(new Label("Campus Name:"));
+			campus_name_form.getChildren().add(new Label("Pickup Name:"));
 			TextField name = new TextField();
 			campus_name_form.getChildren().add(name);
 			campus_latitude_form.getChildren().add(new Label("Latitude:"));
@@ -119,11 +132,25 @@ public class GUI extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					// TODO: Handle exceptions
+					
+					//
+					PickupLocation temp = new PickupLocation(Integer.parseInt(campus_latitude.getText()),
+							Integer.parseInt(campus_longitude.getText()),
+							name.getText());
+					// Set map to new location
+					ArrayList<MapLocation> empty = new ArrayList<MapLocation>();
+					empty.add(new DropoffLocation(0,0,""));
+					ScatterChart<Number,Number> map = createMap(empty);
+					overview.add(map, 0, 1);
+					//
+					location_drop_down.setValue(temp.getName());
+					all_campuses.add(temp);
 					data.add(name.getText());
-					location_drop_down.setItems(data);
-					System.out.println(name.getText());
-					System.out.println(campus_latitude.getText());
-					System.out.println(campus_longitude.getText());
+					// Clear text boxes
+					name.setText("");
+					campus_latitude.setText("");
+					campus_longitude.setText("");
+					// Close
 					modal.close();
 				}
 			});
@@ -150,6 +177,9 @@ public class GUI extends Application {
 			delivery_button_form.setId("form");
 
 			// Add text boxes
+			delivery_name_form.getChildren().add(new Label("Dropoff Name:"));
+			TextField delivery_name = new TextField();
+			delivery_name_form.getChildren().add(delivery_name);
 			delivery_latitude_form.getChildren().add(new Label("Latitude:"));
 			TextField delivery_latitude = new TextField();
 			delivery_latitude_form.getChildren().add(delivery_latitude);
@@ -173,8 +203,24 @@ public class GUI extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					// TODO: Handle exceptions
-					System.out.println(delivery_latitude.getText());
-					System.out.println(delivery_longitude.getText());
+					
+					// Add location
+					DropoffLocation temp = new DropoffLocation(Integer.parseInt(delivery_latitude.getText()),
+							Integer.parseInt(delivery_longitude.getText()),
+							delivery_name.getText());
+					for(PickupLocation location : all_campuses) {
+						if (location.getName() == location_drop_down.getValue()) {
+							location.addDropoffLocation(temp);
+							// Update map on submit
+							ScatterChart<Number,Number> map = createMap(location.getDropoffLocations());
+							overview.add(map, 0, 1);
+						}
+					}
+					// Clear text boxes
+					delivery_name.setText("");
+					delivery_latitude.setText("");
+					delivery_longitude.setText("");
+					// Close
 					modal.close();
 				}
 			});
@@ -242,7 +288,16 @@ public class GUI extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					// Open modal
-					System.out.println(location_drop_down.getValue());
+					for(PickupLocation location : all_campuses) {
+						if (location.getName() == location_drop_down.getValue()) {
+							ArrayList<MapLocation> empty = new ArrayList<MapLocation>();
+							empty.add(new DropoffLocation(0,0,""));
+							ScatterChart<Number,Number> map = createMap(empty);
+							overview.add(map, 0, 1);
+							map = createMap(location.getDropoffLocations());
+							overview.add(map, 0, 1);
+						}
+					}
 				}
 			});
 			campus_menu.getChildren().add(location_drop_down);
@@ -260,9 +315,7 @@ public class GUI extends Application {
 			});
 			campus_menu.getChildren().add(new_campus_button);
 
-			// TODO: Get data to put into campus map
-			// double[][] list = {{2,3},{10,4},{6,9},{-4,3},{-4,-5}};
-			ScatterChart<Number,Number> map = createMap(Dropoff);
+			ScatterChart<Number,Number> map = createMap(dropoff_1);
 			overview.add(map, 0, 1);
 
 			// New delivery location
@@ -284,7 +337,9 @@ public class GUI extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					System.out.println("Ran");
-					// simulation ran = new simulation(, 0, 0);
+					// TODO: Generate orders
+					// TODO: Run Simulation
+					//simulation ran = new simulation(, 1, 1);
 					primaryStage.setScene(statistics_scene);
 				}
 			});
