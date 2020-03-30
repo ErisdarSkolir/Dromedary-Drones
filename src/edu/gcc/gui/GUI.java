@@ -1,14 +1,14 @@
 package edu.gcc.gui;
 
-import edu.gcc.maplocation.DropoffLocation;
-import edu.gcc.maplocation.PickupLocation;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 
+import edu.gcc.maplocation.MapLocation;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,12 +28,18 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class GUI extends Application {
-	private ArrayList<PickupLocation> pickup;
-	private ArrayList<DropoffLocation> dropoff;
+	private static ScatterChart<Number,Number> map;
 	
-	public GUI(ArrayList<PickupLocation> pickup, ArrayList<DropoffLocation> dropoff) {
-		this.pickup = pickup;
-		this.dropoff = dropoff;
+	private static XYChart.Series mapDropOffLocations = new XYChart.Series();
+	
+	public static void setDropOffLocations(final List<MapLocation> locations) {
+		Platform.runLater(() -> {
+			mapDropOffLocations.getData().clear();
+			
+			for(MapLocation location : locations) {
+				mapDropOffLocations.getData().add(new XYChart.Data(location.getxCoord(), location.getyCoord()));
+			}
+		});
 	}
 	
 	@Override
@@ -268,7 +274,8 @@ public class GUI extends Application {
 	        
 			// TODO: Get data to put into campus map
 			double[][] list = {{2,3},{10,4},{6,9},{-4,3},{-4,-5}};
-	        overview.add(createMap(list),0,1);
+			map = createMap(list);
+	        overview.add(map,0,1);
 			
 			// New delivery location
 			Button new_delivery_button = new Button("New Delivery Location");
@@ -371,13 +378,13 @@ public class GUI extends Application {
         series1.setName("Shop Location");
         series1.getData().add(new XYChart.Data(0, 0));
         
-        XYChart.Series series2 = new XYChart.Series();
+        /*XYChart.Series series2 = new XYChart.Series();
         series2.setName("Delivery Points");
 	    for (int i = 0; i < array.length; i++) {
 	    	series2.getData().add(new XYChart.Data(array[i][0], array[i][1]));
-	    }
+	    }*/
  
-        sc.getData().addAll(series1, series2);
+        sc.getData().addAll(series1, mapDropOffLocations);
 		return sc;
 	}
 	
