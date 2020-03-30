@@ -2,15 +2,30 @@ package GreedyBestFirst;
 
 import java.util.ArrayList;
 
-public class Node implements Comparable<Node>{
+public class Order implements Comparable<Order>{
 
 	private double distance = 0;
 	public double x = 0;
 	public double y = 0;
 	private boolean examined = false;
-	private ArrayList<Node> neighbors = new ArrayList<Node>();
+	private ArrayList<Order> neighbors = new ArrayList<Order>();
+	private int weight;
+	private int deliveryTime;
+	
+	public Order(int w, int d) {
+		weight = w;
+		deliveryTime = d;
+	}
+	
+	public int getWeight() {
+		return weight;
+	}
+	
+	public int getTime() {
+		return deliveryTime;
+	}
 
-	public Node (double x, double y) {
+	public Order(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -24,7 +39,7 @@ public class Node implements Comparable<Node>{
 		distance = d;
 	}
 
-	public double getDistanceTo(Node n) {
+	public double getDistanceTo(Order n) {
 		return Math.sqrt((n.x-x)*(n.x-x) + (n.y-y)*(n.y-y));
 	}
 	
@@ -40,11 +55,11 @@ public class Node implements Comparable<Node>{
 		return 1;
 	}
 
-	public void addNeighbor(Node n) {
+	public void addNeighbor(Order n) {
 		neighbors.add(n);
 	}
 
-	public Node getNeighbor(int i) {
+	public Order getNeighbor(int i) {
 		return neighbors.get(i);
 	}
 	
@@ -52,7 +67,7 @@ public class Node implements Comparable<Node>{
 		
 	}*/
 
-	public int compareTo(Node n) {
+	public int compareTo(Order n) {
 		return (int)(distance - n.getDistance());
 	}
 

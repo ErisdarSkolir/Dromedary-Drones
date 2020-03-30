@@ -1,7 +1,10 @@
 package edu.gcc.gui;
 
+import edu.gcc.maplocation.DropoffLocation;
+import edu.gcc.maplocation.PickupLocation;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 
@@ -25,6 +28,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class GUI extends Application {
+	private ArrayList<PickupLocation> pickup;
+	private ArrayList<DropoffLocation> dropoff;
+	
+	public GUI(ArrayList<PickupLocation> pickup, ArrayList<DropoffLocation> dropoff) {
+		this.pickup = pickup;
+		this.dropoff = dropoff;
+	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {

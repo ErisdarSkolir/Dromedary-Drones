@@ -7,7 +7,7 @@ import edu.gcc.packing.order;
 
 public class fifo {
 
-	static order nextFit(ArrayList<order> ords, ArrayList<order> filled, double capWeight, double capTime){ 
+	public order nextFit(ArrayList<order> ords, ArrayList<order> filled, double capWeight){ 
 		double totalFilledWeight = 0;
 		double totalFilledTime = 0;
 		order result = null;
@@ -15,12 +15,12 @@ public class fifo {
 		//calculate totalFilledWeight and totalFilledTime
 		for (int i = 0; i < filled.size(); i++) {
 			totalFilledWeight += filled.get(i).getWeight();
-			totalFilledTime += filled.get(i).getTime();
 		}
 		
 		for (int i = 0; i < ords.size(); i++) {
-			if (ords.get(i).getWeight() + totalFilledWeight <= capWeight && ords.get(i).getTime() + totalFilledTime <= capTime) {
+			if (ords.get(i).getWeight() + totalFilledWeight <= capWeight) {
 				result = ords.get(i);
+				break;
 			}
 		}
 
@@ -45,11 +45,11 @@ public class fifo {
 
 		//		System.out.println(nextFit(orders, filled, 12, 20).getTime());
 		for (int i = 0; i < 3; i++) {
-			order temp = nextFit(orders, filled, 12, 20);
-			orders.remove(temp);
-			if (temp != null) {
-				filled.add(temp);
-			}
+			//order temp = nextFit(orders, filled, 12, 20);
+			//orders.remove(temp);
+			//if (temp != null) {
+			//	filled.add(temp);
+			//}
 		}
 
 		System.out.println("Filled size: " + filled.size());

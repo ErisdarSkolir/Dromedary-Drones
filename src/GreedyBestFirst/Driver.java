@@ -5,11 +5,11 @@ import java.util.PriorityQueue;
 
 public class Driver {
 
-	static ArrayList<Node> GBFS(Graph g, Node start) {
+	static ArrayList<Order> GBFS(Graph g, Order start) {
 
-		ArrayList<Node> path = new ArrayList<Node>();
+		ArrayList<Order> path = new ArrayList<Order>();
 		
-		Node current = start;
+		Order current = start;
 		boolean isBeginning = true;
 		boolean isDone = false;
 		
@@ -17,7 +17,7 @@ public class Driver {
 		
 		path.add(current);
 		
-		Node closest;
+		Order closest;
 
 		while(!isDone && counter < 10) {
 			counter++;
@@ -61,13 +61,13 @@ public class Driver {
 		//		
 		//		System.out.println(pq.peek());
 
-		Node start = new Node(0, 0);
-		Node n1 = new Node(1,1);
-		Node n2 = new Node(2,0);
-		Node n3 = new Node(2,2);
+		Order start = new Order(0, 0);
+		Order n1 = new Order(1,1);
+		Order n2 = new Order(2,0);
+		Order n3 = new Order(2,2);
 		
-		ArrayList<Node> nodes = new ArrayList<Node>();
-		ArrayList<Node> path;
+		ArrayList<Order> nodes = new ArrayList<Order>();
+		ArrayList<Order> path;
 		
 		nodes.add(start);
 		nodes.add(n1);

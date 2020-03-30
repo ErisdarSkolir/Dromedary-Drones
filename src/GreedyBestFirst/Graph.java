@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Graph {
 
-	private ArrayList<Node> nodes;
+	private ArrayList<Order> nodes;
 
-	private Node start;
+	private Order start;
 
-	public Graph(ArrayList<Node> n) {
+	public Graph(ArrayList<Order> n) {
 		nodes = n;
 
 		for (int i = 0; i < nodes.size(); i++) {
@@ -23,13 +23,13 @@ public class Graph {
 		start.setExamined(true);
 	}
 
-	public ArrayList<Node> getNodes(){
+	public ArrayList<Order> getNodes(){
 		return nodes;
 	}
 
-	public Node getClosestNeighbor(Node current) {
+	public Order getClosestNeighbor(Order current) {
 		//iterate through all neighbors of the current node and grab the closest if it is unvisited
-		Node closest = null;
+		Order closest = null;
 
 		//check if all are examined
 		boolean allExamined = false;
