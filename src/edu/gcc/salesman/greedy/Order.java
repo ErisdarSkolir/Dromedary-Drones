@@ -1,9 +1,14 @@
-package GreedyBestFirst;
+package edu.gcc.salesman.greedy;
 
 import java.util.ArrayList;
 
-public class Order implements Comparable<Order>{
+import edu.gcc.order.Meal;
 
+public class Order implements Comparable<Order> {
+	private long timestamp;
+	private Meal meal;
+	private String customerName;
+	
 	private double distance = 0;
 	public double x = 0;
 	public double y = 0;
@@ -11,16 +16,16 @@ public class Order implements Comparable<Order>{
 	private ArrayList<Order> neighbors = new ArrayList<Order>();
 	private int weight;
 	private int deliveryTime;
-	
+
 	public Order(int w, int d) {
 		weight = w;
 		deliveryTime = d;
 	}
-	
+
 	public int getWeight() {
 		return weight;
 	}
-	
+
 	public int getTime() {
 		return deliveryTime;
 	}
@@ -29,20 +34,20 @@ public class Order implements Comparable<Order>{
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public double getDistance() {
-		
+
 		return distance;
 	}
-	
+
 	public void setDistance(double d) {
 		distance = d;
 	}
 
 	public double getDistanceTo(Order n) {
-		return Math.sqrt((n.x-x)*(n.x-x) + (n.y-y)*(n.y-y));
+		return Math.sqrt((n.x - x) * (n.x - x) + (n.y - y) * (n.y - y));
 	}
-	
+
 	public void setExamined(boolean b) {
 		examined = b;
 	}
@@ -62,13 +67,15 @@ public class Order implements Comparable<Order>{
 	public Order getNeighbor(int i) {
 		return neighbors.get(i);
 	}
-	
-	/*public double getFlightTime(int i) {
-		
-	}*/
+
+	/*
+	 * public double getFlightTime(int i) {
+	 * 
+	 * }
+	 */
 
 	public int compareTo(Order n) {
-		return (int)(distance - n.getDistance());
+		return (int) (distance - n.getDistance());
 	}
 
 }

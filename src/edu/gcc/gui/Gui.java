@@ -10,7 +10,9 @@ import javax.swing.JFileChooser;
 import edu.gcc.maplocation.DropoffLocation;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.PickupLocation;
-import edu.gcc.simulation.simulation;
+import edu.gcc.order.Order;
+import edu.gcc.packing.Fifo;
+import edu.gcc.simulation.Simulation;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -22,6 +24,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -31,41 +35,57 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class GUI extends Application {
+public class Gui extends Application {
+	private static Gui instance;
+
+	public Gui() {
+		Gui.initInstance(this);
+	}
+
+	private static void initInstance(final Gui inst) {
+		if (inst != null && Gui.instance == null)
+			Gui.instance = inst;
+	}
+
+	public static Gui getInstance() {
+		if (instance != null)
+			return instance;
+
+		throw new IllegalStateException(String.format("%s is not initialized", Gui.class));
+	}
+
+	private ObservableList<XYChart.Data<Number, Number>> dropoffLocations;
+
+	public void setDropOffLocations(final List<MapLocation> locations) {
+		Platform.runLater(() -> {
+			dropoffLocations.clear();
+
+			for (MapLocation location : locations) {
+				dropoffLocations.add(new Data<>(location.getxCoord(), location.getyCoord()));
+			}
+		});
+	}
+
+	public void addDropoffLocations(final MapLocation location) {
+		Platform.runLater(() -> dropoffLocations.add(new Data<>(location.getxCoord(), location.getyCoord())));
+	}
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			
+
 			/* Get map data */
-			List<MapLocation> dropoff_1 = new ArrayList<>();
-			List<MapLocation> dropoff_2 = new ArrayList<>();
-			DropoffLocation drop_1 = new DropoffLocation(-2, 5, "drop_one");
-			DropoffLocation drop_2 = new DropoffLocation(4, 5, "drop_two");
-			DropoffLocation drop_3 = new DropoffLocation(6, -8, "drop_three");
-			DropoffLocation drop_4 = new DropoffLocation(7, 8, "drop_four");
-			DropoffLocation drop_5 = new DropoffLocation(-2, 5, "drop_one");
-			DropoffLocation drop_6 = new DropoffLocation(4, 5, "drop_two");
-			DropoffLocation drop_7 = new DropoffLocation(6, -8, "drop_three");
-			DropoffLocation drop_8 = new DropoffLocation(7, 8, "drop_four");
-			dropoff_1.add(drop_1);
-			dropoff_1.add(drop_2);
-			dropoff_1.add(drop_3);
-			dropoff_1.add(drop_4);
-			dropoff_1.add(drop_5);
-			dropoff_1.add(drop_6);
-			dropoff_2.add(drop_7);
-			dropoff_2.add(drop_8);
-			
+
 			ArrayList<PickupLocation> all_campuses = new ArrayList<PickupLocation>();
-			PickupLocation pick_1 = new PickupLocation(2, 3, "pick_one", dropoff_1);
-			PickupLocation pick_2 = new PickupLocation(2, 3, "pick_two", dropoff_2);
+			PickupLocation pick_1 = new PickupLocation(2, 3, "pick_one", new ArrayList<>());
+			PickupLocation pick_2 = new PickupLocation(2, 3, "pick_two", new ArrayList<>());
 			all_campuses.add(pick_1);
 			all_campuses.add(pick_2);
 			/* End get map data */
 
 			// Fill drop down of pickup locations
 			ObservableList<String> data = FXCollections.observableArrayList();
-			for(MapLocation location : all_campuses) {
+			for (MapLocation location : all_campuses) {
 				data.add(location.getName());
 			}
 			ComboBox<String> location_drop_down = new ComboBox<String>();
@@ -132,15 +152,14 @@ public class GUI extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					// TODO: Handle exceptions
-					
+
 					//
 					PickupLocation temp = new PickupLocation(Integer.parseInt(campus_latitude.getText()),
-							Integer.parseInt(campus_longitude.getText()),
-							name.getText());
+							Integer.parseInt(campus_longitude.getText()), name.getText());
 					// Set map to new location
 					ArrayList<MapLocation> empty = new ArrayList<MapLocation>();
-					empty.add(new DropoffLocation(0,0,""));
-					ScatterChart<Number,Number> map = createMap(empty);
+					empty.add(new DropoffLocation(0, 0, ""));
+					ScatterChart<Number, Number> map = createMap();
 					overview.add(map, 0, 1);
 					//
 					location_drop_down.setValue(temp.getName());
@@ -203,16 +222,15 @@ public class GUI extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					// TODO: Handle exceptions
-					
+
 					// Add location
 					DropoffLocation temp = new DropoffLocation(Integer.parseInt(delivery_latitude.getText()),
-							Integer.parseInt(delivery_longitude.getText()),
-							delivery_name.getText());
-					for(PickupLocation location : all_campuses) {
+							Integer.parseInt(delivery_longitude.getText()), delivery_name.getText());
+					for (PickupLocation location : all_campuses) {
 						if (location.getName() == location_drop_down.getValue()) {
 							location.addDropoffLocation(temp);
 							// Update map on submit
-							ScatterChart<Number,Number> map = createMap(location.getDropoffLocations());
+							ScatterChart<Number, Number> map = createMap();
 							overview.add(map, 0, 1);
 						}
 					}
@@ -288,13 +306,13 @@ public class GUI extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					// Open modal
-					for(PickupLocation location : all_campuses) {
+					for (PickupLocation location : all_campuses) {
 						if (location.getName() == location_drop_down.getValue()) {
 							ArrayList<MapLocation> empty = new ArrayList<MapLocation>();
-							empty.add(new DropoffLocation(0,0,""));
-							ScatterChart<Number,Number> map = createMap(empty);
+							empty.add(new DropoffLocation(0, 0, ""));
+							ScatterChart<Number, Number> map = createMap();
 							overview.add(map, 0, 1);
-							map = createMap(location.getDropoffLocations());
+							map = createMap();
 							overview.add(map, 0, 1);
 						}
 					}
@@ -315,7 +333,7 @@ public class GUI extends Application {
 			});
 			campus_menu.getChildren().add(new_campus_button);
 
-			ScatterChart<Number,Number> map = createMap(dropoff_1);
+			ScatterChart<Number, Number> map = createMap();
 			overview.add(map, 0, 1);
 
 			// New delivery location
@@ -339,7 +357,7 @@ public class GUI extends Application {
 					System.out.println("Ran");
 					// TODO: Generate orders
 					// TODO: Run Simulation
-					//simulation ran = new simulation(, 1, 1);
+					runSimulation();
 					primaryStage.setScene(statistics_scene);
 				}
 			});
@@ -395,12 +413,24 @@ public class GUI extends Application {
 			primaryStage.setScene(overview_scene);
 			primaryStage.show();
 
+			List<MapLocation> dropoff_1 = new ArrayList<>();
+			DropoffLocation drop_1 = new DropoffLocation(-2, 5, "drop_one");
+			DropoffLocation drop_2 = new DropoffLocation(4, 5, "drop_two");
+			DropoffLocation drop_3 = new DropoffLocation(6, -8, "drop_three");
+			DropoffLocation drop_4 = new DropoffLocation(7, 8, "drop_four");
+			dropoff_1.add(drop_1);
+			dropoff_1.add(drop_2);
+			dropoff_1.add(drop_3);
+			dropoff_1.add(drop_4);
+			
+			setDropOffLocations(dropoff_1);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static ScatterChart<Number, Number> createMap(List<MapLocation> locations) {
+	public ScatterChart<Number, Number> createMap() {
 		// Map
 		final NumberAxis xAxis = new NumberAxis();
 		final NumberAxis yAxis = new NumberAxis();
@@ -411,15 +441,18 @@ public class GUI extends Application {
 		sc.setMaxWidth(500);
 		sc.setMaxHeight(400);
 
-		XYChart.Series series1 = new XYChart.Series();
+		Series<Number, Number> series1 = new Series<>();
 		series1.setName("Shop Location");
-		series1.getData().add(new XYChart.Data(0, 0));
+		series1.getData().add(new Data<>(0, 0));
 
-		XYChart.Series series2 = new XYChart.Series();
+		Series<Number, Number> series2 = new Series<>();
 		series2.setName("Delivery Points");
-		for (MapLocation location : locations) {
-			series2.getData().add(new XYChart.Data(location.getxCoord(), location.getyCoord()));
-		}
+		/*
+		 * (for (MapLocation location : locations) { series2.getData().add(new
+		 * XYChart.Data(location.getxCoord(), location.getyCoord())); }
+		 */
+
+		dropoffLocations = series2.getData();
 
 		sc.getData().addAll(series1, series2);
 		return sc;
@@ -446,5 +479,10 @@ public class GUI extends Application {
 		}
 		lineChart.getData().add(series);
 		return lineChart;
+	}
+	
+	public void runSimulation() {
+		Simulation sim = new Simulation(new Fifo(), 1);
+		sim.runSimulation();
 	}
 }

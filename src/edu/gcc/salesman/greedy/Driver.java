@@ -1,7 +1,9 @@
-package GreedyBestFirst;
+package edu.gcc.salesman.greedy;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
+
+import edu.gcc.order.Order;
 
 public class Driver {
 

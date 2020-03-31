@@ -6,17 +6,17 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-import edu.gcc.maplocation.DropoffLocation;
+import edu.gcc.maplocation.MapLocation;
 
 public class OrderGenerator {
 	private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
 	private final NavigableMap<Float, Meal> meals = new TreeMap<>();
 	private final List<String> customers;
-	private final List<DropoffLocation> dropoffLocations;
+	private final List<MapLocation> dropoffLocations;
 
 	public OrderGenerator(final List<Meal> meals, final List<String> customers,
-			final List<DropoffLocation> dropoffLocations) {
+			final List<MapLocation> dropoffLocations) {
 		this.customers = new ArrayList<>(customers);
 		this.dropoffLocations = new ArrayList<>(dropoffLocations);
 
@@ -44,7 +44,7 @@ public class OrderGenerator {
 	private Order generateOrder(final long timestamp) {
 		Meal meal = meals.ceilingEntry(random.nextFloat()).getValue();
 		String customer = customers.get(random.nextInt(customers.size()));
-		DropoffLocation dropoffLocation = dropoffLocations.get(random.nextInt(dropoffLocations.size()));
+		MapLocation dropoffLocation = dropoffLocations.get(random.nextInt(dropoffLocations.size()));
 
 		return new Order(customer, dropoffLocation, meal, timestamp);
 	}

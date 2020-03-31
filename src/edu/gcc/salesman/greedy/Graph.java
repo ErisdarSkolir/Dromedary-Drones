@@ -1,6 +1,8 @@
-package GreedyBestFirst;
+package edu.gcc.salesman.greedy;
 
 import java.util.ArrayList;
+
+import edu.gcc.order.Order;
 
 public class Graph {
 
