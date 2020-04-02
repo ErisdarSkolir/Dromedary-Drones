@@ -2,17 +2,21 @@
  * Generic class for location on the map, with children of pickup and dropoff classes
  */
 package edu.gcc.maplocation;
-import java.lang.Math;
-import java.util.List;
+
+import edu.gcc.xml.annotation.XmlSerializable;
+
 /**
  * @author zack
  *
  */
+@XmlSerializable("id")
 public abstract class MapLocation {
 
-	private int xCoord;
-	private int yCoord;
-	private String name;
+	public int id;
+	
+	protected int xCoord;
+	protected int yCoord;
+	protected String name;
 	
 	public MapLocation() {
 		xCoord = 0;

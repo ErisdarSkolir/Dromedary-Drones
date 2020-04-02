@@ -70,6 +70,18 @@ public class XmlSchema<T> {
 	}
 
 	/**
+	 * Static initializer class that provides type safety that overrides file name.
+	 * 
+	 * @param <A>      The class type.
+	 * @param clazz    The class type
+	 * @param fileName The name of the XML file.
+	 * @return A new Schema with the generic parameter <A>
+	 */
+	public static <A> XmlSchema<A> of(final Class<A> clazz, final String fileName) {
+		return new XmlSchema<>(clazz, fileName);
+	}
+
+	/**
 	 * Private constructor. Creates a new schema for the provided object type. The
 	 * directory that the XML files should be stored in will be created if it does
 	 * not already exist.
@@ -87,17 +99,30 @@ public class XmlSchema<T> {
 		funObjectToXml = curryFunObjectToXml(clazz);
 		funXmlToObject = curryFunXmlToObject(clazz);
 
-		Path directory = Paths.get(DATABASE_FOLDER);
-		Path file = Paths.get(String.format("%s%s.xml", DATABASE_FOLDER, clazz.getSimpleName()));
+		setupFunctions(clazz);
+		createFile(clazz.getSimpleName());
+	}
 
-		try {
-			if (Files.notExists(directory))
-				Files.createDirectories(directory);
+	/**
+	 * Private constructor. Creates a new schema for the provided object type. The
+	 * directory that the XML files should be stored in will be created if it does
+	 * not already exist. The name of the file will be as specified
+	 * 
+	 * @param clazz    The object type to be stored in this schema.
+	 * @param fileName The name of XML file.
+	 */
+	private XmlSchema(final Class<T> clazz, final String fileName) {
+		if (!clazz.isAnnotationPresent(XmlSerializable.class))
+			throw new IllegalArgumentException("Class must be annotated with XmlSerializable");
 
-			xmlFile = new XmlFile(file.toString());
-		} catch (IOException | ModifyException e) {
-			throw new XmlSchemaCreationException("Could not create xml file or directory");
-		}
+		if (fileName.isEmpty())
+			throw new IllegalArgumentException("File name cannot be empty");
+
+		elementName = clazz.getSimpleName();
+		primaryKeyName = clazz.getAnnotation(XmlSerializable.class).value();
+
+		setupFunctions(clazz);
+		createFile(fileName);
 	}
 
 	/**
@@ -238,6 +263,36 @@ public class XmlSchema<T> {
 		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, funGetPrimaryKey.apply(value));
 	}
 
+	/**
+	 * Generates all necessary functions.
+	 * 
+	 * @param clazz The class being stored in this XML file.
+	 */
+	private final void setupFunctions(final Class<T> clazz) {
+		funGetPrimaryKey = curryGetPrimaryKey(clazz);
+		funObjectToXml = curryFunObjectToXml(clazz);
+		funXmlToObject = curryFunXmlToObject(clazz);
+	}
+
+	/**
+	 * Creates the {@link XmlFile} object and checks whether the directory exists.
+	 * 
+	 * @param fileName
+	 */
+	private final void createFile(final String fileName) {
+		Path directory = Paths.get(DATABASE_FOLDER);
+		Path file = Paths.get(String.format("%s%s.xml", DATABASE_FOLDER, fileName));
+
+		try {
+			if (Files.notExists(directory))
+				Files.createDirectories(directory);
+
+			xmlFile = new XmlFile(file.toString());
+		} catch (IOException | ModifyException e) {
+			throw new XmlSchemaCreationException("Could not create xml file or directory");
+		}
+	}
+	
 	/**
 	 * Creates a function that accepts an object and returns the primary key as a
 	 * string for serialization. The primary key must be a primitive, primitive

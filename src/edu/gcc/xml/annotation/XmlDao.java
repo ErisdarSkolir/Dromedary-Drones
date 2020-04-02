@@ -19,4 +19,9 @@ public @interface XmlDao {
 	 * The class to be returned by this DAO.
 	 */
 	Class<?> value();
+	
+	/**
+	 * Allows overriding the name of the actual XML file.
+	 */
+	String fileName() default "";
 }

@@ -42,9 +42,12 @@ public class XmlDaoFactory {
 		if (!clazz.isAnnotationPresent(XmlDao.class))
 			throw new XmlDaoCreationException(String.format("%s does not ahve XmlDao annotation", clazz));
 
-		XmlSchema<?> schema = XmlSchema.of(clazz.getAnnotation(XmlDao.class).value());
+		XmlDao annotation = clazz.getAnnotation(XmlDao.class);
 
-		//Create proxy and method interceptors using byte buddy.
+		XmlSchema<?> schema = annotation.fileName().isEmpty() ? XmlSchema.of(annotation.value())
+				: XmlSchema.of(annotation.value(), annotation.fileName());
+
+		// Create proxy and method interceptors using byte buddy.
 		Class<? extends T> proxy = new ByteBuddy().subclass(clazz)
 				.method(ElementMatchers.isAnnotatedWith(XmlInsert.class))
 				.intercept(MethodDelegation.to(new InsertInterceptor<>(schema)))
