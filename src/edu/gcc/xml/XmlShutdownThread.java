@@ -10,14 +10,13 @@ import java.util.List;
  * down in the middle of a write command.
  */
 class XmlShutdownThread {
-	private static Thread thread = new Thread(XmlShutdownThread::shutdown);
 	private static List<Runnable> runnables = new ArrayList<>();
 
 	/**
 	 * Static initializer to automatically register the shutdown hook.
 	 */
 	static {
-		Runtime.getRuntime().addShutdownHook(thread);
+		Runtime.getRuntime().addShutdownHook(new Thread(XmlShutdownThread::shutdown));
 	}
 
 	private XmlShutdownThread() {
