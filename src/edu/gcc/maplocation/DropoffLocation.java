@@ -3,10 +3,13 @@
  */
 package edu.gcc.maplocation;
 
+import edu.gcc.xml.annotation.XmlSerializable;
+
 /**
  * @author Zack Orlaski
  *
  */
+@XmlSerializable("id")
 public class DropoffLocation extends MapLocation {
 
 	/**

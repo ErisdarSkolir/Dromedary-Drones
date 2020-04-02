@@ -2,7 +2,6 @@ package edu.gcc.xml;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -54,11 +53,13 @@ public class XmlFile {
 		this.filepath = filepath;
 
 		Path path = Paths.get(filepath);
-		if (Files.notExists(path, LinkOption.NOFOLLOW_LINKS)) {
+		if (Files.notExists(path)) {
 			Files.write(path, HEADER.getBytes(), StandardOpenOption.CREATE);
 		}
 
 		parse(filepath);
+
+		XmlShutdownThread.addShutdownEvent(this::flush);
 	}
 
 	/**
