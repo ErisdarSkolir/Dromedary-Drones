@@ -10,8 +10,7 @@ import edu.gcc.xml.annotation.XmlSerializable;
  *
  */
 @XmlSerializable("id")
-public abstract class MapLocation {
-
+public class MapLocation {
 	public int id;
 	
 	protected int xCoord;
