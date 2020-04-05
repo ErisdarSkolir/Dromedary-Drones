@@ -34,6 +34,7 @@ import edu.gcc.xml.annotation.XmlSerializable;
 import edu.gcc.xml.exception.XmlDeserializeException;
 import edu.gcc.xml.exception.XmlSchemaCreationException;
 import edu.gcc.xml.exception.XmlSerializationException;
+import javafx.collections.ObservableList;
 
 /**
  * @author Luke Donmoyer
@@ -137,7 +138,7 @@ public class XmlSchema<T> {
 	 * @param value The object to be inserted.
 	 */
 	public final void insert(final T value) {
-		//TODO: Optimize this so it is not O(n) for auto generation
+		// TODO: Optimize this so it is not O(n) for auto generation
 		if (autogenerate && funGetPrimaryKey.apply(value) == 0) {
 			for (long i = 1; i < Long.MAX_VALUE; i++) {
 				if (!xmlFile.containsElement(getPrimaryKeyQueryLong(i))) {
@@ -186,7 +187,7 @@ public class XmlSchema<T> {
 
 		return result;
 	}
-
+	
 	/**
 	 * Returns an {@link XmlReactive} with a single object in it that matches the
 	 * given xPath query.
@@ -288,8 +289,11 @@ public class XmlSchema<T> {
 	 * @param clazz The class being stored in this XML file.
 	 */
 	private final void setupFunctions(final Class<T> clazz) {
-		funGetPrimaryKey = curryFunGetPrimaryKey(clazz);
-		funSetPrimaryKey = currySetPrimaryKey(clazz);
+		if (autogenerate) {
+			funGetPrimaryKey = curryFunGetPrimaryKey(clazz);
+			funSetPrimaryKey = currySetPrimaryKey(clazz);
+		}
+		
 		funSerializePrimaryKey = curryGetPrimaryKey(clazz);
 		funObjectToXml = curryFunObjectToXml(clazz);
 		funXmlToObject = curryFunXmlToObject(clazz);

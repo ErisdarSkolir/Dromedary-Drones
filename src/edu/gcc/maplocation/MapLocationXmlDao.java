@@ -9,8 +9,8 @@ import edu.gcc.xml.annotation.XmlDelete;
 import edu.gcc.xml.annotation.XmlInsert;
 import edu.gcc.xml.annotation.XmlUpdate;
 
-@XmlDao(value = MapLocation.class, fileName = "PickupLocation")
-public interface PickupLocationXmlDao {
+@XmlDao(MapLocation.class)
+public interface MapLocationXmlDao {
 	@XmlInsert
 	public void insert(final MapLocation location);
 	
@@ -23,9 +23,6 @@ public interface PickupLocationXmlDao {
 	@XPathQuery("//MapLocation[id[text()='{0}']]")
 	public MapLocation getMapLocation(final int id);
 	
-	@XPathQuery(value = "//MapLocation", list = true)
-	public List<MapLocation> getAll();
-	
-	@XPathQuery(value = "//MapLocation", list = true, reactive = true)
-	public XmlReactive<List<MapLocation>> getAllReactive();
+	@XPathQuery(value = "//MapLocation[campus[text()='{0}'] and type[text()='1']]", list = true, reactive = true)
+	public XmlReactive<List<MapLocation>> getDropoffReactiveForCampus(final String campus);
 }

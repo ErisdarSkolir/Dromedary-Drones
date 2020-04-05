@@ -3,8 +3,6 @@ package edu.gcc.simulation;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.gcc.gui.Gui;
-import edu.gcc.maplocation.DropoffLocation;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.order.Meal;
 import edu.gcc.order.Order;
@@ -39,18 +37,18 @@ public class Simulation {
 		customers.add("Jane");
 		customers.add("That random guy over there");
 		
-		List<MapLocation> dropoff_1 = new ArrayList<>();
-		DropoffLocation drop_1 = new DropoffLocation(-2, 5, "drop_one");
-		DropoffLocation drop_2 = new DropoffLocation(4, 5, "drop_two");
-		DropoffLocation drop_3 = new DropoffLocation(6, -8, "drop_three");
-		DropoffLocation drop_4 = new DropoffLocation(7, 8, "drop_four");
+		/*List<MapLocation> dropoff_1 = new ArrayList<>();
+		MapLocation drop_1 = new MapLocation(-2, 5, "drop_one");
+		MapLocation drop_2 = new MapLocation(4, 5, "drop_two");
+		MapLocation drop_3 = new MapLocation(6, -8, "drop_three");
+		MapLocation drop_4 = new MapLocation(7, 8, "drop_four");
 		dropoff_1.add(drop_1);
 		dropoff_1.add(drop_2);
 		dropoff_1.add(drop_3);
 		dropoff_1.add(drop_4);
 		
 		this.orderGen = new OrderGenerator(meals, customers, dropoff_1);
-		orders.addAll(orderGen.getOrdersInInterval(10, 0, 10));
+		orders.addAll(orderGen.getOrdersInInterval(10, 0, 10));*/
 	}
 
 	public void runSimulation() {

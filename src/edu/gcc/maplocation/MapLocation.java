@@ -9,32 +9,36 @@ import edu.gcc.xml.annotation.XmlSerializable;
  * @author zack
  *
  */
-@XmlSerializable("id")
+@XmlSerializable(value = "id", autogenerate = true)
 public class MapLocation {
-	public int id;
-	
-	protected int xCoord;
-	protected int yCoord;
-	protected String name;
-	
-	public MapLocation() {
-		xCoord = 0;
-		yCoord = 0;
-		name = "n/a";
+	public transient static final int INVALID = 0x0;
+	public transient static final int DROPOFF = 0x1;
+	public transient static final int PICKUP = 0x2;
+
+	@SuppressWarnings("unused")
+	private long id;
+
+	private int type;
+	private int xCoord;
+	private int yCoord;
+
+	private String name;
+	private String campus;
+
+	public MapLocation(int x, int y, int type, String n, String campus) {
+		this.xCoord = x;
+		this.yCoord = y;
+		this.type = type;
+		this.name = n;
+		this.campus = campus;
 	}
-	
-	MapLocation(int x, int y, String n) {
-		xCoord = x;
-		yCoord = y;
-		name = n;
-	}
-	
-	//calculates the length of a vector between 2 points on Map
+
+	// calculates the length of a vector between 2 points on Map
 	public double distance(MapLocation l) {
 		int xSum = Math.abs(xCoord - l.xCoord);
 		int ySum = Math.abs(yCoord - l.yCoord);
 		double pythagorean = Math.sqrt((xSum * xSum) + (ySum * ySum));
-		
+
 		return pythagorean;
 	}
 
@@ -62,9 +66,25 @@ public class MapLocation {
 		this.name = name;
 	}
 
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public String getCampus() {
+		return campus;
+	}
+
+	public void setCampus(String campus) {
+		this.campus = campus;
+	}
+
 	@Override
 	public String toString() {
-		return "xCoord: " + xCoord + "\nyCoord: " + yCoord + "\nname: " + name+ "\n";
+		return "MapLocation [type=" + type + ", xCoord=" + xCoord + ", yCoord=" + yCoord + ", name=" + name
+				+ ", campus=" + campus + "]";
 	}
-	
 }

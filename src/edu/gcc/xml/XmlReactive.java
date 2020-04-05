@@ -21,7 +21,7 @@ import edu.gcc.xml.exception.XmlReadException;
  *         the XML file, the listeners on any XmlReactive that matches the new
  *         element will be called with the new object or list.
  *
- * @param <T> The object or list of objects returned by the XMl query.
+ * @param <T> The object or list of objects returned by the XML query.
  */
 public class XmlReactive<T> {
 	private T value;

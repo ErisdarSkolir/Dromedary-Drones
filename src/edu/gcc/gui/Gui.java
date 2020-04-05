@@ -7,11 +7,12 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 
-import edu.gcc.maplocation.DropoffLocation;
+import edu.gcc.maplocation.Campus;
+import edu.gcc.maplocation.CampusXml;
+import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
-import edu.gcc.maplocation.PickupLocation;
-import edu.gcc.maplocation.PickupLocationXml;
-import edu.gcc.maplocation.PickupLocationXmlDao;
+import edu.gcc.maplocation.MapLocationXml;
+import edu.gcc.maplocation.MapLocationXmlDao;
 import edu.gcc.packing.Fifo;
 import edu.gcc.simulation.Simulation;
 import edu.gcc.xml.XmlListener;
@@ -32,14 +33,11 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 public class Gui extends Application {
@@ -61,11 +59,12 @@ public class Gui extends Application {
 		throw new IllegalStateException(String.format("%s is not initialized", Gui.class));
 	}
 
-	private PickupLocationXmlDao pickupLocationXml = PickupLocationXml.getInstance();
-	
+	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
+	private CampusXmlDao campusXml = CampusXml.getInstance();
+
 	private ObservableList<XYChart.Data<Number, Number>> dropoffLocations;
-	private ObservableList<MapLocation> campusList = FXCollections.observableArrayList();
-	private ComboBox<MapLocation> locationDropDown = createLocationDropdown();
+	private ObservableList<Campus> campusList = FXCollections.observableArrayList();
+	private ComboBox<Campus> campusDropdown = createLocationDropdown();
 
 	public void setDropOffLocations(final List<MapLocation> locations) {
 		Platform.runLater(() -> {
@@ -81,58 +80,40 @@ public class Gui extends Application {
 		Platform.runLater(() -> dropoffLocations.add(new Data<>(location.getxCoord(), location.getyCoord())));
 	}
 
-	public ComboBox<MapLocation> createLocationDropdown(){
-		ComboBox<MapLocation> result = new ComboBox<>();
-		
+	public ComboBox<Campus> createLocationDropdown() {
+		ComboBox<Campus> result = new ComboBox<>();
+
 		result.setItems(campusList);
 		result.setMinWidth(200);
 		result.getSelectionModel().select(0);
-		
-		result.setConverter(new StringConverter<MapLocation>() {
-			@Override
-			public String toString(MapLocation object) {
-				return object.getName();
-			}
-			
-			@Override
-			public MapLocation fromString(String string) {
-				return null;
-			}
-		});
 
 		result.setOnAction(event -> {
-				System.out.println("Dropdown clicked");
-				
-				// Open modal
-				/*for (PickupLocation location : all_campuses) {
-					if (location.getName() == locationDropDown.getValue()) {
-						ArrayList<MapLocation> empty = new ArrayList<MapLocation>();
-						empty.add(new DropoffLocation(10, 10, ""));
-						ScatterChart<Number, Number> map = createMap(location);
-						overview.add(map, 0, 1);
-						map = createMap(location);
-						overview.add(map, 0, 1);
-					}
-				}*/
+			System.out.println("Dropdown clicked");
+
+			// Open modal
+			/*
+			 * for (PickupLocation location : all_campuses) { if (location.getName() ==
+			 * locationDropDown.getValue()) { ArrayList<MapLocation> empty = new
+			 * ArrayList<MapLocation>(); empty.add(new DropoffLocation(10, 10, ""));
+			 * ScatterChart<Number, Number> map = createMap(location); overview.add(map, 0,
+			 * 1); map = createMap(location); overview.add(map, 0, 1); } }
+			 */
 		});
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			XmlReactive<List<MapLocation>> locations = pickupLocationXml.getAllReactive();
-			locations.addListener(new XmlListener<List<MapLocation>>() {
-				@Override
-				public void notify(List<MapLocation> newValue) {
-					campusList.clear();
-					campusList.addAll(newValue);
-				}
+			XmlReactive<List<Campus>> campuses = campusXml.getAll();
+			campuses.addListener(newValue -> {
+				campusList.clear();
+				campusList.addAll(newValue);
 			});
-			
-			//PickupLocation pickupLocation = new PickupLocation(10, 10, "Test");
-			//pickupLocationXml.insert(pickupLocation);
+
+			// PickupLocation pickupLocation = new PickupLocation(10, 10, "Test");
+			// pickupLocationXml.insert(pickupLocation);
 
 			// Overview page
 			GridPane overview = new GridPane();
@@ -173,11 +154,11 @@ public class Gui extends Application {
 			campus_name_form.getChildren().add(new Label("Pickup Name:"));
 			TextField name = new TextField();
 			campus_name_form.getChildren().add(name);
-			
+
 			campus_latitude_form.getChildren().add(new Label("Latitude:"));
 			TextField campus_latitude = new TextField();
 			campus_latitude_form.getChildren().add(campus_latitude);
-			
+
 			campus_longitude_form.getChildren().add(new Label("Longitude:"));
 			TextField campus_longitude = new TextField();
 			campus_longitude_form.getChildren().add(campus_longitude);
@@ -199,24 +180,23 @@ public class Gui extends Application {
 				public void handle(ActionEvent event) {
 					// TODO: Handle exceptions
 
-					//Create a PickupLocation from filled form
-					PickupLocation temp = new PickupLocation(
-							Integer.parseInt(campus_latitude.getText()),
-							Integer.parseInt(campus_longitude.getText()),
-							name.getText(),
-							new ArrayList<>()
-							
-							);
+					Campus campus = new Campus(name.getText());
+
+					// Create a PickupLocation from filled form
+					MapLocation temp = new MapLocation(Integer.parseInt(campus_latitude.getText()),
+							Integer.parseInt(campus_longitude.getText()), MapLocation.PICKUP, name.getText(),
+							campus.getName());
 					// Set map to new location
-					ArrayList<MapLocation> empty = new ArrayList<MapLocation>();
+					ArrayList<MapLocation> empty = new ArrayList<>();
 					empty.add(temp);
-					ScatterChart<Number, Number> map = createMap(temp);
+					ScatterChart<Number, Number> map = createMap();
 					overview.add(map, 0, 1);
 					//
-					
-					pickupLocationXml.insert(temp);
-					locationDropDown.setValue(temp);
-					
+
+					campusXml.insert(campus);
+					campusDropdown.setValue(campus);
+					locationXml.insert(temp);
+
 					// Clear text boxes
 					name.setText("");
 					campus_latitude.setText("");
@@ -251,11 +231,11 @@ public class Gui extends Application {
 			delivery_name_form.getChildren().add(new Label("Dropoff Name:"));
 			TextField delivery_name = new TextField();
 			delivery_name_form.getChildren().add(delivery_name);
-			
+
 			delivery_latitude_form.getChildren().add(new Label("Latitude:"));
 			TextField delivery_latitude = new TextField();
 			delivery_latitude_form.getChildren().add(delivery_latitude);
-			
+
 			delivery_longitude_form.getChildren().add(new Label("Longitude:"));
 			TextField delivery_longitude = new TextField();
 			delivery_longitude_form.getChildren().add(delivery_longitude);
@@ -278,22 +258,17 @@ public class Gui extends Application {
 					// TODO: Handle exceptions
 
 					// Add location from fields
-					DropoffLocation temp = new DropoffLocation(
-							Integer.parseInt(delivery_latitude.getText()),
-							Integer.parseInt(delivery_longitude.getText()),
-							delivery_name.getText()
-							);
-					
-					
-					//FIXME
-					/*for (PickupLocation location : all_campuses) {
-						if (location.getName() == location_drop_down.getValue()) {
-							location.addDropoffLocation(temp);
-							// Update map on submit
-							ScatterChart<Number, Number> map = createMap(location);
-							overview.add(map, 0, 1);
-						}
-					}*/
+					MapLocation temp = new MapLocation(Integer.parseInt(delivery_latitude.getText()),
+							Integer.parseInt(delivery_longitude.getText()), MapLocation.DROPOFF,
+							delivery_name.getText(), campusDropdown.getValue().getName());
+
+					// FIXME
+					/*
+					 * for (PickupLocation location : all_campuses) { if (location.getName() ==
+					 * location_drop_down.getValue()) { location.addDropoffLocation(temp); // Update
+					 * map on submit ScatterChart<Number, Number> map = createMap(location);
+					 * overview.add(map, 0, 1); } }
+					 */
 					// Clear text boxes
 					delivery_name.setText("");
 					delivery_latitude.setText("");
@@ -358,8 +333,7 @@ public class Gui extends Application {
 			overview.add(simulation_menu, 0, 2);
 			simulation_menu.setId("simulation_menu");
 
-
-			campus_menu.getChildren().add(locationDropDown);
+			campus_menu.getChildren().add(campusDropdown);
 
 			// New campus
 			Button new_campus_button = new Button("New Campus");
@@ -374,7 +348,7 @@ public class Gui extends Application {
 			});
 			campus_menu.getChildren().add(new_campus_button);
 
-			ScatterChart<Number, Number> map = createMap((PickupLocation) locationDropDown.getValue());
+			ScatterChart<Number, Number> map = createMap();
 			overview.add(map, 0, 1);
 
 			// New delivery location
@@ -465,15 +439,15 @@ public class Gui extends Application {
 //			dropoff_1.add(drop_4);
 //			
 //			setDropOffLocations(dropoff_1);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	//Creates a map from PickupLocation
-	public ScatterChart<Number, Number> createMap(PickupLocation p) {
-		
+	// Creates a map from PickupLocation
+	public ScatterChart<Number, Number> createMap() {
+
 		// Map
 		final NumberAxis xAxis = new NumberAxis();
 		final NumberAxis yAxis = new NumberAxis();
@@ -484,16 +458,16 @@ public class Gui extends Application {
 		sc.setMaxWidth(500);
 		sc.setMaxHeight(400);
 
-		//Pickup Points
+		// Pickup Points
 		Series<Number, Number> series1 = new Series<>();
 		series1.setName("Shop Location");
-		//series1.getData().add(new Data<>(p.getxCoord(), p.getyCoord()));
+		// series1.getData().add(new Data<>(p.getxCoord(), p.getyCoord()));
 
-		//Dropoff Points
+		// Dropoff Points
 		Series<Number, Number> series2 = new Series<>();
-		series2.setName("Delivery Points");	
-		//for(MapLocation d : p.getDropoffLocations())
-		//	series2.getData().add(new Data<>(d.getxCoord(),d.getyCoord()));
+		series2.setName("Delivery Points");
+		// for(MapLocation d : p.getDropoffLocations())
+		// series2.getData().add(new Data<>(d.getxCoord(),d.getyCoord()));
 
 		dropoffLocations = series2.getData();
 
@@ -523,7 +497,7 @@ public class Gui extends Application {
 		lineChart.getData().add(series);
 		return lineChart;
 	}
-	
+
 	public void runSimulation() {
 		Simulation sim = new Simulation(new Fifo(), 1);
 		sim.runSimulation();
