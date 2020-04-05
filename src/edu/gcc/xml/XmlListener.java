@@ -7,7 +7,7 @@ package edu.gcc.xml;
  *
  */
 @FunctionalInterface
-public interface XmlListener {
+public interface XmlListener<T> {
 	/**
 	 * The function to be called whenever an XmlReactive changes. Nothing should be
 	 * returned by this method.
@@ -15,5 +15,5 @@ public interface XmlListener {
 	 * @param <T>      The type of the new value.
 	 * @param newValue The actual new value that was recently updated.
 	 */
-	<T> void notify(T newValue);
+	void notify(T newValue);
 }

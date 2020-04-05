@@ -29,7 +29,7 @@ public class XmlReactive<T> {
 	private XPathExpression xPath;
 	private String query;
 
-	private List<XmlListener> listeners = new ArrayList<>();
+	private List<XmlListener<T>> listeners = new ArrayList<>();
 
 	/**
 	 * Main Constructor.
@@ -82,7 +82,7 @@ public class XmlReactive<T> {
 	public void notifyListeners() {
 		this.value = valueFunction.apply(query);
 
-		for (XmlListener listener : listeners) {
+		for (XmlListener<T> listener : listeners) {
 			listener.notify(value);
 		}
 	}
@@ -92,7 +92,8 @@ public class XmlReactive<T> {
 	 * 
 	 * @param listener The listener to add.
 	 */
-	public void addListener(final XmlListener listener) {
+	public void addListener(final XmlListener<T> listener) {
 		this.listeners.add(listener);
+		listener.notify(value);
 	}
 }

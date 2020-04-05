@@ -360,7 +360,7 @@ public class XmlSchema<T> {
 				xmlWriter.writeEndElement();
 				xmlWriter.close();
 			} catch (Throwable e) {
-				throw new XmlSerializationException(String.format("Failed to created xml for class %s", clazz));
+				throw new XmlSerializationException(String.format("Failed to created xml for class %s", clazz), e);
 			}
 
 			return stringWriter.toString();
