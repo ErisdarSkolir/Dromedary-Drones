@@ -3,7 +3,6 @@ package edu.gcc.gui;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JFileChooser;
 
@@ -16,7 +15,6 @@ import edu.gcc.maplocation.MapLocationXmlDao;
 import edu.gcc.packing.Fifo;
 import edu.gcc.simulation.Simulation;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -70,19 +68,7 @@ public class Gui extends Application {
 		result.setItems(campusList);
 		result.setMinWidth(200);
 		result.getSelectionModel().select(0);
-
-		result.setOnAction(event -> {
-			System.out.println("Dropdown clicked");
-
-			// Open modal
-			/*
-			 * for (PickupLocation location : all_campuses) { if (location.getName() ==
-			 * locationDropDown.getValue()) { ArrayList<MapLocation> empty = new
-			 * ArrayList<MapLocation>(); empty.add(new DropoffLocation(10, 10, ""));
-			 * ScatterChart<Number, Number> map = createMap(location); overview.add(map, 0,
-			 * 1); map = createMap(location); overview.add(map, 0, 1); } }
-			 */
-		});
+		result.setOnAction(event -> setMapLocationData(campusDropdown.getValue()));
 
 		return result;
 	}
@@ -237,6 +223,8 @@ public class Gui extends Application {
 					MapLocation temp = new MapLocation(Integer.parseInt(delivery_latitude.getText()),
 							Integer.parseInt(delivery_longitude.getText()), MapLocation.DROPOFF,
 							delivery_name.getText(), campusDropdown.getValue().getName());
+
+					locationXml.insert(temp);
 
 					// FIXME
 					/*
@@ -436,25 +424,57 @@ public class Gui extends Application {
 		// Pickup Points
 		Series<Number, Number> series1 = new Series<>();
 		series1.setName("Shop Location");
-		series1.setData(mapPickupLocations);
-		
+		mapPickupLocations = series1.getData();
+
 		// Dropoff Points
 		Series<Number, Number> series2 = new Series<>();
 		series2.setName("Delivery Points");
-		series2.setData(mapDropoffLocations);
-		
+		mapDropoffLocations = series2.getData();
+
+		setMapLocationData(campusDropdown.getValue());
+
 		sc.getData().addAll(series1, series2);
 		return sc;
 	}
-	
+
 	public void setMapLocationData(final Campus campus) {
-		if(campus == null)
+		if (campus == null)
 			return;
 		
-		locationXml.getDropoffReactiveForCampus(campus.getName()).addListener(new ListChangeListener<MapLocation>() {
+		mapDropoffLocations.clear();
+		mapPickupLocations.clear();
+		
+		ObservableList<MapLocation> dropoffLocations = locationXml.getDropoffReactiveForCampus(campus.getName());
+		dropoffLocations.stream().map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
+				.forEach(mapDropoffLocations::add);
+		dropoffLocations.addListener(new ListChangeListener<MapLocation>() {
 			@Override
 			public void onChanged(Change<? extends MapLocation> c) {
-				//c.getRemoved().stream().map
+				while (c.next()) {
+					c.getRemoved().stream().map(location -> new Data<>(location.getxCoord(), location.getyCoord()))
+							.forEach(mapDropoffLocations::remove);
+
+					c.getAddedSubList().stream()
+							.map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
+							.forEach(mapDropoffLocations::add);
+				}
+			}
+		});
+
+		ObservableList<MapLocation> pickupLocations = locationXml.getPickupReactiveForCampus(campus.getName());
+		pickupLocations.stream().map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
+				.forEach(mapPickupLocations::add);
+		pickupLocations.addListener(new ListChangeListener<MapLocation>() {
+			@Override
+			public void onChanged(Change<? extends MapLocation> c) {
+				while (c.next()) {
+					c.getRemoved().stream().map(location -> new Data<>(location.getxCoord(), location.getyCoord()))
+							.forEach(mapPickupLocations::remove);
+
+					c.getAddedSubList().stream()
+							.map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
+							.forEach(mapPickupLocations::add);
+				}
 			}
 		});
 	}
