@@ -20,4 +20,10 @@ public @interface XmlSerializable {
 	 * The name of the field that serves as the primary key. Must be unique.
 	 */
 	String value();
+
+	/**
+	 * If true and the primary key is an integer, long, or short then it will
+	 * automatically be generated.
+	 */
+	boolean autogenerate() default false;
 }

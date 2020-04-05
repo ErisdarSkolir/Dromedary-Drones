@@ -14,8 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -46,10 +48,14 @@ public class XmlSchema<T> {
 	private static final String DATABASE_FOLDER = String.format("%s/DromedaryDrones/db/",
 			SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : System.getProperty("user.home"));
 
+	private boolean autogenerate;
+
 	private String elementName;
 	private String primaryKeyName;
 
-	private Function<T, String> funGetPrimaryKey;
+	private Function<T, Long> funGetPrimaryKey;
+	private BiFunction<T, Long, Void> funSetPrimaryKey;
+	private Function<T, String> funSerializePrimaryKey;
 	private Function<T, String> funObjectToXml;
 	private Function<Map<String, String>, T> funXmlToObject;
 
@@ -92,12 +98,10 @@ public class XmlSchema<T> {
 		if (!clazz.isAnnotationPresent(XmlSerializable.class))
 			throw new IllegalArgumentException("Class must be annotated with XmlSerializable");
 
+		autogenerate = clazz.getAnnotation(XmlSerializable.class).autogenerate();
+
 		elementName = clazz.getSimpleName();
 		primaryKeyName = clazz.getAnnotation(XmlSerializable.class).value();
-
-		funGetPrimaryKey = curryGetPrimaryKey(clazz);
-		funObjectToXml = curryFunObjectToXml(clazz);
-		funXmlToObject = curryFunXmlToObject(clazz);
 
 		setupFunctions(clazz);
 		createFile(clazz.getSimpleName());
@@ -118,6 +122,8 @@ public class XmlSchema<T> {
 		if (fileName.isEmpty())
 			throw new IllegalArgumentException("File name cannot be empty");
 
+		autogenerate = clazz.getAnnotation(XmlSerializable.class).autogenerate();
+
 		elementName = clazz.getSimpleName();
 		primaryKeyName = clazz.getAnnotation(XmlSerializable.class).value();
 
@@ -132,6 +138,16 @@ public class XmlSchema<T> {
 	 * @param value The object to be inserted.
 	 */
 	public final void insert(final T value) {
+		//TODO: Optimize this so it is not O(n) for auto generation
+		if (autogenerate && funGetPrimaryKey.apply(value) == 0) {
+			for (long i = 1; i < Long.MAX_VALUE; i++) {
+				if (!xmlFile.containsElement(getPrimaryKeyQueryLong(i))) {
+					funSetPrimaryKey.apply(value, i);
+					break;
+				}
+			}
+		}
+
 		if (xmlFile.containsElement(getPrimaryKeyQuery(value)))
 			throw new IllegalArgumentException("Cannot insert element that already exists");
 
@@ -260,7 +276,11 @@ public class XmlSchema<T> {
 	 * @return An xPath query that matches the given object.
 	 */
 	private final String getPrimaryKeyQuery(final T value) {
-		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, funGetPrimaryKey.apply(value));
+		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, funSerializePrimaryKey.apply(value));
+	}
+
+	private final String getPrimaryKeyQueryLong(final long value) {
+		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, value);
 	}
 
 	/**
@@ -269,7 +289,9 @@ public class XmlSchema<T> {
 	 * @param clazz The class being stored in this XML file.
 	 */
 	private final void setupFunctions(final Class<T> clazz) {
-		funGetPrimaryKey = curryGetPrimaryKey(clazz);
+		funGetPrimaryKey = curryFunGetPrimaryKey(clazz);
+		funSetPrimaryKey = currySetPrimaryKey(clazz);
+		funSerializePrimaryKey = curryGetPrimaryKey(clazz);
 		funObjectToXml = curryFunObjectToXml(clazz);
 		funXmlToObject = curryFunXmlToObject(clazz);
 	}
@@ -292,7 +314,7 @@ public class XmlSchema<T> {
 			throw new XmlSchemaCreationException("Could not create xml file or directory");
 		}
 	}
-	
+
 	/**
 	 * Creates a function that accepts an object and returns the primary key as a
 	 * string for serialization. The primary key must be a primitive, primitive
@@ -413,6 +435,56 @@ public class XmlSchema<T> {
 				throw new XmlDeserializeException(String.format("Failed to deserialize object %s", clazz), e);
 			}
 		};
+	}
+
+	private final Function<T, Long> curryFunGetPrimaryKey(final Class<T> clazz) {
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+		try {
+			Field field = clazz.getDeclaredField(primaryKeyName);
+			Class<?> fieldType = field.getType();
+
+			if (!(fieldType.equals(Long.class) || fieldType.equals(long.class)))
+				throw new IllegalArgumentException("Primary key has to be long to autogenerate");
+
+			MethodHandle getter = ReflectionUtils.getFieldGetter(clazz, primaryKeyName, lookup);
+
+			return obj -> {
+				try {
+					return (Long) getter.invoke(obj);
+				} catch (Throwable e) {
+					throw new XmlSchemaCreationException("Could not get primary key", e);
+				}
+			};
+		} catch (Exception e) {
+			throw new XmlSchemaCreationException("Could not get field getter");
+		}
+	}
+
+	private final BiFunction<T, Long, Void> currySetPrimaryKey(final Class<T> clazz) {
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+		try {
+			Field field = clazz.getDeclaredField(primaryKeyName);
+			Class<?> fieldType = field.getType();
+
+			if (!(fieldType.equals(Long.class) || fieldType.equals(long.class)))
+				throw new IllegalArgumentException("Primary key has to be long to autogenerate");
+
+			MethodHandle setter = ReflectionUtils.getFieldSetter(clazz, primaryKeyName, lookup);
+
+			return (instance, value) -> {
+				try {
+					setter.invoke(instance, value);
+				} catch (Throwable e) {
+					throw new XmlSchemaCreationException("Could not get primary key", e);
+				}
+
+				return null;
+			};
+		} catch (Exception e) {
+			throw new XmlSchemaCreationException("Could not get field getter");
+		}
 	}
 
 	/**
