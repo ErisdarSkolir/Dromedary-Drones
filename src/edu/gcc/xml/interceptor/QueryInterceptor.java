@@ -80,7 +80,7 @@ public class QueryInterceptor<T> {
 	 * @return A reactive with a single Object or just a single Object.
 	 */
 	public Object singleOrReactive(final XPathQuery annotation, final String query) {
-		return annotation.reactive() ? schema.getSingleReactive(query) : schema.get(query);
+		return annotation.reactive() ? schema.getSingleReactive(query).getObservable() : schema.get(query);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class QueryInterceptor<T> {
 	 * @return A reactive with a list of Object or just a list or Objects.
 	 */
 	public Object listOrReactive(final XPathQuery annotation, final String query) {
-		return annotation.reactive() ? schema.getListReactive(query) : schema.getList(query);
+		return annotation.reactive() ? schema.getListReactive(query).getObservable() : schema.getList(query);
 	}
 
 	/**

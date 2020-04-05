@@ -8,6 +8,7 @@ import edu.gcc.xml.annotation.XmlDao;
 import edu.gcc.xml.annotation.XmlDelete;
 import edu.gcc.xml.annotation.XmlInsert;
 import edu.gcc.xml.annotation.XmlUpdate;
+import javafx.collections.ObservableList;
 
 @XmlDao(TestObject.class)
 public interface TestDao {
@@ -36,5 +37,5 @@ public interface TestDao {
 	CompletableFuture<List<TestObject>> getByIdAsyncList();
 	
 	@XPathQuery(value = "//TestObject", list = true, reactive = true)
-	XmlReactive<List<TestObject>> getListRx();
+	ObservableList<TestObject> getListRx();
 }

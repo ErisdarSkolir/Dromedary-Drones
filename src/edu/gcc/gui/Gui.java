@@ -15,11 +15,8 @@ import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
 import edu.gcc.packing.Fifo;
 import edu.gcc.simulation.Simulation;
-import edu.gcc.xml.XmlListener;
-import edu.gcc.xml.XmlReactive;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -38,7 +35,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 public class Gui extends Application {
 	private static Gui instance;
@@ -63,7 +59,7 @@ public class Gui extends Application {
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 
 	private ObservableList<XYChart.Data<Number, Number>> dropoffLocations;
-	private ObservableList<Campus> campusList = FXCollections.observableArrayList();
+	private ObservableList<Campus> campusList = CampusXml.getInstance().getAll();
 	private ComboBox<Campus> campusDropdown = createLocationDropdown();
 
 	public void setDropOffLocations(final List<MapLocation> locations) {
@@ -106,11 +102,6 @@ public class Gui extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			XmlReactive<List<Campus>> campuses = campusXml.getAll();
-			campuses.addListener(newValue -> {
-				campusList.clear();
-				campusList.addAll(newValue);
-			});
 
 			// PickupLocation pickupLocation = new PickupLocation(10, 10, "Test");
 			// pickupLocationXml.insert(pickupLocation);
