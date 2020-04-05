@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javafx.beans.Observable;
+
 @ExtendWith(MockitoExtension.class)
 public class XmlDaoFactoryTest {
 	private Path path = Paths.get(String.format("%s\\DromedaryDrones\\db\\%s.xml", System.getenv("APPDATA"),
@@ -49,8 +51,8 @@ public class XmlDaoFactoryTest {
 			e.printStackTrace();
 		}
 		
-		XmlReactive<List<TestObject>> rx = dao.getListRx();
-		rx.addListener(System.out::println);
+		//XmlReactive<Observable<TestObject>> rx = dao.getListRx();
+		//rx.addListener(System.out::println);
 		
 		obj2.x = 1039;
 		dao.updateObject(obj2);

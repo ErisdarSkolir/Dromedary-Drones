@@ -34,6 +34,8 @@ import edu.gcc.xml.annotation.XmlSerializable;
 import edu.gcc.xml.exception.XmlDeserializeException;
 import edu.gcc.xml.exception.XmlSchemaCreationException;
 import edu.gcc.xml.exception.XmlSerializationException;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
@@ -59,8 +61,8 @@ public class XmlSchema<T> {
 	private Function<T, String> funObjectToXml;
 	private Function<Map<String, String>, T> funXmlToObject;
 
-	private List<XmlReactive<T>> singleReactives = new ArrayList<>();
-	private List<XmlReactive<List<T>>> listReactives = new ArrayList<>();
+	private List<XmlReactive<SimpleObjectProperty<T>>> singleReactives = new ArrayList<>();
+	private List<XmlReactive<ObservableList<T>>> listReactives = new ArrayList<>();
 
 	private XmlFile xmlFile;
 
@@ -154,7 +156,16 @@ public class XmlSchema<T> {
 		String element = funObjectToXml.apply(value);
 		xmlFile.insertElementAtEnd(element);
 
-		checkReactives(element);
+		// Update reactives
+		for (XmlReactive<SimpleObjectProperty<T>> rx : singleReactives) {
+			if (rx.matches(element))
+				rx.getObservable().set(value);
+		}
+
+		for (XmlReactive<ObservableList<T>> rx : listReactives) {
+			if (rx.matches(element))
+				rx.getObservable().add(value);
+		}
 	}
 
 	/**
@@ -168,7 +179,20 @@ public class XmlSchema<T> {
 		String element = funObjectToXml.apply(value);
 		boolean result = xmlFile.updateElement(getPrimaryKeyQuery(value), element);
 
-		checkReactives(element);
+		// Update reactives
+		for (XmlReactive<SimpleObjectProperty<T>> rx : singleReactives) {
+			if (rx.matches(element))
+				rx.getObservable().set(value);
+		}
+
+		for (XmlReactive<ObservableList<T>> rx : listReactives) {
+			if (rx.matches(element))
+			{
+				rx.getObservable()
+						.removeIf(listValue -> funGetPrimaryKey.apply(listValue).equals(funGetPrimaryKey.apply(value)));
+				rx.getObservable().add(value);
+			}
+		}
 
 		return result;
 	}
@@ -183,11 +207,21 @@ public class XmlSchema<T> {
 	public final boolean delete(final T value) {
 		boolean result = xmlFile.removeElement(getPrimaryKeyQuery(value));
 
-		checkReactives(funObjectToXml.apply(value));
+		// Update reactives
+		String element = funObjectToXml.apply(value);
+		for (XmlReactive<SimpleObjectProperty<T>> rx : singleReactives) {
+			if (rx.matches(element))
+				rx.getObservable().set(null);
+		}
 
+		for (XmlReactive<ObservableList<T>> rx : listReactives) {
+			if (rx.matches(element))
+				rx.getObservable().remove(value);
+		}
+		
 		return result;
 	}
-	
+
 	/**
 	 * Returns an {@link XmlReactive} with a single object in it that matches the
 	 * given xPath query.
@@ -195,8 +229,9 @@ public class XmlSchema<T> {
 	 * @param xPath The xPath query to evaluate.
 	 * @return An {@link XmlReactive} with the object.
 	 */
-	public final XmlReactive<T> getSingleReactive(final String xPath) {
-		XmlReactive<T> rx = new XmlReactive<>(this::get, xPath);
+	public final XmlReactive<SimpleObjectProperty<T>> getSingleReactive(final String xPath) {
+		SimpleObjectProperty<T> observable = new SimpleObjectProperty<>(get(xPath));
+		XmlReactive<SimpleObjectProperty<T>> rx = new XmlReactive<>(observable, xPath);
 		singleReactives.add(rx);
 		return rx;
 	}
@@ -208,9 +243,13 @@ public class XmlSchema<T> {
 	 * @param xPath The xPath query to evaluate.
 	 * @return An {@link XmlReactive} with a list of objects.
 	 */
-	public final XmlReactive<List<T>> getListReactive(final String xPath) {
-		XmlReactive<List<T>> rx = new XmlReactive<>(this::getList, xPath);
+	public final XmlReactive<ObservableList<T>> getListReactive(final String xPath) {
+		ObservableList<T> observableList = FXCollections.observableArrayList();
+		XmlReactive<ObservableList<T>> rx = new XmlReactive<>(observableList, xPath);
+
+		observableList.addAll(getList(xPath));
 		listReactives.add(rx);
+
 		return rx;
 	}
 
@@ -250,24 +289,6 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Checks if the given XML element matches any reactives and if so notifies it
-	 * of a change.
-	 * 
-	 * @param element The element to test against any reactives.
-	 */
-	private final void checkReactives(final String element) {
-		for (XmlReactive<T> rx : singleReactives) {
-			if (rx.matches(element))
-				rx.notifyListeners();
-		}
-
-		for (XmlReactive<List<T>> rx : listReactives) {
-			if (rx.matches(element))
-				rx.notifyListeners();
-		}
-	}
-
-	/**
 	 * Returns an xPath query that matches an object with the given object's primary
 	 * key. Thus the query returned by this method only works for the specified
 	 * object since primary keys are unique.
@@ -293,7 +314,7 @@ public class XmlSchema<T> {
 			funGetPrimaryKey = curryFunGetPrimaryKey(clazz);
 			funSetPrimaryKey = currySetPrimaryKey(clazz);
 		}
-		
+
 		funSerializePrimaryKey = curryGetPrimaryKey(clazz);
 		funObjectToXml = curryFunObjectToXml(clazz);
 		funXmlToObject = curryFunXmlToObject(clazz);
