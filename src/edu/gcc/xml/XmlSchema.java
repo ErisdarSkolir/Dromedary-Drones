@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -33,6 +34,9 @@ import edu.gcc.xml.annotation.XmlSerializable;
 import edu.gcc.xml.exception.XmlDeserializeException;
 import edu.gcc.xml.exception.XmlSchemaCreationException;
 import edu.gcc.xml.exception.XmlSerializationException;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * @author Luke Donmoyer
@@ -46,15 +50,19 @@ public class XmlSchema<T> {
 	private static final String DATABASE_FOLDER = String.format("%s/DromedaryDrones/db/",
 			SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : System.getProperty("user.home"));
 
+	private boolean autogenerate;
+
 	private String elementName;
 	private String primaryKeyName;
 
-	private Function<T, String> funGetPrimaryKey;
+	private Function<T, Long> funGetPrimaryKey;
+	private BiFunction<T, Long, Void> funSetPrimaryKey;
+	private Function<T, String> funSerializePrimaryKey;
 	private Function<T, String> funObjectToXml;
 	private Function<Map<String, String>, T> funXmlToObject;
 
-	private List<XmlReactive<T>> singleReactives = new ArrayList<>();
-	private List<XmlReactive<List<T>>> listReactives = new ArrayList<>();
+	private List<XmlReactive<SimpleObjectProperty<T>>> singleReactives = new ArrayList<>();
+	private List<XmlReactive<ObservableList<T>>> listReactives = new ArrayList<>();
 
 	private XmlFile xmlFile;
 
@@ -92,12 +100,10 @@ public class XmlSchema<T> {
 		if (!clazz.isAnnotationPresent(XmlSerializable.class))
 			throw new IllegalArgumentException("Class must be annotated with XmlSerializable");
 
+		autogenerate = clazz.getAnnotation(XmlSerializable.class).autogenerate();
+
 		elementName = clazz.getSimpleName();
 		primaryKeyName = clazz.getAnnotation(XmlSerializable.class).value();
-
-		funGetPrimaryKey = curryGetPrimaryKey(clazz);
-		funObjectToXml = curryFunObjectToXml(clazz);
-		funXmlToObject = curryFunXmlToObject(clazz);
 
 		setupFunctions(clazz);
 		createFile(clazz.getSimpleName());
@@ -118,6 +124,8 @@ public class XmlSchema<T> {
 		if (fileName.isEmpty())
 			throw new IllegalArgumentException("File name cannot be empty");
 
+		autogenerate = clazz.getAnnotation(XmlSerializable.class).autogenerate();
+
 		elementName = clazz.getSimpleName();
 		primaryKeyName = clazz.getAnnotation(XmlSerializable.class).value();
 
@@ -132,13 +140,32 @@ public class XmlSchema<T> {
 	 * @param value The object to be inserted.
 	 */
 	public final void insert(final T value) {
+		// TODO: Optimize this so it is not O(n) for auto generation
+		if (autogenerate && funGetPrimaryKey.apply(value) == 0) {
+			for (long i = 1; i < Long.MAX_VALUE; i++) {
+				if (!xmlFile.containsElement(getPrimaryKeyQueryLong(i))) {
+					funSetPrimaryKey.apply(value, i);
+					break;
+				}
+			}
+		}
+
 		if (xmlFile.containsElement(getPrimaryKeyQuery(value)))
 			throw new IllegalArgumentException("Cannot insert element that already exists");
 
 		String element = funObjectToXml.apply(value);
 		xmlFile.insertElementAtEnd(element);
 
-		checkReactives(element);
+		// Update reactives
+		for (XmlReactive<SimpleObjectProperty<T>> rx : singleReactives) {
+			if (rx.matches(element))
+				rx.getObservable().set(value);
+		}
+
+		for (XmlReactive<ObservableList<T>> rx : listReactives) {
+			if (rx.matches(element))
+				rx.getObservable().add(value);
+		}
 	}
 
 	/**
@@ -152,7 +179,20 @@ public class XmlSchema<T> {
 		String element = funObjectToXml.apply(value);
 		boolean result = xmlFile.updateElement(getPrimaryKeyQuery(value), element);
 
-		checkReactives(element);
+		// Update reactives
+		for (XmlReactive<SimpleObjectProperty<T>> rx : singleReactives) {
+			if (rx.matches(element))
+				rx.getObservable().set(value);
+		}
+
+		for (XmlReactive<ObservableList<T>> rx : listReactives) {
+			if (rx.matches(element))
+			{
+				rx.getObservable()
+						.removeIf(listValue -> funGetPrimaryKey.apply(listValue).equals(funGetPrimaryKey.apply(value)));
+				rx.getObservable().add(value);
+			}
+		}
 
 		return result;
 	}
@@ -167,8 +207,18 @@ public class XmlSchema<T> {
 	public final boolean delete(final T value) {
 		boolean result = xmlFile.removeElement(getPrimaryKeyQuery(value));
 
-		checkReactives(funObjectToXml.apply(value));
+		// Update reactives
+		String element = funObjectToXml.apply(value);
+		for (XmlReactive<SimpleObjectProperty<T>> rx : singleReactives) {
+			if (rx.matches(element))
+				rx.getObservable().set(null);
+		}
 
+		for (XmlReactive<ObservableList<T>> rx : listReactives) {
+			if (rx.matches(element))
+				rx.getObservable().remove(value);
+		}
+		
 		return result;
 	}
 
@@ -179,8 +229,9 @@ public class XmlSchema<T> {
 	 * @param xPath The xPath query to evaluate.
 	 * @return An {@link XmlReactive} with the object.
 	 */
-	public final XmlReactive<T> getSingleReactive(final String xPath) {
-		XmlReactive<T> rx = new XmlReactive<>(this::get, xPath);
+	public final XmlReactive<SimpleObjectProperty<T>> getSingleReactive(final String xPath) {
+		SimpleObjectProperty<T> observable = new SimpleObjectProperty<>(get(xPath));
+		XmlReactive<SimpleObjectProperty<T>> rx = new XmlReactive<>(observable, xPath);
 		singleReactives.add(rx);
 		return rx;
 	}
@@ -192,9 +243,13 @@ public class XmlSchema<T> {
 	 * @param xPath The xPath query to evaluate.
 	 * @return An {@link XmlReactive} with a list of objects.
 	 */
-	public final XmlReactive<List<T>> getListReactive(final String xPath) {
-		XmlReactive<List<T>> rx = new XmlReactive<>(this::getList, xPath);
+	public final XmlReactive<ObservableList<T>> getListReactive(final String xPath) {
+		ObservableList<T> observableList = FXCollections.observableArrayList();
+		XmlReactive<ObservableList<T>> rx = new XmlReactive<>(observableList, xPath);
+
+		observableList.addAll(getList(xPath));
 		listReactives.add(rx);
+
 		return rx;
 	}
 
@@ -234,24 +289,6 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Checks if the given XML element matches any reactives and if so notifies it
-	 * of a change.
-	 * 
-	 * @param element The element to test against any reactives.
-	 */
-	private final void checkReactives(final String element) {
-		for (XmlReactive<T> rx : singleReactives) {
-			if (rx.matches(element))
-				rx.notifyListeners();
-		}
-
-		for (XmlReactive<List<T>> rx : listReactives) {
-			if (rx.matches(element))
-				rx.notifyListeners();
-		}
-	}
-
-	/**
 	 * Returns an xPath query that matches an object with the given object's primary
 	 * key. Thus the query returned by this method only works for the specified
 	 * object since primary keys are unique.
@@ -260,7 +297,11 @@ public class XmlSchema<T> {
 	 * @return An xPath query that matches the given object.
 	 */
 	private final String getPrimaryKeyQuery(final T value) {
-		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, funGetPrimaryKey.apply(value));
+		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, funSerializePrimaryKey.apply(value));
+	}
+
+	private final String getPrimaryKeyQueryLong(final long value) {
+		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, value);
 	}
 
 	/**
@@ -269,7 +310,12 @@ public class XmlSchema<T> {
 	 * @param clazz The class being stored in this XML file.
 	 */
 	private final void setupFunctions(final Class<T> clazz) {
-		funGetPrimaryKey = curryGetPrimaryKey(clazz);
+		if (autogenerate) {
+			funGetPrimaryKey = curryFunGetPrimaryKey(clazz);
+			funSetPrimaryKey = currySetPrimaryKey(clazz);
+		}
+
+		funSerializePrimaryKey = curryGetPrimaryKey(clazz);
 		funObjectToXml = curryFunObjectToXml(clazz);
 		funXmlToObject = curryFunXmlToObject(clazz);
 	}
@@ -292,7 +338,7 @@ public class XmlSchema<T> {
 			throw new XmlSchemaCreationException("Could not create xml file or directory");
 		}
 	}
-	
+
 	/**
 	 * Creates a function that accepts an object and returns the primary key as a
 	 * string for serialization. The primary key must be a primitive, primitive
@@ -360,7 +406,7 @@ public class XmlSchema<T> {
 				xmlWriter.writeEndElement();
 				xmlWriter.close();
 			} catch (Throwable e) {
-				throw new XmlSerializationException(String.format("Failed to created xml for class %s", clazz));
+				throw new XmlSerializationException(String.format("Failed to created xml for class %s", clazz), e);
 			}
 
 			return stringWriter.toString();
@@ -413,6 +459,56 @@ public class XmlSchema<T> {
 				throw new XmlDeserializeException(String.format("Failed to deserialize object %s", clazz), e);
 			}
 		};
+	}
+
+	private final Function<T, Long> curryFunGetPrimaryKey(final Class<T> clazz) {
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+		try {
+			Field field = clazz.getDeclaredField(primaryKeyName);
+			Class<?> fieldType = field.getType();
+
+			if (!(fieldType.equals(Long.class) || fieldType.equals(long.class)))
+				throw new IllegalArgumentException("Primary key has to be long to autogenerate");
+
+			MethodHandle getter = ReflectionUtils.getFieldGetter(clazz, primaryKeyName, lookup);
+
+			return obj -> {
+				try {
+					return (Long) getter.invoke(obj);
+				} catch (Throwable e) {
+					throw new XmlSchemaCreationException("Could not get primary key", e);
+				}
+			};
+		} catch (Exception e) {
+			throw new XmlSchemaCreationException("Could not get field getter");
+		}
+	}
+
+	private final BiFunction<T, Long, Void> currySetPrimaryKey(final Class<T> clazz) {
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+		try {
+			Field field = clazz.getDeclaredField(primaryKeyName);
+			Class<?> fieldType = field.getType();
+
+			if (!(fieldType.equals(Long.class) || fieldType.equals(long.class)))
+				throw new IllegalArgumentException("Primary key has to be long to autogenerate");
+
+			MethodHandle setter = ReflectionUtils.getFieldSetter(clazz, primaryKeyName, lookup);
+
+			return (instance, value) -> {
+				try {
+					setter.invoke(instance, value);
+				} catch (Throwable e) {
+					throw new XmlSchemaCreationException("Could not get primary key", e);
+				}
+
+				return null;
+			};
+		} catch (Exception e) {
+			throw new XmlSchemaCreationException("Could not get field getter");
+		}
 	}
 
 	/**

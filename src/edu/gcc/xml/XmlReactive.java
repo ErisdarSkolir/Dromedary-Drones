@@ -1,9 +1,6 @@
 package edu.gcc.xml;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
@@ -12,6 +9,7 @@ import javax.xml.xpath.XPathFactory;
 import org.xml.sax.InputSource;
 
 import edu.gcc.xml.exception.XmlReadException;
+import javafx.beans.Observable;
 
 /**
  * @author Luke Donmoyer
@@ -21,42 +19,24 @@ import edu.gcc.xml.exception.XmlReadException;
  *         the XML file, the listeners on any XmlReactive that matches the new
  *         element will be called with the new object or list.
  *
- * @param <T> The object or list of objects returned by the XMl query.
+ * @param <T> The object or list of objects returned by the XML query.
  */
-public class XmlReactive<T> {
-	private T value;
-	private Function<String, T> valueFunction;
+public class XmlReactive<O extends Observable> {
+	private O observable;
 	private XPathExpression xPath;
-	private String query;
 
-	private List<XmlListener> listeners = new ArrayList<>();
-
-	/**
-	 * Main Constructor.
-	 * 
-	 * @param valueFunction The function that generates this reactive's value,
-	 *                      usually a get function from an {@link XmlFile}.
-	 * @param query         The xPath query to be matches against.
-	 */
-	public XmlReactive(final Function<String, T> valueFunction, final String query) {
-		this.value = valueFunction.apply(query);
-		this.valueFunction = valueFunction;
-		this.query = query;
-
+	public XmlReactive(final O observable, final String query) {
+		this.observable = observable;
+		
 		try {
 			this.xPath = XPathFactory.newInstance().newXPath().compile(query);
 		} catch (XPathExpressionException e) {
 			throw new XmlReadException(String.format("Could not compile xPath for reative %s", xPath), e);
 		}
 	}
-
-	/**
-	 * Returns the current value of this reactive.
-	 * 
-	 * @return the current value
-	 */
-	public T getValue() {
-		return value;
+	
+	public O getObservable() {
+		return observable;
 	}
 
 	/**
@@ -73,26 +53,5 @@ public class XmlReactive<T> {
 		} catch (XPathExpressionException e) {
 			throw new XmlReadException(String.format("Could not evaulate element for reactive %s", element), e);
 		}
-	}
-
-	/**
-	 * Updates the current value of this reactive using the value function and calls
-	 * all listeners.
-	 */
-	public void notifyListeners() {
-		this.value = valueFunction.apply(query);
-
-		for (XmlListener listener : listeners) {
-			listener.notify(value);
-		}
-	}
-
-	/**
-	 * Adds a listener to this reactive.
-	 * 
-	 * @param listener The listener to add.
-	 */
-	public void addListener(final XmlListener listener) {
-		this.listeners.add(listener);
 	}
 }
