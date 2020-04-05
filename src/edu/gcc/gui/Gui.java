@@ -503,7 +503,7 @@ public class Gui extends Application {
 	}
 
 	public void runSimulation() {
-		Simulation sim = new Simulation(new Fifo(), 1);
+		Simulation sim = new Simulation(locationXml.getDropoffReactiveForCampus(campusDropdown.getValue().getName()), new Fifo(), 1);
 		sim.runSimulation();
 	}
 }

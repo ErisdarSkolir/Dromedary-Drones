@@ -3,7 +3,9 @@ package edu.gcc.simulation;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.MapLocation;
+import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.order.Meal;
 import edu.gcc.order.Order;
 import edu.gcc.order.OrderGenerator;
@@ -22,7 +24,7 @@ public class Simulation {
 	// Orders
 	// Algorithms
 	// Run algorithms on orders
-	public Simulation(PackingAlgorithm packingAlgorithm, int traveling) {
+	public Simulation(List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm, int traveling) {
 		this.packingAlgorithm = packingAlgorithm;
 		this.traveling = traveling;
 		
@@ -37,18 +39,10 @@ public class Simulation {
 		customers.add("Jane");
 		customers.add("That random guy over there");
 		
-		/*List<MapLocation> dropoff_1 = new ArrayList<>();
-		MapLocation drop_1 = new MapLocation(-2, 5, "drop_one");
-		MapLocation drop_2 = new MapLocation(4, 5, "drop_two");
-		MapLocation drop_3 = new MapLocation(6, -8, "drop_three");
-		MapLocation drop_4 = new MapLocation(7, 8, "drop_four");
-		dropoff_1.add(drop_1);
-		dropoff_1.add(drop_2);
-		dropoff_1.add(drop_3);
-		dropoff_1.add(drop_4);
+		this.orderGen = new OrderGenerator(meals, customers, dropoffLocations);
+		orders.addAll(orderGen.getOrdersInInterval(10, 0, 10));
 		
-		this.orderGen = new OrderGenerator(meals, customers, dropoff_1);
-		orders.addAll(orderGen.getOrdersInInterval(10, 0, 10));*/
+		System.out.println(orders);
 	}
 
 	public void runSimulation() {
