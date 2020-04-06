@@ -48,7 +48,6 @@ public class Simulation {
 	public void runSimulation() {
 		//
 		ArrayList<Order> filled = new ArrayList<Order>();
-		ArrayList<Order> orders_knapsack = new ArrayList<Order>();
 
 		// Order temp
 		Order temp;
@@ -56,9 +55,9 @@ public class Simulation {
 		while (this.orders != null) {
 
 			// FIFO
-			for (int i = 0; i < orders_knapsack.size(); i++) {
+			for (int i = 0; i < orders.size(); i++) {
 				temp = packingAlgorithm.nextFit(orders, filled, CAPACITY_WEIGHT);
-				orders_knapsack.remove(temp);
+				orders.remove(temp);
 				if (temp != null) {
 					filled.add(temp);
 				}
