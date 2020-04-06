@@ -52,7 +52,7 @@ public class Simulation {
 		// Order temp
 		Order temp;
 
-		while (this.orders != null) {
+		while (this.orders.size() != 0) {
 
 			// FIFO
 			for (int i = 0; i < orders.size(); i++) {
