@@ -58,6 +58,7 @@ public class Simulation {
 		// Feet per second drone speed
 		double drone_speed = 0.02933;
 		//
+		// TODO: we need to sort orders by time
 		this.simulation_time = orders.get(0).getTime();		
 		ArrayList<Long> delivery_times = new ArrayList<Long>();
 

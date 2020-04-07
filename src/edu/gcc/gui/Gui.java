@@ -329,24 +329,24 @@ public class Gui extends Application {
 			simulation_button_form.getChildren().add(run_cancel_button);
 			  
 			// List view
-			ListView<String> list = new ListView<String>();
+			ListView<String> combo_list = new ListView<String>();
 			ObservableList<String> items = FXCollections.observableArrayList (
 			    "Single", "2 Drinks", "Combo", "ADD NEW");
-			list.setItems(items);
-			list.setPrefWidth(100);
-			list.setPrefHeight(70);
-			list.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			combo_list.setItems(items);
+			combo_list.setPrefWidth(100);
+			combo_list.setPrefHeight(70);
+			combo_list.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent event) {
 					title_combo.setText("");
 					delete_button.setDisable(true);
-					if (list.getSelectionModel().getSelectedItem()!="ADD NEW") {
-						title_combo.setText(list.getSelectionModel().getSelectedItem().toString());
+					if (combo_list.getSelectionModel().getSelectedItem()!="ADD NEW") {
+						title_combo.setText(combo_list.getSelectionModel().getSelectedItem().toString());
 						delete_button.setDisable(false);
 					}
 				}
 			});
-			run_simulation.add(list,0,1);
+			run_simulation.add(combo_list,0,1);
 			
 			// Submit Button
 			Button run_submit_button = new Button("Submit");
