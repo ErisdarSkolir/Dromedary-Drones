@@ -53,7 +53,7 @@ public class Order implements Comparable<Order> {
 	}
 
 	public double getDistanceTo(Order n) {
-		return Math.sqrt((n.x - x) * (n.x - x) + (n.y - y) * (n.y - y));
+		return Math.sqrt(((n.x - x) * (n.x - x)) + ((n.y - y) * (n.y - y)));
 	}
 
 	public void setExamined(boolean b) {

@@ -12,6 +12,7 @@ import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
+import edu.gcc.order.Order;
 import edu.gcc.packing.Fifo;
 import edu.gcc.simulation.Simulation;
 import javafx.application.Application;
@@ -61,7 +62,7 @@ public class Gui extends Application {
 	private ObservableList<XYChart.Data<Number, Number>> mapPickupLocations;
 	private ObservableList<Campus> campusList = CampusXml.getInstance().getAll();
 	private ComboBox<Campus> campusDropdown = createLocationDropdown();
-
+	
 	public ComboBox<Campus> createLocationDropdown() {
 		ComboBox<Campus> result = new ComboBox<>();
 
@@ -333,10 +334,8 @@ public class Gui extends Application {
 			run_button.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					System.out.println("Ran");
-					// TODO: Generate orders
-					// TODO: Run Simulation
-					runSimulation();
+					Simulation sim = runSimulation();
+					statistics.add(createChart(sim.getTimeStatistics()), 0, 1);
 					primaryStage.setScene(statistics_scene);
 				}
 			});
@@ -378,10 +377,6 @@ public class Gui extends Application {
 			});
 			statistics.add(button, 0, 2);
 
-			// Chart
-			int[] points = { 3, 4, 5, 6, 3, 2, 2, 4, 5, 6, 5 };
-
-			statistics.add(createChart(points), 0, 1);
 			/* End Statistics Page */
 
 			add_campus_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -391,18 +386,6 @@ public class Gui extends Application {
 			statistics_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(overview_scene);
 			primaryStage.show();
-
-//			List<MapLocation> dropoff_1 = new ArrayList<>();
-//			DropoffLocation drop_1 = new DropoffLocation(-2, 5, "drop_one");
-//			DropoffLocation drop_2 = new DropoffLocation(4, 5, "drop_two");
-//			DropoffLocation drop_3 = new DropoffLocation(6, -8, "drop_three");
-//			DropoffLocation drop_4 = new DropoffLocation(7, 8, "drop_four");
-//			dropoff_1.add(drop_1);
-//			dropoff_1.add(drop_2);
-//			dropoff_1.add(drop_3);
-//			dropoff_1.add(drop_4);
-//			
-//			setDropOffLocations(dropoff_1);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -479,7 +462,7 @@ public class Gui extends Application {
 		});
 	}
 
-	public LineChart<Number, Number> createChart(int[] array) {
+	public LineChart<Number, Number> createChart(ArrayList<Long> times) {
 		// defining the axes
 		final NumberAxis xAxis2 = new NumberAxis();
 		final NumberAxis yAxis2 = new NumberAxis();
@@ -495,15 +478,17 @@ public class Gui extends Application {
 		// defining a series
 		XYChart.Series series = new XYChart.Series();
 		series.setName("Average Number of Something");
-		for (int i = 0; i < 11; i++) {
-			series.getData().add(new XYChart.Data(i, array[i]));
+		for (int i = 0; i < times.size(); i++) {
+			series.getData().add(new XYChart.Data(i, times.get(i)));
 		}
 		lineChart.getData().add(series);
 		return lineChart;
 	}
 
-	public void runSimulation() {
+	public Simulation runSimulation() {
+		// We (Lake and Ethan) believe that the shop location is being counted as a delivery point
 		Simulation sim = new Simulation(locationXml.getDropoffReactiveForCampus(campusDropdown.getValue().getName()), new Fifo(), 1);
 		sim.runSimulation();
+		return sim;
 	}
 }

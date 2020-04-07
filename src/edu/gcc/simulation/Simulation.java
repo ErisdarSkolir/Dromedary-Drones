@@ -1,5 +1,6 @@
 package edu.gcc.simulation;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class Simulation {
 	private List<Order> orders = new ArrayList<>();
 	private PackingAlgorithm packingAlgorithm;
 	private int traveling;
+	private long simulation_time;
+	ArrayList<Long> time_statistics = new ArrayList<Long>();
 
 	// Orders
 	// Algorithms
@@ -46,8 +49,17 @@ public class Simulation {
 	}
 
 	public void runSimulation() {
-		//
+		// Orders filled
 		ArrayList<Order> filled = new ArrayList<Order>();
+		// Order path
+		ArrayList<Order> path = new ArrayList<Order>();
+		// Distance from order to next order
+		double distance_to_next;
+		// Feet per second drone speed
+		double drone_speed = 0.02933;
+		//
+		this.simulation_time = orders.get(0).getTime();		
+		ArrayList<Long> delivery_times = new ArrayList<Long>();
 
 		// Order temp
 		Order temp;
@@ -65,11 +77,24 @@ public class Simulation {
 
 			// Greedy
 			if (traveling == 1) {
-				ArrayList<Order> path = new ArrayList<Order>();
 				Graph g = new Graph(filled);
 				path = GBFS(g, filled.get(0));
 			}
+			
+			// Set times
+			for(int i = 0; i < path.size()-1; i++) {
+				distance_to_next = path.get(i).getDistanceTo(path.get(i+1));
+				simulation_time += distance_to_next / drone_speed;
+				delivery_times.add(simulation_time - path.get(i).getTime());
+				this.time_statistics.add(delivery_times.get(i)-path.get(i).getTime());
+				System.out.println(delivery_times.get(i)-path.get(i).getTime());
+			}
+			simulation_time += 180_000;
 		}
+	}
+	
+	public ArrayList<Long> getTimeStatistics() {
+		return this.time_statistics;
 	}
 
 	public ArrayList<Order> GBFS(Graph g, Order start) {
