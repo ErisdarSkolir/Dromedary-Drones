@@ -16,6 +16,7 @@ import edu.gcc.order.Order;
 import edu.gcc.packing.Fifo;
 import edu.gcc.simulation.Simulation;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,9 +31,12 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -227,13 +231,6 @@ public class Gui extends Application {
 
 					locationXml.insert(temp);
 
-					// FIXME
-					/*
-					 * for (PickupLocation location : all_campuses) { if (location.getName() ==
-					 * location_drop_down.getValue()) { location.addDropoffLocation(temp); // Update
-					 * map on submit ScatterChart<Number, Number> map = createMap(location);
-					 * overview.add(map, 0, 1); } }
-					 */
 					// Clear text boxes
 					delivery_name.setText("");
 					delivery_latitude.setText("");
@@ -245,46 +242,126 @@ public class Gui extends Application {
 			delivery_button_form.getChildren().add(delivery_submit_button);
 			/* End Add Delivery Location Modal */
 
-			/*
-			 * Run Simulation Modal GridPane run_simulation = new GridPane();
-			 * run_simulation.setId("modal"); Scene run_simulation_scene = new
-			 * Scene(run_simulation);
-			 * 
-			 * // Form rows HBox simulation_button_form = new HBox(10);
-			 * run_simulation.add(simulation_button_form,0,4);
-			 * simulation_button_form.setId("form");
-			 * 
-			 * // TODO: Get saved combo meals // For each combo meal for (int i = 0; i < 3;
-			 * i ++) { HBox combo_form = new HBox(10); run_simulation.add(combo_form,0,i);
-			 * delivery_name_form.setId("form");
-			 * 
-			 * combo_form.getChildren().add(new Label("Burgers:")); TextField burgers_combo
-			 * = new TextField(); burgers_combo.setMaxWidth(30);
-			 * combo_form.getChildren().add(burgers_combo); combo_form.getChildren().add(new
-			 * Label("Fries:")); TextField fries_combo = new TextField();
-			 * fries_combo.setMaxWidth(30); combo_form.getChildren().add(fries_combo);
-			 * combo_form.getChildren().add(new Label("Drinks:")); TextField drinks_combo =
-			 * new TextField(); drinks_combo.setMaxWidth(30); drinks_combo.setText("10");
-			 * combo_form.getChildren().add(drinks_combo); combo_form.getChildren().add(new
-			 * Label("Percentage:")); TextField percentage_combo = new TextField();
-			 * percentage_combo.setMaxWidth(30);
-			 * combo_form.getChildren().add(percentage_combo); }
-			 * 
-			 * // Button to get back from modal Button run_cancel_button = new
-			 * Button("Cancel"); run_cancel_button.setOnAction(new
-			 * EventHandler<ActionEvent>() {
-			 * 
-			 * @Override public void handle(ActionEvent event) { modal.close(); } });
-			 * simulation_button_form.getChildren().add(run_cancel_button);
-			 * 
-			 * // Submit Button Button run_submit_button = new Button("Submit");
-			 * run_submit_button.setOnAction(new EventHandler<ActionEvent>() {
-			 * 
-			 * @Override public void handle(ActionEvent event) { System.out.println("Ran");
-			 * modal.close(); primaryStage.setScene(statistics_scene); } });
-			 * simulation_button_form.getChildren().add(run_submit_button); End Run
-			 * Simulation Modal
-			 */
+			
+			/* Run Simulation Modal */
+			GridPane run_simulation = new GridPane();
+			run_simulation.setId("modal");
+			Scene run_simulation_scene = new Scene(run_simulation);
+			
+			// Form rows
+			HBox simulation_button_form = new HBox(10);
+			run_simulation.add(simulation_button_form,1,4);
+			simulation_button_form.setId("form");
+			
+			// Form rows
+			HBox add_edit_form = new HBox(10);
+			run_simulation.add(add_edit_form,2,2);
+			add_edit_form.setId("form");
+			  
+			// TODO: Get saved combo meals
+			// For each combo meal
+			VBox combo_form = new VBox(10); 
+			run_simulation.add(combo_form,2,1);
+			combo_form.setId("form");
+			
+			//Labels
+			VBox combo_labels = new VBox(10); 
+			run_simulation.add(combo_labels,1,1);
+			combo_labels.setId("labels");
+
+			
+			Label title_label = new Label("Title:");
+			title_label.setId("label");
+			combo_labels.getChildren().add(title_label);
+			Label burgers_label = new Label("Burgers:");
+			burgers_label.setId("label");
+			combo_labels.getChildren().add(burgers_label);
+			Label fries_label = new Label("Fires:");
+			fries_label.setId("label");
+			combo_labels.getChildren().add(fries_label);
+			Label drinks_label = new Label("Drinks:");
+			drinks_label.setId("label");
+			combo_labels.getChildren().add(drinks_label);
+			Label percent_label = new Label("Percent:");
+			percent_label.setId("label");
+			combo_labels.getChildren().add(percent_label);
+			
+			TextField title_combo = new TextField();
+			title_combo.setMaxWidth(100);
+			combo_form.getChildren().add(title_combo);
+			TextField burgers_combo = new TextField();
+			burgers_combo.setMaxWidth(30);
+			combo_form.getChildren().add(burgers_combo);
+			TextField fries_combo = new TextField();
+			fries_combo.setMaxWidth(30);
+			combo_form.getChildren().add(fries_combo);
+			TextField drinks_combo = new TextField();
+			drinks_combo.setMaxWidth(30);
+			combo_form.getChildren().add(drinks_combo);
+			TextField percentage_combo = new TextField();
+			percentage_combo.setMaxWidth(30);
+			combo_form.getChildren().add(percentage_combo);
+			
+			// Add edit combo button
+			Button add_edit_button = new Button("Add/Edit");
+			add_edit_button.setOnAction(new EventHandler<ActionEvent>() {
+				@Override public void handle(ActionEvent event) {
+					System.out.println("Add/Edit");
+					}
+				});
+			add_edit_form.getChildren().add(add_edit_button);
+			// Delete combo button
+			Button delete_button = new Button("Delete");
+			add_edit_button.setOnAction(new EventHandler<ActionEvent>() {
+				@Override public void handle(ActionEvent event) {
+					System.out.println("Delete");
+					}
+				});
+			add_edit_form.getChildren().add(delete_button);
+			
+			// Button to get back from modal
+			Button run_cancel_button = new Button("Cancel");
+			run_cancel_button.setOnAction(new EventHandler<ActionEvent>() {
+				@Override public void handle(ActionEvent event) {
+					modal.close();
+					}
+				});
+			simulation_button_form.getChildren().add(run_cancel_button);
+			  
+			// List view
+			ListView<String> list = new ListView<String>();
+			ObservableList<String> items = FXCollections.observableArrayList (
+			    "Single", "2 Drinks", "Combo", "ADD NEW");
+			list.setItems(items);
+			list.setPrefWidth(100);
+			list.setPrefHeight(70);
+			list.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					title_combo.setText("");
+					delete_button.setDisable(true);
+					if (list.getSelectionModel().getSelectedItem()!="ADD NEW") {
+						title_combo.setText(list.getSelectionModel().getSelectedItem().toString());
+						delete_button.setDisable(false);
+					}
+				}
+			});
+			run_simulation.add(list,0,1);
+			
+			// Submit Button
+			Button run_submit_button = new Button("Submit");
+			run_submit_button.setOnAction(new EventHandler<ActionEvent>() {
+				@Override public void handle(ActionEvent event) { 
+					Simulation sim = runSimulation();
+					statistics.add(createChart(sim.getTimeStatistics()), 0, 1);
+					modal.close();
+					primaryStage.setScene(statistics_scene);
+				}
+			});
+			simulation_button_form.getChildren().add(run_submit_button);
+			  	
+			/* End Run Simulation Modal */
+			 
 
 			/* Main Menu */
 			// Grids
@@ -334,9 +411,9 @@ public class Gui extends Application {
 			run_button.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					Simulation sim = runSimulation();
-					statistics.add(createChart(sim.getTimeStatistics()), 0, 1);
-					primaryStage.setScene(statistics_scene);
+					modal.setTitle("Run Simulation");
+					modal.setScene(run_simulation_scene);
+					modal.showAndWait();
 				}
 			});
 			simulation_menu.getChildren().add(run_button);
@@ -381,7 +458,7 @@ public class Gui extends Application {
 
 			add_campus_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			add_delivery_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			// run_simulation_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			run_simulation_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			overview_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			statistics_scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(overview_scene);
