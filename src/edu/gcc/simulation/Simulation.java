@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.gcc.maplocation.MapLocation;
+import edu.gcc.meal.Meal;
 import edu.gcc.order.Order;
 import edu.gcc.order.OrderGenerator;
 import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.salesman.greedy.Graph;
-import gcc.edu.meal.Meal;
 
 public class Simulation {
 	private static final int CAPACITY_WEIGHT = 12;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.gcc.maplocation.MapLocation;
-import gcc.edu.meal.Meal;
+import edu.gcc.meal.Meal;
 
 public class Order {
 	private long timestamp;

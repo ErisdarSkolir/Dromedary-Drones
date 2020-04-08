@@ -2,7 +2,7 @@ package edu.gcc.salesman.greedy;
 
 import java.util.ArrayList;
 
-import gcc.edu.meal.Meal;
+import edu.gcc.meal.Meal;
 
 public class Order implements Comparable<Order> {
 	private long timestamp;

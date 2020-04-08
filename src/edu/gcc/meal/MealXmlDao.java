@@ -1,4 +1,4 @@
-package gcc.edu.meal;
+package edu.gcc.meal;
 
 import java.util.List;
 
