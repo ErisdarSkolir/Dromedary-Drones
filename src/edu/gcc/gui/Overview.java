@@ -318,10 +318,7 @@ public class Overview extends GridPane {
 				MapLocation temp = new MapLocation(Integer.parseInt(campus_latitude.getText()),
 						Integer.parseInt(campus_longitude.getText()), MapLocation.PICKUP, name.getText(),
 						campus.getName());
-				// Set map to new location
-				ArrayList<MapLocation> empty = new ArrayList<>();
-				empty.add(temp);
-
+				
 				// Set map to newly created campus
 				campusMap.setMapLocationData(campus);
 
