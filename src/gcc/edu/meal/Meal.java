@@ -1,4 +1,4 @@
-package edu.gcc.order;
+package gcc.edu.meal;
 
 import edu.gcc.xml.annotation.XmlSerializable;
 

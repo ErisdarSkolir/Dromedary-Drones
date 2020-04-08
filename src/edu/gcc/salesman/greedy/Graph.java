@@ -1,16 +1,16 @@
 package edu.gcc.salesman.greedy;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import edu.gcc.order.Order;
 
 public class Graph {
 
-	private ArrayList<Order> nodes;
+	private List<Order> nodes;
 
 	private Order start;
 
-	public Graph(ArrayList<Order> n) {
+	public Graph(List<Order> n) {
 		nodes = n;
 
 		for (int i = 0; i < nodes.size(); i++) {
@@ -25,7 +25,7 @@ public class Graph {
 		start.setExamined(true);
 	}
 
-	public ArrayList<Order> getNodes(){
+	public List<Order> getNodes(){
 		return nodes;
 	}
 

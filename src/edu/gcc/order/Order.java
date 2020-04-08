@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.gcc.maplocation.MapLocation;
+import gcc.edu.meal.Meal;
 
-public class Order implements Comparable<Order> {
+public class Order {
 	private long timestamp;
 	private Meal meal;
 	private String customerName;
-	
+
 	private double distance = 0;
-	public double x = 0;
-	public double y = 0;
+	public MapLocation dropoffLocation;
 	private boolean examined = false;
 	private List<Order> neighbors = new ArrayList<>();
 	private int weight;
@@ -22,13 +22,16 @@ public class Order implements Comparable<Order> {
 		this.customerName = customerName;
 		this.meal = meal;
 		this.timestamp = timestamp;
-		this.x = dropoffLocation.getxCoord();
-		this.y = dropoffLocation.getyCoord();
+		this.dropoffLocation = dropoffLocation;
 	}
-	
+
 	public Order(int w, int d) {
 		weight = w;
 		deliveryTime = d;
+	}
+	
+	public double getDistanceTo(Order n) {
+		return this.dropoffLocation.distance(n.dropoffLocation);
 	}
 
 	public int getWeight() {
@@ -42,11 +45,6 @@ public class Order implements Comparable<Order> {
 	public long getTimestamp() {
 		return timestamp;
 	}
-	
-	public Order(double x, double y) {
-		this.x = x;
-		this.y = y;
-	}
 
 	public double getDistance() {
 
@@ -56,11 +54,7 @@ public class Order implements Comparable<Order> {
 	public void setDistance(double d) {
 		distance = d;
 	}
-
-	public double getDistanceTo(Order n) {
-		return Math.sqrt(((n.x - x) * (n.x - x)) + ((n.y - y) * (n.y - y)));
-	}
-
+	
 	public void setExamined(boolean b) {
 		examined = b;
 	}
@@ -80,23 +74,4 @@ public class Order implements Comparable<Order> {
 	public Order getNeighbor(int i) {
 		return neighbors.get(i);
 	}
-
-	/*
-	 * public double getFlightTime(int i) {
-	 * 
-	 * }
-	 */
-
-	public int compareTo(Order n) {
-		return (int) (distance - n.getDistance());
-	}
-
-	@Override
-	public String toString() {
-		return "Order [timestamp=" + timestamp + ", meal=" + meal + ", customerName=" + customerName + ", distance="
-				+ distance + ", x=" + x + ", y=" + y + ", examined=" + examined + ", neighbors=" + neighbors
-				+ ", weight=" + weight + ", deliveryTime=" + deliveryTime + "]";
-	}
-
-	
 }

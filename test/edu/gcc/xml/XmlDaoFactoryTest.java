@@ -2,15 +2,12 @@ package edu.gcc.xml;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import javafx.beans.Observable;
 
 @ExtendWith(MockitoExtension.class)
 public class XmlDaoFactoryTest {

@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import edu.gcc.maplocation.MapLocation;
+import gcc.edu.meal.Meal;
 
 public class OrderGenerator {
 	private final ThreadLocalRandom random = ThreadLocalRandom.current();
