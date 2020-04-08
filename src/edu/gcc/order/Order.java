@@ -1,6 +1,7 @@
 package edu.gcc.order;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.gcc.maplocation.MapLocation;
 
@@ -13,7 +14,7 @@ public class Order implements Comparable<Order> {
 	public double x = 0;
 	public double y = 0;
 	private boolean examined = false;
-	private ArrayList<Order> neighbors = new ArrayList<Order>();
+	private List<Order> neighbors = new ArrayList<>();
 	private int weight;
 	private int deliveryTime;
 
@@ -38,6 +39,10 @@ public class Order implements Comparable<Order> {
 		return deliveryTime;
 	}
 
+	public long getTimestamp() {
+		return timestamp;
+	}
+	
 	public Order(double x, double y) {
 		this.x = x;
 		this.y = y;
@@ -86,4 +91,12 @@ public class Order implements Comparable<Order> {
 		return (int) (distance - n.getDistance());
 	}
 
+	@Override
+	public String toString() {
+		return "Order [timestamp=" + timestamp + ", meal=" + meal + ", customerName=" + customerName + ", distance="
+				+ distance + ", x=" + x + ", y=" + y + ", examined=" + examined + ", neighbors=" + neighbors
+				+ ", weight=" + weight + ", deliveryTime=" + deliveryTime + "]";
+	}
+
+	
 }
