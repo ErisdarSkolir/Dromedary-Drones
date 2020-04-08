@@ -1,5 +1,9 @@
 package edu.gcc.gui;
 
+import static edu.gcc.gui.UiText.CANCEL_TEXT;
+import static edu.gcc.gui.UiText.CSS;
+import static edu.gcc.gui.UiText.SUBMIT_TEXT;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
@@ -20,19 +24,14 @@ import edu.gcc.meal.MealXmlDao;
 import edu.gcc.packing.Fifo;
 import edu.gcc.simulation.Simulation;
 import javafx.application.Application;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -41,8 +40,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import static edu.gcc.gui.UiText.*;
 
 public class Gui extends Application {
 	private static Gui instance;
@@ -62,37 +59,22 @@ public class Gui extends Application {
 
 		throw new IllegalStateException(String.format("%s is not initialized", Gui.class));
 	}
-
-	// TODO: replace string with variables gotten from ui_text.properties file
-	// Stings
-
+	
 	// XML DAOs
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 	private MealXmlDao mealXml = MealXml.getInstance();
 
-	// Map data
-	private ObservableList<XYChart.Data<Number, Number>> mapDropoffLocations;
-	private ObservableList<XYChart.Data<Number, Number>> mapPickupLocations;
-
-	// Dropdown data
-	private ObservableList<Campus> campusList = campusXml.getAll();
-	private ComboBox<Campus> campusDropdown = createLocationDropdown();
+	//Map
+	private CampusMap campusMap = new CampusMap();
+	
+	//Dropdown
+	private CampusDropdown campusDropdown = new CampusDropdown(campusMap);
+	
 
 	// Meal form data
 	private DecimalFormat probabiltyDecimalFormat = new DecimalFormat("0.##");
 	private ObservableList<Meal> mealList = mealXml.getAllObservable();
-
-	public ComboBox<Campus> createLocationDropdown() {
-		ComboBox<Campus> result = new ComboBox<>();
-
-		result.setItems(campusList);
-		result.setMinWidth(200);
-		result.getSelectionModel().select(0);
-		result.setOnAction(event -> setMapLocationData(campusDropdown.getValue()));
-
-		return result;
-	}
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -167,9 +149,9 @@ public class Gui extends Application {
 					// Set map to new location
 					ArrayList<MapLocation> empty = new ArrayList<>();
 					empty.add(temp);
-					ScatterChart<Number, Number> map = createMap();
-					overview.add(map, 0, 1);
-					//
+					
+					//Set map to newly created campus
+					campusMap.setMapLocationData(campus);
 
 					campusXml.insert(campus);
 					campusDropdown.setValue(campus);
@@ -379,7 +361,7 @@ public class Gui extends Application {
 			overview.add(simulation_menu, 0, 2);
 			simulation_menu.setId("simulation_menu");
 
-			campus_menu.getChildren().add(campusDropdown);
+			campus_menu.getChildren().add(campusDropdown.getElement());
 
 			// New campus
 			Button new_campus_button = new Button("New Campus");
@@ -391,8 +373,8 @@ public class Gui extends Application {
 			});
 			campus_menu.getChildren().add(new_campus_button);
 
-			ScatterChart<Number, Number> map = createMap();
-			overview.add(map, 0, 1);
+			campusMap.setMapLocationData(campusDropdown.getValue());
+			overview.add(campusMap.getElement(), 0, 1);
 
 			// New delivery location
 			Button new_delivery_button = new Button("New Delivery Location");
@@ -468,76 +450,6 @@ public class Gui extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	// Creates a map
-	public ScatterChart<Number, Number> createMap() {
-		// Map
-		final NumberAxis xAxis = new NumberAxis();
-		final NumberAxis yAxis = new NumberAxis();
-		final ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
-		sc.getXAxis().setTickLabelsVisible(false);
-		sc.getYAxis().setTickLabelsVisible(false);
-		sc.setTitle("Campus Map");
-		sc.setMaxWidth(500);
-		sc.setMaxHeight(400);
-
-		// Pickup Points
-		Series<Number, Number> series1 = new Series<>();
-		series1.setName("Shop Location");
-		mapPickupLocations = series1.getData();
-
-		// Dropoff Points
-		Series<Number, Number> series2 = new Series<>();
-		series2.setName("Delivery Points");
-		mapDropoffLocations = series2.getData();
-
-		setMapLocationData(campusDropdown.getValue());
-
-		sc.getData().addAll(series1, series2);
-		return sc;
-	}
-
-	public void setMapLocationData(final Campus campus) {
-		if (campus == null)
-			return;
-
-		mapDropoffLocations.clear();
-		mapPickupLocations.clear();
-
-		ObservableList<MapLocation> dropoffLocations = locationXml.getDropoffReactiveForCampus(campus.getName());
-		dropoffLocations.stream().map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
-				.forEach(mapDropoffLocations::add);
-		dropoffLocations.addListener(new ListChangeListener<MapLocation>() {
-			@Override
-			public void onChanged(Change<? extends MapLocation> c) {
-				while (c.next()) {
-					c.getRemoved().stream().map(location -> new Data<>(location.getxCoord(), location.getyCoord()))
-							.forEach(mapDropoffLocations::remove);
-
-					c.getAddedSubList().stream()
-							.map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
-							.forEach(mapDropoffLocations::add);
-				}
-			}
-		});
-
-		ObservableList<MapLocation> pickupLocations = locationXml.getPickupReactiveForCampus(campus.getName());
-		pickupLocations.stream().map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
-				.forEach(mapPickupLocations::add);
-		pickupLocations.addListener(new ListChangeListener<MapLocation>() {
-			@Override
-			public void onChanged(Change<? extends MapLocation> c) {
-				while (c.next()) {
-					c.getRemoved().stream().map(location -> new Data<>(location.getxCoord(), location.getyCoord()))
-							.forEach(mapPickupLocations::remove);
-
-					c.getAddedSubList().stream()
-							.map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
-							.forEach(mapPickupLocations::add);
-				}
-			}
-		});
 	}
 
 	public LineChart<Number, Number> createChart(List<Long> times) {
