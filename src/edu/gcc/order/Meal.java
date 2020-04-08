@@ -1,29 +1,17 @@
 package edu.gcc.order;
 
-import java.util.List;
-
 import edu.gcc.xml.annotation.XmlSerializable;
 
-@XmlSerializable("id")
+@XmlSerializable(value = "id", autogenerate = true)
 public class Meal {
-	private int id;
+	private long id;
 
 	private String name;
 	private float probability;
 
-	private transient List<MealItem> items;
-
 	public Meal(final String name, final float probability) {
 		this.name = name;
 		this.probability = probability;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -44,14 +32,14 @@ public class Meal {
 
 	@Override
 	public String toString() {
-		return "Meal [name=" + name + ", probability=" + probability + "]";
+		return name;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + Float.floatToIntBits(probability);
 		return result;
@@ -59,22 +47,14 @@ public class Meal {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (obj == this)
 			return true;
-		if (obj == null)
+
+		if (!(obj instanceof Meal))
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Meal other = (Meal) obj;
-		if (id != other.id)
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (Float.floatToIntBits(probability) != Float.floatToIntBits(other.probability))
-			return false;
-		return true;
+
+		Meal meal = (Meal) obj;
+		return meal.id == this.id && meal.name.equals(this.name)
+				&& Float.floatToIntBits(meal.probability) == Float.floatToIntBits(this.probability);
 	}
 }

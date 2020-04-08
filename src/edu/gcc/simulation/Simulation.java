@@ -1,12 +1,9 @@
 package edu.gcc.simulation;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.MapLocation;
-import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.order.Meal;
 import edu.gcc.order.Order;
 import edu.gcc.order.OrderGenerator;
@@ -14,7 +11,6 @@ import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.salesman.greedy.Graph;
 
 public class Simulation {
-
 	private static final int CAPACITY_WEIGHT = 12;
 
 	private OrderGenerator orderGen;
@@ -27,14 +23,9 @@ public class Simulation {
 	// Orders
 	// Algorithms
 	// Run algorithms on orders
-	public Simulation(List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm, int traveling) {
+	public Simulation(List<Meal> meals, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm, int traveling) {
 		this.packingAlgorithm = packingAlgorithm;
 		this.traveling = traveling;
-		
-		List<Meal> meals = new ArrayList<>();
-		meals.add(new Meal("meal 1", 0.5f));
-		meals.add(new Meal("meal 2", 0.25f));
-		meals.add(new Meal("meal 3", 0.25f));
 		
 		List<String> customers = new ArrayList<>();
 		customers.add("Bob");

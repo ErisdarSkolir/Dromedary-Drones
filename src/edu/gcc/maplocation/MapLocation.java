@@ -11,9 +11,9 @@ import edu.gcc.xml.annotation.XmlSerializable;
  */
 @XmlSerializable(value = "id", autogenerate = true)
 public class MapLocation {
-	public transient static final int INVALID = 0x0;
-	public transient static final int DROPOFF = 0x1;
-	public transient static final int PICKUP = 0x2;
+	public static final transient int INVALID = 0x0;
+	public static final transient int DROPOFF = 0x1;
+	public static final transient int PICKUP = 0x2;
 
 	@SuppressWarnings("unused")
 	private long id;
@@ -37,9 +37,7 @@ public class MapLocation {
 	public double distance(MapLocation l) {
 		int xSum = Math.abs(xCoord - l.xCoord);
 		int ySum = Math.abs(yCoord - l.yCoord);
-		double pythagorean = Math.sqrt((xSum * xSum) + (ySum * ySum));
-
-		return pythagorean;
+		return Math.sqrt((double) (xSum * xSum) + (ySum * ySum));
 	}
 
 	public int getxCoord() {

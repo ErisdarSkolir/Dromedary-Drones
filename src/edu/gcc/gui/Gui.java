@@ -2,7 +2,9 @@ package edu.gcc.gui;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 
@@ -12,11 +14,12 @@ import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
-import edu.gcc.order.Order;
+import edu.gcc.order.Meal;
+import edu.gcc.order.MealXml;
+import edu.gcc.order.MealXmlDao;
 import edu.gcc.packing.Fifo;
 import edu.gcc.simulation.Simulation;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,7 +36,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -61,12 +63,17 @@ public class Gui extends Application {
 
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
+	private MealXmlDao mealXml = MealXml.getInstance();
 
 	private ObservableList<XYChart.Data<Number, Number>> mapDropoffLocations;
 	private ObservableList<XYChart.Data<Number, Number>> mapPickupLocations;
-	private ObservableList<Campus> campusList = CampusXml.getInstance().getAll();
+
+	private ObservableList<Campus> campusList = campusXml.getAll();
 	private ComboBox<Campus> campusDropdown = createLocationDropdown();
-	
+
+	private DecimalFormat probabiltyDecimalFormat = new DecimalFormat("0.##");
+	private ObservableList<Meal> mealList = mealXml.getAllObservable();
+
 	public ComboBox<Campus> createLocationDropdown() {
 		ComboBox<Campus> result = new ComboBox<>();
 
@@ -242,34 +249,32 @@ public class Gui extends Application {
 			delivery_button_form.getChildren().add(delivery_submit_button);
 			/* End Add Delivery Location Modal */
 
-			
 			/* Run Simulation Modal */
 			GridPane run_simulation = new GridPane();
 			run_simulation.setId("modal");
 			Scene run_simulation_scene = new Scene(run_simulation);
-			
+
 			// Form rows
 			HBox simulation_button_form = new HBox(10);
-			run_simulation.add(simulation_button_form,1,4);
+			run_simulation.add(simulation_button_form, 1, 4);
 			simulation_button_form.setId("form");
-			
+
 			// Form rows
 			HBox add_edit_form = new HBox(10);
-			run_simulation.add(add_edit_form,2,2);
+			run_simulation.add(add_edit_form, 2, 2);
 			add_edit_form.setId("form");
-			  
+
 			// TODO: Get saved combo meals
 			// For each combo meal
-			VBox combo_form = new VBox(10); 
-			run_simulation.add(combo_form,2,1);
+			VBox combo_form = new VBox(10);
+			run_simulation.add(combo_form, 2, 1);
 			combo_form.setId("form");
-			
-			//Labels
-			VBox combo_labels = new VBox(10); 
-			run_simulation.add(combo_labels,1,1);
+
+			// Labels
+			VBox combo_labels = new VBox(10);
+			run_simulation.add(combo_labels, 1, 1);
 			combo_labels.setId("labels");
 
-			
 			Label title_label = new Label("Title:");
 			title_label.setId("label");
 			combo_labels.getChildren().add(title_label);
@@ -285,7 +290,7 @@ public class Gui extends Application {
 			Label percent_label = new Label("Percent:");
 			percent_label.setId("label");
 			combo_labels.getChildren().add(percent_label);
-			
+
 			TextField title_combo = new TextField();
 			title_combo.setMaxWidth(100);
 			combo_form.getChildren().add(title_combo);
@@ -301,57 +306,63 @@ public class Gui extends Application {
 			TextField percentage_combo = new TextField();
 			percentage_combo.setMaxWidth(30);
 			combo_form.getChildren().add(percentage_combo);
-			
+
+			Meal addNewMeal = new Meal("ADD NEW", 0.0f);
+			mealList.add(addNewMeal);
+
 			// Add edit combo button
 			Button add_edit_button = new Button("Add/Edit");
-			add_edit_button.setOnAction(new EventHandler<ActionEvent>() {
-				@Override public void handle(ActionEvent event) {
-					System.out.println("Add/Edit");
-					}
-				});
+			add_edit_button.setOnAction(event -> {
+				Meal meal = new Meal(title_combo.getText(),
+						Float.parseFloat(percentage_combo.getText().replace("%", "")) / 100.0f);
+				mealXml.insert(meal);
+				mealList.remove(addNewMeal); // Bit of a hack to keep the ADD NEW element at the bottom
+				mealList.add(addNewMeal);
+			});
 			add_edit_form.getChildren().add(add_edit_button);
+
 			// Delete combo button
 			Button delete_button = new Button("Delete");
-			add_edit_button.setOnAction(new EventHandler<ActionEvent>() {
-				@Override public void handle(ActionEvent event) {
-					System.out.println("Delete");
-					}
-				});
 			add_edit_form.getChildren().add(delete_button);
-			
+
 			// Button to get back from modal
 			Button run_cancel_button = new Button("Cancel");
 			run_cancel_button.setOnAction(new EventHandler<ActionEvent>() {
-				@Override public void handle(ActionEvent event) {
-					modal.close();
-					}
-				});
-			simulation_button_form.getChildren().add(run_cancel_button);
-			  
-			// List view
-			ListView<String> combo_list = new ListView<String>();
-			ObservableList<String> items = FXCollections.observableArrayList (
-			    "Single", "2 Drinks", "Combo", "ADD NEW");
-			combo_list.setItems(items);
-			combo_list.setPrefWidth(100);
-			combo_list.setPrefHeight(70);
-			combo_list.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				@Override
-				public void handle(MouseEvent event) {
-					title_combo.setText("");
-					delete_button.setDisable(true);
-					if (combo_list.getSelectionModel().getSelectedItem()!="ADD NEW") {
-						title_combo.setText(combo_list.getSelectionModel().getSelectedItem().toString());
-						delete_button.setDisable(false);
-					}
+				public void handle(ActionEvent event) {
+					modal.close();
 				}
 			});
-			run_simulation.add(combo_list,0,1);
-			
+			simulation_button_form.getChildren().add(run_cancel_button);
+
+			// List view
+			ListView<Meal> combo_list = new ListView<>();
+			combo_list.setItems(mealList);
+			combo_list.setPrefWidth(100);
+			combo_list.setPrefHeight(70);
+			combo_list.setOnMouseClicked(event -> {
+				if (!combo_list.getSelectionModel().getSelectedItem().equals(addNewMeal)) {
+					Meal currentMeal = combo_list.getSelectionModel().getSelectedItem();
+
+					title_combo.setText(currentMeal.getName());
+					percentage_combo.setText(String.format("%s%%",
+							probabiltyDecimalFormat.format(currentMeal.getProbability() * 100.0f)));
+					delete_button.setDisable(false);
+				} else {
+					title_combo.setText("");
+					percentage_combo.setText("");
+					delete_button.setDisable(true);
+				}
+			});
+			run_simulation.add(combo_list, 0, 1);
+
+			delete_button.setOnAction(event -> mealXml.delete(combo_list.getSelectionModel().getSelectedItem()));
+
 			// Submit Button
 			Button run_submit_button = new Button("Submit");
 			run_submit_button.setOnAction(new EventHandler<ActionEvent>() {
-				@Override public void handle(ActionEvent event) { 
+				@Override
+				public void handle(ActionEvent event) {
 					Simulation sim = runSimulation();
 					statistics.add(createChart(sim.getTimeStatistics()), 0, 1);
 					modal.close();
@@ -359,9 +370,8 @@ public class Gui extends Application {
 				}
 			});
 			simulation_button_form.getChildren().add(run_submit_button);
-			  	
+
 			/* End Run Simulation Modal */
-			 
 
 			/* Main Menu */
 			// Grids
@@ -500,10 +510,10 @@ public class Gui extends Application {
 	public void setMapLocationData(final Campus campus) {
 		if (campus == null)
 			return;
-		
+
 		mapDropoffLocations.clear();
 		mapPickupLocations.clear();
-		
+
 		ObservableList<MapLocation> dropoffLocations = locationXml.getDropoffReactiveForCampus(campus.getName());
 		dropoffLocations.stream().map(location -> new Data<Number, Number>(location.getxCoord(), location.getyCoord()))
 				.forEach(mapDropoffLocations::add);
@@ -539,7 +549,7 @@ public class Gui extends Application {
 		});
 	}
 
-	public LineChart<Number, Number> createChart(ArrayList<Long> times) {
+	public LineChart<Number, Number> createChart(List<Long> times) {
 		// defining the axes
 		final NumberAxis xAxis2 = new NumberAxis();
 		final NumberAxis yAxis2 = new NumberAxis();
@@ -563,8 +573,10 @@ public class Gui extends Application {
 	}
 
 	public Simulation runSimulation() {
-		// We (Lake and Ethan) believe that the shop location is being counted as a delivery point
-		Simulation sim = new Simulation(locationXml.getDropoffReactiveForCampus(campusDropdown.getValue().getName()), new Fifo(), 1);
+		// We (Lake and Ethan) believe that the shop location is being counted as a
+		// delivery point
+		Simulation sim = new Simulation(mealXml.getAll(),
+				locationXml.getDropoffReactiveForCampus(campusDropdown.getValue().getName()), new Fifo(), 1);
 		sim.runSimulation();
 		return sim;
 	}
