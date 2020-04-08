@@ -8,7 +8,12 @@ public class UiText {
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
+	public static final String CSS = "application.css";
+	public static final String CANCEL_TEXT = getString("Cancel_Text");
+	public static final String SUBMIT_TEXT = getString("Submit_Text");
+
 	private UiText() {
+		throw new UnsupportedOperationException("Cannot instantiate static utility class");
 	}
 
 	public static String getString(String key) {
