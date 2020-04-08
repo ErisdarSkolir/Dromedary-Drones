@@ -7,7 +7,7 @@ import edu.gcc.order.Order;
 
 public class Driver {
 
-	static ArrayList<Order> GBFS(Graph g, Order start) {
+	/*static ArrayList<Order> GBFS(Graph g, Order start) {
 
 		ArrayList<Order> path = new ArrayList<Order>();
 		
@@ -49,9 +49,9 @@ public class Driver {
 		
 		return path;
 
-	}
+	}*/
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 
 		//		PriorityQueue<Integer> pq = new PriorityQueue<Integer>(); 
 		//		
@@ -83,6 +83,6 @@ public class Driver {
 		for (int i = 0; i < path.size(); i++) {
 			System.out.println("(" + path.get(i).x + ", " + path.get(i).y + ")");
 		}
-	}
+	}*/
 
 }

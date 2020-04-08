@@ -1,12 +1,14 @@
 package edu.gcc.order;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import edu.gcc.maplocation.MapLocation;
+import gcc.edu.meal.Meal;
 
 public class OrderGenerator {
 	private final ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -38,6 +40,8 @@ public class OrderGenerator {
 			result.add(generateOrder(random.nextLong(startTimestmp, endTimestamp + 1)));
 		}
 
+		result.sort(Comparator.comparingLong(Order::getTimestamp));
+		
 		return result;
 	}
 

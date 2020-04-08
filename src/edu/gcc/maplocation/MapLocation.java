@@ -11,21 +11,21 @@ import edu.gcc.xml.annotation.XmlSerializable;
  */
 @XmlSerializable(value = "id", autogenerate = true)
 public class MapLocation {
-	public transient static final int INVALID = 0x0;
-	public transient static final int DROPOFF = 0x1;
-	public transient static final int PICKUP = 0x2;
+	public static final transient int INVALID = 0x0;
+	public static final transient int DROPOFF = 0x1;
+	public static final transient int PICKUP = 0x2;
 
 	@SuppressWarnings("unused")
 	private long id;
 
 	private int type;
-	private int xCoord;
-	private int yCoord;
+	private double xCoord;
+	private double yCoord;
 
 	private String name;
 	private String campus;
 
-	public MapLocation(int x, int y, int type, String n, String campus) {
+	public MapLocation(double x, double y, int type, String n, String campus) {
 		this.xCoord = x;
 		this.yCoord = y;
 		this.type = type;
@@ -35,26 +35,24 @@ public class MapLocation {
 
 	// calculates the length of a vector between 2 points on Map
 	public double distance(MapLocation l) {
-		int xSum = Math.abs(xCoord - l.xCoord);
-		int ySum = Math.abs(yCoord - l.yCoord);
-		double pythagorean = Math.sqrt((xSum * xSum) + (ySum * ySum));
-
-		return pythagorean;
+		double xSum = Math.abs(xCoord - l.xCoord);
+		double ySum = Math.abs(yCoord - l.yCoord);
+		return Math.sqrt((xSum * xSum) + (ySum * ySum));
 	}
 
-	public int getxCoord() {
+	public double getxCoord() {
 		return xCoord;
 	}
 
-	public void setxCoord(int xCoord) {
+	public void setxCoord(double xCoord) {
 		this.xCoord = xCoord;
 	}
 
-	public int getyCoord() {
+	public double getyCoord() {
 		return yCoord;
 	}
 
-	public void setyCoord(int yCoord) {
+	public void setyCoord(double yCoord) {
 		this.yCoord = yCoord;
 	}
 
