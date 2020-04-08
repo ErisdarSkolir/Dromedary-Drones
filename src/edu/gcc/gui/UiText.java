@@ -8,6 +8,9 @@ public class UiText {
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
+	public static final String OVERVIEW_ID = getString("Overview_ID");
+	public static final String STATISTICS_ID = getString("Statistics_ID");
+	
 	public static final String CSS = "application.css";
 	public static final String CANCEL_TEXT = getString("Cancel_Text");
 	public static final String SUBMIT_TEXT = getString("Submit_Text");
