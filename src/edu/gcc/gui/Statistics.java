@@ -2,11 +2,8 @@ package edu.gcc.gui;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JFileChooser;
-
 import edu.gcc.simulation.Simulation;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -42,9 +39,9 @@ public class Statistics extends GridPane {
 			}
 		});
 		
-		backButton.setId("back");
+		this.backButton.setId("back");
 		export_button.setId("export");
-		add(backButton, 0, 0);
+		add(this.backButton, 0, 0);
 		add(export_button, 0, 2);
 	}
 
@@ -56,8 +53,8 @@ public class Statistics extends GridPane {
 	public LineChart<Number, Number> createChart(List<Long> times) { // defining the axes
 		final NumberAxis xAxis2 = new NumberAxis();
 		final NumberAxis yAxis2 = new NumberAxis();
-		xAxis2.setLabel("Drone Trip");
-		yAxis2.setLabel("Time (seconds)"); // creating the chart final
+		xAxis2.setLabel("Order Number");
+		yAxis2.setLabel("Time (minutes)"); // creating the chart final
 		LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis2, yAxis2);
 
 		lineChart.setTitle("Drone Data");
@@ -68,7 +65,8 @@ public class Statistics extends GridPane {
 		XYChart.Series series = new XYChart.Series();
 		series.setName("Delivery time for each order");
 		for (int i = 0; i < times.size(); i++) {
-			series.getData().add(new XYChart.Data(i, times.get(i)));
+			// Dividing by 60 to get minutes
+			series.getData().add(new XYChart.Data(i, times.get(i)/60));
 		}
 		lineChart.getData().add(series);
 		return lineChart;

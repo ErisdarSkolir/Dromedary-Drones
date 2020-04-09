@@ -3,10 +3,7 @@ package edu.gcc.gui;
 import static edu.gcc.gui.UiText.CANCEL_TEXT;
 import static edu.gcc.gui.UiText.CSS;
 import static edu.gcc.gui.UiText.SUBMIT_TEXT;
-
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-
 import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.CampusXml;
 import edu.gcc.maplocation.CampusXmlDao;
@@ -184,6 +181,11 @@ public class Overview extends GridPane {
 		TextField percentage_combo = new TextField();
 		percentage_combo.setMaxWidth(50);
 		combo_form.getChildren().add(percentage_combo);
+		
+		Label error_label = new Label("TOTAL GREATER THAN 100%");
+		error_label.setId("error");
+		error_label.setVisible(false);
+		run_simulation.add(error_label, 2, 3);
 
 		Meal addNewMeal = new Meal("ADD NEW", 0.0f);
 		mealList.add(addNewMeal);
@@ -191,11 +193,22 @@ public class Overview extends GridPane {
 		// Add edit combo button
 		Button add_edit_button = new Button("Add/Edit");
 		add_edit_button.setOnAction(event -> {
-			Meal meal = new Meal(title_combo.getText(),
-					Float.parseFloat(percentage_combo.getText().replace("%", "")) / 100.0f); //$NON-NLS-2$
-			mealXml.insert(meal);
-			mealList.remove(addNewMeal); // Bit of a hack to keep the ADD NEW element at the bottom
-			mealList.add(addNewMeal);
+			// Check to make sure probabilty of meals is not over 100
+			double probability = 0;
+			for(Meal temp : this.mealList) {
+				probability += temp.getProbability() * 100.0f;
+			}
+			probability += Double.parseDouble(percentage_combo.getText().replace("%", ""));
+			if (probability > 100.0f) {
+				error_label.setVisible(true);
+			} else {
+				error_label.setVisible(false);
+				Meal meal = new Meal(title_combo.getText(),
+						Float.parseFloat(percentage_combo.getText().replace("%", "")) / 100.0f); //$NON-NLS-2$
+				mealXml.insert(meal);
+				mealList.remove(addNewMeal); // Bit of a hack to keep the ADD NEW element at the bottom
+				mealList.add(addNewMeal);
+			}
 		});
 		add_edit_form.getChildren().add(add_edit_button);
 
@@ -215,6 +228,7 @@ public class Overview extends GridPane {
 		combo_list.setPrefHeight(70);
 		combo_list.setOnMouseClicked(event -> {
 			if (!combo_list.getSelectionModel().getSelectedItem().equals(addNewMeal)) {
+				error_label.setVisible(false);
 				Meal currentMeal = combo_list.getSelectionModel().getSelectedItem();
 				title_combo.setText(currentMeal.getName());
 				// TODO: Get Burger, Fry, and Drink count
@@ -222,11 +236,17 @@ public class Overview extends GridPane {
 						String.format("%s%%", probabiltyDecimalFormat.format(currentMeal.getProbability() * 100.0f)));
 				delete_button.setDisable(false);
 			} else {
+				error_label.setVisible(false);
 				title_combo.setText("");
 				burgers_combo.setText("");
 				fries_combo.setText("");
 				drinks_combo.setText("");
-				percentage_combo.setText("");
+				// Set leftover percentage
+				double probability = 0;
+				for(Meal temp : this.mealList) {
+					probability += temp.getProbability();
+				}
+				percentage_combo.setText(String.format("%s%%", Double.toString(100.0f - (probability * 100.0f))));
 				delete_button.setDisable(true);
 			}
 		});
