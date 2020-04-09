@@ -2,6 +2,7 @@ package edu.gcc.gui;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -15,15 +16,19 @@ import javafx.scene.layout.GridPane;
 
 public class Statistics extends GridPane {
 	private Button backButton = new Button("Back");
+	private LineChart<Number, Number> line_chart;
 
 	public Statistics() {
 		setId(UiText.STATISTICS_ID);
 
-		backButton.setOnAction(e -> Gui.getInstance().navigateTo(UiText.OVERVIEW_ID));
+		backButton.setOnAction(e -> {
+			this.line_chart.setVisible(false);
+			Gui.getInstance().navigateTo(UiText.OVERVIEW_ID);
+		});
 
 		// Export button
-		Button button = new Button("Export");
-		button.setOnAction(event -> {
+		Button export_button = new Button("Export");
+		export_button.setOnAction(event -> {
 			String sb = "TEST CONTENT";
 			JFileChooser chooser = new JFileChooser();
 			chooser.setCurrentDirectory(new File("/home/me/Desktop"));
@@ -36,13 +41,16 @@ public class Statistics extends GridPane {
 				}
 			}
 		});
-
+		
+		backButton.setId("back");
+		export_button.setId("export");
 		add(backButton, 0, 0);
-		add(button, 0, 2);
+		add(export_button, 0, 2);
 	}
 
 	public void setSimulation(Simulation sim) {
-		add(createChart(sim.getTimeStatistics()), 0, 1);
+		this.line_chart = createChart(sim.getTimeStatistics());
+		add(this.line_chart, 0, 1);
 	}
 
 	public LineChart<Number, Number> createChart(List<Long> times) { // defining the axes
@@ -53,12 +61,12 @@ public class Statistics extends GridPane {
 		LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis2, yAxis2);
 
 		lineChart.setTitle("Drone Data");
-		lineChart.setMaxWidth(400);
+		lineChart.setMaxWidth(500);
 		lineChart.setMaxHeight(300);
 
 		// defining a series
 		XYChart.Series series = new XYChart.Series();
-		series.setName("Average Number of Something");
+		series.setName("Delivery time for each order");
 		for (int i = 0; i < times.size(); i++) {
 			series.getData().add(new XYChart.Data(i, times.get(i)));
 		}

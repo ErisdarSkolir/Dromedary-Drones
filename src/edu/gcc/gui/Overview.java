@@ -109,7 +109,6 @@ public class Overview extends GridPane {
 		delivery_submit_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				// TODO: Handle exceptions
 
 				// Add location from fields
 				MapLocation temp = new MapLocation(Integer.parseInt(delivery_latitude.getText()),
@@ -144,7 +143,6 @@ public class Overview extends GridPane {
 		run_simulation.add(add_edit_form, 2, 2);
 		add_edit_form.setId("form");
 
-		// TODO: Get saved combo meals
 		// For each combo meal
 		VBox combo_form = new VBox(10);
 		run_simulation.add(combo_form, 2, 1);
@@ -161,7 +159,7 @@ public class Overview extends GridPane {
 		Label burgers_label = new Label("Burgers:");
 		burgers_label.setId("label");
 		combo_labels.getChildren().add(burgers_label);
-		Label fries_label = new Label("Fires:");
+		Label fries_label = new Label("Fries:");
 		fries_label.setId("label");
 		combo_labels.getChildren().add(fries_label);
 		Label drinks_label = new Label("Drinks:");
@@ -184,7 +182,7 @@ public class Overview extends GridPane {
 		drinks_combo.setMaxWidth(30);
 		combo_form.getChildren().add(drinks_combo);
 		TextField percentage_combo = new TextField();
-		percentage_combo.setMaxWidth(30);
+		percentage_combo.setMaxWidth(50);
 		combo_form.getChildren().add(percentage_combo);
 
 		Meal addNewMeal = new Meal("ADD NEW", 0.0f);
@@ -218,13 +216,16 @@ public class Overview extends GridPane {
 		combo_list.setOnMouseClicked(event -> {
 			if (!combo_list.getSelectionModel().getSelectedItem().equals(addNewMeal)) {
 				Meal currentMeal = combo_list.getSelectionModel().getSelectedItem();
-
 				title_combo.setText(currentMeal.getName());
+				// TODO: Get Burger, Fry, and Drink count
 				percentage_combo.setText(
 						String.format("%s%%", probabiltyDecimalFormat.format(currentMeal.getProbability() * 100.0f)));
 				delete_button.setDisable(false);
 			} else {
 				title_combo.setText("");
+				burgers_combo.setText("");
+				fries_combo.setText("");
+				drinks_combo.setText("");
 				percentage_combo.setText("");
 				delete_button.setDisable(true);
 			}
@@ -309,7 +310,6 @@ public class Overview extends GridPane {
 		campus_submit_button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				// TODO: Handle exceptions
 
 				Campus campus = new Campus(name.getText());
 

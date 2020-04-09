@@ -70,8 +70,6 @@ public class CampusMap {
 		result.getXAxis().setTickLabelsVisible(false);
 		result.getYAxis().setTickLabelsVisible(false);
 		result.setTitle("Campus Map");
-		result.setMaxWidth(500);
-		result.setMaxHeight(400);
 
 		// Pickup Points
 		Series<Number, Number> pickupLocationSeries = new Series<>();
