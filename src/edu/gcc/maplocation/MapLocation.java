@@ -32,6 +32,12 @@ public class MapLocation {
 		this.name = n;
 		this.campus = campus;
 	}
+	
+	public MapLocation(double x, double y, int type) {
+		this.xCoord = x;
+		this.yCoord = y;
+		this.type = type;
+	}
 
 	// calculates the length of a vector between 2 points on Map
 	public double distance(MapLocation l) {

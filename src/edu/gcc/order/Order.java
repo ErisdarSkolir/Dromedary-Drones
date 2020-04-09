@@ -30,6 +30,10 @@ public class Order {
 		deliveryTime = d;
 	}
 	
+	public Order(final MapLocation shoplocation) {
+		dropoffLocation = shoplocation;
+	}
+	
 	public double getDistanceTo(Order n) {
 		return this.dropoffLocation.distance(n.dropoffLocation);
 	}
