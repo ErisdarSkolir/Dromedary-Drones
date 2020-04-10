@@ -38,7 +38,7 @@ public class Graph {
 		int numExamined = 0;
 
 		boolean okToEnd = false;
-		//System.out.println();
+		
 		for (int i = 0 ; i < nodes.size(); i++) {
 
 			//System.out.println("(" + nodes.get(i).x + ", " + nodes.get(i).y + ") examined: " + nodes.get(i).getExamined());
@@ -50,9 +50,6 @@ public class Graph {
 
 		if (numExamined == nodes.size()) {
 			allExamined = true;
-		}
-
-		if(numExamined == nodes.size() - 1) {
 			okToEnd = true;
 		}
 
@@ -79,6 +76,10 @@ public class Graph {
 					return start;
 				}
 			}
+		}
+		
+		if (okToEnd) {
+			return start;
 		}
 
 		return closest;

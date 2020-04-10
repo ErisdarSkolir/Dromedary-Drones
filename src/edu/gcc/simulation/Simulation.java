@@ -77,7 +77,12 @@ public class Simulation {
 				path = GBFS(g, filled.get(0));
 			}
 			
-			System.out.println("First thing in path: " + path.get(0).dropoffLocation.getxCoord());
+			//System.out.println("First thing in path: " + path.get(0).dropoffLocation.getxCoord());
+			System.out.println("******************************************************");
+			//print everything in path
+			for (int i = 0 ; i < path.size(); i++) {
+				System.out.println(path.get(i).dropoffLocation.getxCoord() + " " + path.get(i).dropoffLocation.getyCoord());
+			}
 
 			// Set times
 			for (int i = 0; i < path.size() - 1; i++) {
@@ -85,13 +90,15 @@ public class Simulation {
 				System.out.println("The drone is flying from (" + path.get(i).dropoffLocation.getxCoord() + "," + path.get(i).dropoffLocation.getyCoord() + ") to (" + path.get(i + 1).dropoffLocation.getxCoord() + "," + path.get(i + 1).dropoffLocation.getyCoord() + ")");
 				
 				distance_to_next = path.get(i).getDistanceTo(path.get(i + 1));				
-				simulation_time += distance_to_next / drone_speed;
+				simulation_time += (distance_to_next / drone_speed);
 				delivery_times.add(simulation_time);
 				//time_statistics.add(simulation_time - path.get(i).getTime());
 				this.time_statistics.add(delivery_times.get(i) - path.get(i).getTime());
 				//System.out.println(time_statistics.get(i));
 			}
+			//System.out.println(simulation_time);
 			simulation_time += 180_000;
+			//System.out.println(simulation_time);
 			
 			
 			for (int ind = filled.size() - 1; ind >= 0; ind--) {
@@ -111,15 +118,11 @@ public class Simulation {
 		boolean isBeginning = true;
 		boolean isDone = false;
 
-		int counter = 0;
-
 		path.add(current);
 
 		Order closest;
 
-		while (!isDone && counter < 10) {
-			counter++;
-
+		while (!isDone) {
 			closest = g.getClosestNeighbor(current);
 
 			if (closest == null) {
@@ -134,7 +137,7 @@ public class Simulation {
 				path.add(current);
 
 				if (current == start && !isBeginning) {
-					System.out.println("Found the goal");
+					System.out.println("******************************************************\nFound a path...\n");
 					isDone = true;
 				}
 
