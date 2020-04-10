@@ -23,3 +23,6 @@
 #label {
 	-fx-padding: 5 0 5 0;
 }
+#error {
+	-fx-text-fill: red;
+}
