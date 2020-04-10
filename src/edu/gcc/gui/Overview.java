@@ -258,7 +258,7 @@ public class Overview extends GridPane {
 		Button run_submit_button = new Button(SUBMIT_TEXT);
 		run_submit_button.setOnAction(event -> {
 			modal.close();
-			Gui.getInstance().runSimulation(mealXml.getAll(),
+			Gui.getInstance().runSimulation(mealXml.getAll(), locationXml.getPickupLocationForCampus(campusDropdown.getValue().getName()),
 					locationXml.getDropoffReactiveForCampus(campusDropdown.getValue().getName()), new Fifo());
 		});
 		simulation_button_form.getChildren().add(run_submit_button);

@@ -48,9 +48,9 @@ public class Gui extends Application {
 		Platform.runLater(() -> primaryState.setScene(scenes.get(id)));
 	}
 
-	public void runSimulation(List<Meal> meals, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm) {
+	public void runSimulation(List<Meal> meals, MapLocation shopLocation, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm) {
 		Thread thread = new Thread(() -> {
-			Simulation sim = new Simulation(meals, dropoffLocations, packingAlgorithm, 1);
+			Simulation sim = new Simulation(meals, shopLocation, dropoffLocations, packingAlgorithm, 1);
 			sim.runSimulation();
 			statistics.setSimulation(sim);
 			navigateTo(UiText.STATISTICS_ID);

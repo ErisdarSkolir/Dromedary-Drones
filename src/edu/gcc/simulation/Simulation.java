@@ -18,16 +18,18 @@ public class Simulation {
 	private PackingAlgorithm packingAlgorithm;
 	private int traveling;
 	private long simulation_time;
+	private MapLocation shopLocation;
 	ArrayList<Long> time_statistics = new ArrayList<Long>();
 
 	// Orders
 	// Algorithms
 	// Run algorithms on orders
-	public Simulation(List<Meal> meals, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm,
+	public Simulation(List<Meal> meals, MapLocation shopLocation, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm,
 			int traveling) {
 		this.packingAlgorithm = packingAlgorithm;
 		this.traveling = traveling;
-
+		this.shopLocation = shopLocation;
+		
 		List<String> customers = new ArrayList<>();
 		customers.add("Bob");
 		customers.add("John");
@@ -36,7 +38,7 @@ public class Simulation {
 
 		this.orderGen = new OrderGenerator(meals, customers, dropoffLocations);
 		orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
-
+		
 		System.out.println(orders);
 	}
 
@@ -59,7 +61,7 @@ public class Simulation {
 
 		while (!this.orders.isEmpty()) {
 			// FIFO
-			filled.add(new Order(new MapLocation(0, 0, 0x1)));
+			filled.add(new Order(shopLocation));
 			for (int i = 0; i < orders.size(); i++) {
 				temp = packingAlgorithm.nextFit(orders, filled, CAPACITY_WEIGHT);
 				orders.remove(temp);

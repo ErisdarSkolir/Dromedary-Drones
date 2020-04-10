@@ -26,4 +26,7 @@ public interface MapLocationXmlDao {
 	
 	@XPathQuery(value = "//MapLocation[campus[text()='{0}'] and type[text()='2']]", list = true, reactive = true)
 	public ObservableList<MapLocation> getPickupReactiveForCampus(final String campus);
+	
+	@XPathQuery("//MapLocation[campus[text()='{0}']]")
+	public MapLocation getPickupLocationForCampus(final String campus);
 }
