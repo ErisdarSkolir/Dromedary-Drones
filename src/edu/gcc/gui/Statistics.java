@@ -2,6 +2,7 @@ package edu.gcc.gui;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
 import edu.gcc.simulation.Simulation;
@@ -14,6 +15,7 @@ import javafx.scene.layout.GridPane;
 public class Statistics extends GridPane {
 	private Button backButton = new Button("Back");
 	private LineChart<Number, Number> line_chart;
+	private List<Long> times = new ArrayList<Long>();
 
 	public Statistics() {
 		setId(UiText.STATISTICS_ID);
@@ -26,7 +28,10 @@ public class Statistics extends GridPane {
 		// Export button
 		Button export_button = new Button("Export");
 		export_button.setOnAction(event -> {
-			String sb = "TEST CONTENT";
+			String sb = "Order Number, Delivery Time\n";
+			for (int i = 0; i < this.times.size(); i++) {
+				sb += (i+1) + ", " + this.times.get(i) + "\n";
+			}
 			JFileChooser chooser = new JFileChooser();
 			chooser.setCurrentDirectory(new File("/home/me/Desktop"));
 			int retrival = chooser.showSaveDialog(null);
@@ -46,6 +51,7 @@ public class Statistics extends GridPane {
 	}
 
 	public void setSimulation(Simulation sim) {
+		this.times = sim.getTimeStatistics();
 		this.line_chart = createChart(sim.getTimeStatistics());
 		add(this.line_chart, 0, 1);
 	}
