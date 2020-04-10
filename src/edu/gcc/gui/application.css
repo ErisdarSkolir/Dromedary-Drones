@@ -1,0 +1,28 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+#campus_menu {
+	-fx-alignment: center;
+	-fx-padding: 10;
+}
+
+#simulation_menu {
+	-fx-alignment: center;
+	-fx-padding: 10;
+}
+
+#form {
+	-fx-alignment: center;
+	-fx-padding: 10;
+}
+
+#modal {
+	-fx-padding: 100 50 100 50;
+}
+#labels {
+	-fx-padding: 5 0 5 10;
+}
+#label {
+	-fx-padding: 5 0 5 0;
+}
+#error {
+	-fx-text-fill: red;
+}
