@@ -20,7 +20,7 @@
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                </HBox.margin>
             </ComboBox>
-            <Button fx:id="newCampusButton" mnemonicParsing="false" onAction="#newCampusButtonClicked" onMouseClicked="#newCampusButtonClicked" text="New Campus">
+            <Button fx:id="newCampusButton" mnemonicParsing="false" onAction="#newCampusButtonClicked" text="New Campus">
                <HBox.margin>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                </HBox.margin>

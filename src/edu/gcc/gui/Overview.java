@@ -4,7 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import edu.gcc.maplocation.Campus;
-import javafx.event.ActionEvent;
+import edu.gcc.maplocation.MapLocationXml;
+import edu.gcc.maplocation.MapLocationXmlDao;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.ScatterChart;
@@ -12,28 +13,29 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 
 public class Overview implements Initializable{
-	@FXML
-	public Button newCampusButton;
+	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	
 	@FXML
-	public ComboBox<Campus> campusDropdown;
+	private Button newCampusButton;
 	
 	@FXML
-	public ScatterChart<Number, Number> campusMap;
+	private ComboBox<Campus> campusDropdown;
 	
 	@FXML
-	public void newCampusButtonClicked(ActionEvent event) {
+	private ScatterChart<Number, Number> campusMap;
+	
+	@FXML
+	protected void newCampusButtonClicked() {
 		System.out.println("New Campus button clicked");
 	}
 	
 	@FXML
-	public void campusDropdownClicked(ActionEvent event) { 
+	protected void campusDropdownClicked() { 
 		System.out.println("Dropdown clicked");
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.out.println("Initialized");
-		System.out.println(newCampusButton);
+		campusMap.getData();
 	}
 }
