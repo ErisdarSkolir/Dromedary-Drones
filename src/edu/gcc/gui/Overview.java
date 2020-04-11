@@ -103,73 +103,7 @@ public class Overview extends GridPane {
 		AddCampus addCampusModal = new AddCampus(
 				campusMap, campusXml, campusDropdown, locationXml, modal);
 		Scene add_campus_scene = addCampusModal.getScene();
-		/* Add Campus Modal */
-	//	GridPane add_campus = new GridPane();
-	//	add_campus.setId("modal");
-	//	Scene add_campus_scene = new Scene(add_campus);
 
-		// Form rows
-		//HBox campus_name_form = new HBox(10);
-	//	add_campus.add(campus_name_form, 0, 0);
-	//	campus_name_form.setId("form");
-	//	HBox campus_latitude_form = new HBox(10);
-	//	add_campus.add(campus_latitude_form, 0, 1);
-	//	campus_latitude_form.setId("form");
-	//	HBox campus_longitude_form = new HBox(10);
-	//	add_campus.add(campus_longitude_form, 0, 2);
-	//	campus_longitude_form.setId("form");
-	//	HBox campus_button_form = new HBox(10);
-	//	add_campus.add(campus_button_form, 0, 3);
-	//	campus_button_form.setId("form");
-
-		// Add text boxes
-	//	campus_name_form.getChildren().add(new Label("Pickup Name:"));
-		//TextField name = new TextField();
-		//campus_name_form.getChildren().add(name);
-
-		//campus_latitude_form.getChildren().add(new Label("Latitude:"));
-		//TextField campus_latitude = new TextField();
-		//campus_latitude_form.getChildren().add(campus_latitude);
-
-		//campus_longitude_form.getChildren().add(new Label("Longitude:"));
-		//TextField campus_longitude = new TextField();
-	//	campus_longitude_form.getChildren().add(campus_longitude);
-
-		// Button to get back from modal
-		//Button campus_cancel_button = new Button(CANCEL_TEXT);
-//		campus_cancel_button.setOnAction(event -> modal.close());
-//		campus_button_form.getChildren().add(campus_cancel_button);
-//
-//		// Submit Button
-//		//Button campus_submit_button = new Button(SUBMIT_TEXT); // $NON-NLS-1$
-//		campus_submit_button.setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent event) {
-//
-//				Campus campus = new Campus(name.getText());
-//
-//				// TODO: separate the pickuplocation name from the campus name
-//				// Create a PickupLocation from filled form
-//				MapLocation temp = new MapLocation(Integer.parseInt(campus_latitude.getText()),
-//						Integer.parseInt(campus_longitude.getText()), MapLocation.PICKUP, name.getText(),
-//						campus.getName());
-//				
-//				// Set map to newly created campus
-//				campusMap.setMapLocationData(campus);
-//
-//				campusXml.insert(campus);
-//				campusDropdown.setValue(campus);
-//				locationXml.insert(temp);
-//
-//				// Clear text boxes
-//				name.setText("");
-//				campus_latitude.setText("");
-//				campus_longitude.setText("");
-//				// Close
-//				modal.close();
-//			}
-//		});
-//		campus_button_form.getChildren().add(campus_submit_button);
 
 		// New campus
 		Button newCampusButton = new Button("New Campus");
