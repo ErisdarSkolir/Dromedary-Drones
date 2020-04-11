@@ -63,7 +63,8 @@ public class Overview extends GridPane {
 
 	public void createSimulationMenu() {
 		simulationMenu.setId("simulation_menu");
-
+		AddDeliveryLocation addDeliveryLocation = new AddDeliveryLocation(campusDropdown, locationXml, modal);
+		Scene add_delivery_scene = addDeliveryLocation.getScene();
 		/* Add Delivery Location Modal */
 //		GridPane add_delivery = new GridPane();
 //		add_delivery.setId("modal");
