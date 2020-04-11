@@ -35,7 +35,7 @@ public class Overview extends GridPane {
 	private MealXmlDao mealXml = MealXml.getInstance();
 
 	// Meal form data
-	private DecimalFormat probabiltyDecimalFormat = new DecimalFormat("0.##");
+	private DecimalFormat probabilityDecimalFormat = new DecimalFormat("0.##");
 	private ObservableList<Meal> mealList = mealXml.getAllObservable();
 
 	private HBox campusMenu = new HBox(10);
@@ -65,145 +65,148 @@ public class Overview extends GridPane {
 		simulationMenu.setId("simulation_menu");
 		AddDeliveryLocation addDeliveryLocation = new AddDeliveryLocation(campusDropdown, locationXml, modal);
 		Scene add_delivery_scene = addDeliveryLocation.getScene();
-
-
+		
+		RunSimulation runSimulationWindow = new RunSimulation(
+				mealXml, locationXml, campusDropdown, mealList, probabilityDecimalFormat, modal);
+		Scene run_simulation_scene = runSimulationWindow.getScene();
+		
 		/* Run Simulation Modal */
-		GridPane run_simulation = new GridPane();
-		run_simulation.setId("modal");
-		Scene run_simulation_scene = new Scene(run_simulation);
+	//	GridPane run_simulation = new GridPane();
+		//run_simulation.setId("modal");
+		//Scene run_simulation_scene = new Scene(run_simulation);
 
 		// Form rows
-		HBox simulation_button_form = new HBox(10);
-		run_simulation.add(simulation_button_form, 1, 4);
-		simulation_button_form.setId("form");
+		//HBox simulation_button_form = new HBox(10);
+		//run_simulation.add(simulation_button_form, 1, 4);
+//		simulation_button_form.setId("form");
 
 		// Form rows
-		HBox add_edit_form = new HBox(10);
-		run_simulation.add(add_edit_form, 2, 2);
-		add_edit_form.setId("form");
+		//HBox add_edit_form = new HBox(10);
+//		run_simulation.add(add_edit_form, 2, 2);
+//		add_edit_form.setId("form");
 
 		// For each combo meal
-		VBox combo_form = new VBox(10);
-		run_simulation.add(combo_form, 2, 1);
-		combo_form.setId("form");
+		//VBox combo_form = new VBox(10);
+//		run_simulation.add(combo_form, 2, 1);
+		//combo_form.setId("form");
 
 		// Labels
-		VBox combo_labels = new VBox(10);
-		run_simulation.add(combo_labels, 1, 1);
-		combo_labels.setId("labels");
+		//VBox combo_labels = new VBox(10);
+//		run_simulation.add(combo_labels, 1, 1);
+//		combo_labels.setId("labels");
 
-		Label title_label = new Label("Title:");
-		title_label.setId("label");
-		combo_labels.getChildren().add(title_label);
-		Label burgers_label = new Label("Burgers:");
-		burgers_label.setId("label");
-		combo_labels.getChildren().add(burgers_label);
-		Label fries_label = new Label("Fries:");
-		fries_label.setId("label");
-		combo_labels.getChildren().add(fries_label);
-		Label drinks_label = new Label("Drinks:");
-		drinks_label.setId("label");
-		combo_labels.getChildren().add(drinks_label);
-		Label percent_label = new Label("Percent:");
-		percent_label.setId("label");
-		combo_labels.getChildren().add(percent_label);
+//		Label title_label = new Label("Title:");
+//		title_label.setId("label");
+//		combo_labels.getChildren().add(title_label);
+//		Label burgers_label = new Label("Burgers:");
+//		burgers_label.setId("label");
+//		combo_labels.getChildren().add(burgers_label);
+//		Label fries_label = new Label("Fries:");
+//		fries_label.setId("label");
+//		combo_labels.getChildren().add(fries_label);
+//		Label drinks_label = new Label("Drinks:");
+//		drinks_label.setId("label");
+//		combo_labels.getChildren().add(drinks_label);
+//		Label percent_label = new Label("Percent:");
+//		percent_label.setId("label");
+//		combo_labels.getChildren().add(percent_label);
 
-		TextField title_combo = new TextField();
-		title_combo.setMaxWidth(100);
-		combo_form.getChildren().add(title_combo);
-		TextField burgers_combo = new TextField();
-		burgers_combo.setMaxWidth(30);
-		combo_form.getChildren().add(burgers_combo);
-		TextField fries_combo = new TextField();
-		fries_combo.setMaxWidth(30);
-		combo_form.getChildren().add(fries_combo);
-		TextField drinks_combo = new TextField();
-		drinks_combo.setMaxWidth(30);
-		combo_form.getChildren().add(drinks_combo);
-		TextField percentage_combo = new TextField();
-		percentage_combo.setMaxWidth(50);
-		combo_form.getChildren().add(percentage_combo);
+	//	TextField title_combo = new TextField();
+	//	title_combo.setMaxWidth(100);
+	//	combo_form.getChildren().add(title_combo);
+	//	TextField burgers_combo = new TextField();
+	//	burgers_combo.setMaxWidth(30);
+	//	combo_form.getChildren().add(burgers_combo);
+	//	TextField fries_combo = new TextField();
+	//	fries_combo.setMaxWidth(30);
+	//	combo_form.getChildren().add(fries_combo);
+	//	TextField drinks_combo = new TextField();
+	//	drinks_combo.setMaxWidth(30);
+	//	combo_form.getChildren().add(drinks_combo);
+	//	//TextField percentage_combo = new TextField();
+	//	percentage_combo.setMaxWidth(50);
+	//	combo_form.getChildren().add(percentage_combo);
 		
-		Label error_label = new Label("TOTAL GREATER THAN 100%");
-		error_label.setId("error");
-		error_label.setVisible(false);
-		run_simulation.add(error_label, 2, 3);
+		//Label error_label = new Label("TOTAL GREATER THAN 100%");
+		//error_label.setId("error");
+	//	error_label.setVisible(false);
+	//	run_simulation.add(error_label, 2, 3);
 
-		Meal addNewMeal = new Meal("ADD NEW", 0.0f);
-		mealList.add(addNewMeal);
+//		Meal addNewMeal = new Meal("ADD NEW", 0.0f);
+//		mealList.add(addNewMeal);
 
 		// Add edit combo button
-		Button add_edit_button = new Button("Add/Edit");
-		add_edit_button.setOnAction(event -> {
-			// Check to make sure probabilty of meals is not over 100
-			double probability = 0;
-			for(Meal temp : this.mealList) {
-				probability += temp.getProbability() * 100.0f;
-			}
-			probability += Double.parseDouble(percentage_combo.getText().replace("%", ""));
-			if (probability > 100.0f) {
-				error_label.setVisible(true);
-			} else {
-				error_label.setVisible(false);
-				Meal meal = new Meal(title_combo.getText(),
-						Float.parseFloat(percentage_combo.getText().replace("%", "")) / 100.0f); //$NON-NLS-2$
-				mealXml.insert(meal);
-				mealList.remove(addNewMeal); // Bit of a hack to keep the ADD NEW element at the bottom
-				mealList.add(addNewMeal);
-			}
-		});
-		add_edit_form.getChildren().add(add_edit_button);
+//		Button add_edit_button = new Button("Add/Edit");
+//		add_edit_button.setOnAction(event -> {
+//			// Check to make sure probabilty of meals is not over 100
+//			double probability = 0;
+//			for(Meal temp : this.mealList) {
+//				probability += temp.getProbability() * 100.0f;
+//			}
+//			probability += Double.parseDouble(percentage_combo.getText().replace("%", ""));
+//			if (probability > 100.0f) {
+//				error_label.setVisible(true);
+//			} else {
+//				error_label.setVisible(false);
+//				Meal meal = new Meal(title_combo.getText(),
+//						Float.parseFloat(percentage_combo.getText().replace("%", "")) / 100.0f); //$NON-NLS-2$
+//				mealXml.insert(meal);
+//				mealList.remove(addNewMeal); // Bit of a hack to keep the ADD NEW element at the bottom
+//				mealList.add(addNewMeal);
+//			}
+//		});
+	//	add_edit_form.getChildren().add(add_edit_button);
 
 		// Delete combo button
-		Button delete_button = new Button("Delete");
-		add_edit_form.getChildren().add(delete_button);
+		//Button delete_button = new Button("Delete");
+		//add_edit_form.getChildren().add(delete_button);
 
 		// Button to get back from modal
-		Button run_cancel_button = new Button(CANCEL_TEXT); // $NON-NLS-1$
-		run_cancel_button.setOnAction(event -> modal.close());
-		simulation_button_form.getChildren().add(run_cancel_button);
+	//	Button run_cancel_button = new Button(CANCEL_TEXT); // $NON-NLS-1$
+	//	run_cancel_button.setOnAction(event -> modal.close());
+	//	simulation_button_form.getChildren().add(run_cancel_button);
 
 		// List view
-		ListView<Meal> combo_list = new ListView<>();
-		combo_list.setItems(mealList);
-		combo_list.setPrefWidth(100);
-		combo_list.setPrefHeight(70);
-		combo_list.setOnMouseClicked(event -> {
-			if (!combo_list.getSelectionModel().getSelectedItem().equals(addNewMeal)) {
-				error_label.setVisible(false);
-				Meal currentMeal = combo_list.getSelectionModel().getSelectedItem();
-				title_combo.setText(currentMeal.getName());
-				// TODO: Get Burger, Fry, and Drink count
-				percentage_combo.setText(
-						String.format("%s%%", probabiltyDecimalFormat.format(currentMeal.getProbability() * 100.0f)));
-				delete_button.setDisable(false);
-			} else {
-				error_label.setVisible(false);
-				title_combo.setText("");
-				burgers_combo.setText("");
-				fries_combo.setText("");
-				drinks_combo.setText("");
-				// Set leftover percentage
-				double probability = 0;
-				for(Meal temp : this.mealList) {
-					probability += temp.getProbability();
-				}
-				percentage_combo.setText(String.format("%s%%", Double.toString(100.0f - (probability * 100.0f))));
-				delete_button.setDisable(true);
-			}
-		});
-		run_simulation.add(combo_list, 0, 1);
+//		ListView<Meal> combo_list = new ListView<>();
+//		combo_list.setItems(mealList);
+//		combo_list.setPrefWidth(100);
+//		combo_list.setPrefHeight(70);
+//		combo_list.setOnMouseClicked(event -> {
+//			if (!combo_list.getSelectionModel().getSelectedItem().equals(addNewMeal)) {
+//				error_label.setVisible(false);
+//				Meal currentMeal = combo_list.getSelectionModel().getSelectedItem();
+//				title_combo.setText(currentMeal.getName());
+//				// TODO: Get Burger, Fry, and Drink count
+//				percentage_combo.setText(
+//						String.format("%s%%", probabiltyDecimalFormat.format(currentMeal.getProbability() * 100.0f)));
+//				delete_button.setDisable(false);
+//			} else {
+//				error_label.setVisible(false);
+//				title_combo.setText("");
+//				burgers_combo.setText("");
+//				fries_combo.setText("");
+//				drinks_combo.setText("");
+//				// Set leftover percentage
+//				double probability = 0;
+//				for(Meal temp : this.mealList) {
+//					probability += temp.getProbability();
+//				}
+//				percentage_combo.setText(String.format("%s%%", Double.toString(100.0f - (probability * 100.0f))));
+//				delete_button.setDisable(true);
+//			}
+//		});
+	//	run_simulation.add(combo_list, 0, 1);
 
-		delete_button.setOnAction(event -> mealXml.delete(combo_list.getSelectionModel().getSelectedItem()));
+		//delete_button.setOnAction(event -> mealXml.delete(combo_list.getSelectionModel().getSelectedItem()));
 
 		// Submit Button
-		Button run_submit_button = new Button(SUBMIT_TEXT);
-		run_submit_button.setOnAction(event -> {
-			modal.close();
-			Gui.getInstance().runSimulation(mealXml.getAll(), locationXml.getPickupLocationForCampus(campusDropdown.getValue().getName()),
-					locationXml.getDropoffReactiveForCampus(campusDropdown.getValue().getName()), new Fifo());
-		});
-		simulation_button_form.getChildren().add(run_submit_button);
+		//Button run_submit_button = new Button(SUBMIT_TEXT);
+//		run_submit_button.setOnAction(event -> {
+//			modal.close();
+//			Gui.getInstance().runSimulation(mealXml.getAll(), locationXml.getPickupLocationForCampus(campusDropdown.getValue().getName()),
+//					locationXml.getDropoffReactiveForCampus(campusDropdown.getValue().getName()), new Fifo());
+//		});
+	//	simulation_button_form.getChildren().add(run_submit_button);
 
 		/* End Run Simulation Modal */
 
