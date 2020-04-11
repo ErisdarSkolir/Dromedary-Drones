@@ -65,66 +65,7 @@ public class Overview extends GridPane {
 		simulationMenu.setId("simulation_menu");
 		AddDeliveryLocation addDeliveryLocation = new AddDeliveryLocation(campusDropdown, locationXml, modal);
 		Scene add_delivery_scene = addDeliveryLocation.getScene();
-		/* Add Delivery Location Modal */
-//		GridPane add_delivery = new GridPane();
-//		add_delivery.setId("modal");
-//		Scene add_delivery_scene = new Scene(add_delivery);
-//
-//		// Form rows
-//		HBox delivery_name_form = new HBox(10);
-//		add_delivery.add(delivery_name_form, 0, 0);
-//		delivery_name_form.setId("form");
-//		HBox delivery_latitude_form = new HBox(10);
-//		add_delivery.add(delivery_latitude_form, 0, 1);
-//		delivery_latitude_form.setId("form");
-//		HBox delivery_longitude_form = new HBox(10);
-//		add_delivery.add(delivery_longitude_form, 0, 2);
-//		delivery_longitude_form.setId("form");
-//		HBox delivery_button_form = new HBox(10);
-//		add_delivery.add(delivery_button_form, 0, 3);
-//		delivery_button_form.setId("form");
-//
-//		// Add text boxes
-//		delivery_name_form.getChildren().add(new Label("Dropoff Name:"));
-//		TextField delivery_name = new TextField();
-//		delivery_name_form.getChildren().add(delivery_name);
-//
-//		delivery_latitude_form.getChildren().add(new Label("Latitude:"));
-//		TextField delivery_latitude = new TextField();
-//		delivery_latitude_form.getChildren().add(delivery_latitude);
-//
-//		delivery_longitude_form.getChildren().add(new Label("Longitude:"));
-//		TextField delivery_longitude = new TextField();
-//		delivery_longitude_form.getChildren().add(delivery_longitude);
-//
-//		// Button to get back from modal
-//		Button delivery_cancel_button = new Button(CANCEL_TEXT); // $NON-NLS-1$
-//		delivery_cancel_button.setOnAction(event -> modal.close());
-//		delivery_button_form.getChildren().add(delivery_cancel_button);
-//
-//		// Submit Button
-//		Button delivery_submit_button = new Button(SUBMIT_TEXT); // $NON-NLS-1$
-//		delivery_submit_button.setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent event) {
-//
-//				// Add location from fields
-//				MapLocation temp = new MapLocation(Integer.parseInt(delivery_latitude.getText()),
-//						Integer.parseInt(delivery_longitude.getText()), MapLocation.DROPOFF, delivery_name.getText(),
-//						campusDropdown.getValue().getName());
-//
-//				locationXml.insert(temp);
-//
-//				// Clear text boxes
-//				delivery_name.setText("");
-//				delivery_latitude.setText("");
-//				delivery_longitude.setText("");
-//				// Close
-//				modal.close();
-//			}
-//		});
-//		delivery_button_form.getChildren().add(delivery_submit_button);
-		/* End Add Delivery Location Modal */
+
 
 		/* Run Simulation Modal */
 		GridPane run_simulation = new GridPane();
