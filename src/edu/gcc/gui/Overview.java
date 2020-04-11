@@ -63,53 +63,46 @@ public class Overview extends GridPane {
 
 	public void createSimulationMenu() {
 		simulationMenu.setId("simulation_menu");
-		
-		AddDeliveryLocation addDeliveryLocation = new AddDeliveryLocation(campusDropdown, locationXml, modal);
-		Scene addDL = addDeliveryLocation.getScene();
-		
-		
+
 		/* Add Delivery Location Modal */
-	//	GridPane add_delivery = new GridPane();
-	//	add_delivery.setId("modal");
-	//	Scene add_delivery_scene = new Scene(add_delivery);
-
-		// Form rows
-	//	HBox delivery_name_form = new HBox(10);
-	//	add_delivery.add(delivery_name_form, 0, 0);
-		//delivery_name_form.setId("form");
-		
-		//HBox delivery_latitude_form = new HBox(10);
-		//add_delivery.add(delivery_latitude_form, 0, 1);
-		//delivery_latitude_form.setId("form");
-		
-		//HBox delivery_longitude_form = new HBox(10);
-		//add_delivery.add(delivery_longitude_form, 0, 2);
-		//delivery_longitude_form.setId("form");
-		
-	//	HBox delivery_button_form = new HBox(10);
-		//add_delivery.add(delivery_button_form, 0, 3);
-		//delivery_button_form.setId("form");
-
-		// Add text boxes
-		//delivery_name_form.getChildren().add(new Label("Dropoff Name:"));
-		//TextField delivery_name = new TextField();
-		//delivery_name_form.getChildren().add(delivery_name);
-
-		//delivery_latitude_form.getChildren().add(new Label("Latitude:"));
-		//TextField delivery_latitude = new TextField();
-		//delivery_latitude_form.getChildren().add(delivery_latitude);
-
-	//	delivery_longitude_form.getChildren().add(new Label("Longitude:"));
-	//	TextField delivery_longitude = new TextField();
-		//delivery_longitude_form.getChildren().add(delivery_longitude);
-
-		// Button to get back from modal
-		//Button delivery_cancel_button = new Button(CANCEL_TEXT); // $NON-NLS-1$
-		//delivery_cancel_button.setOnAction(event -> modal.close());
-	//	delivery_button_form.getChildren().add(delivery_cancel_button);
-
-		// Submit Button
-		//Button delivery_submit_button = new Button(SUBMIT_TEXT); // $NON-NLS-1$
+//		GridPane add_delivery = new GridPane();
+//		add_delivery.setId("modal");
+//		Scene add_delivery_scene = new Scene(add_delivery);
+//
+//		// Form rows
+//		HBox delivery_name_form = new HBox(10);
+//		add_delivery.add(delivery_name_form, 0, 0);
+//		delivery_name_form.setId("form");
+//		HBox delivery_latitude_form = new HBox(10);
+//		add_delivery.add(delivery_latitude_form, 0, 1);
+//		delivery_latitude_form.setId("form");
+//		HBox delivery_longitude_form = new HBox(10);
+//		add_delivery.add(delivery_longitude_form, 0, 2);
+//		delivery_longitude_form.setId("form");
+//		HBox delivery_button_form = new HBox(10);
+//		add_delivery.add(delivery_button_form, 0, 3);
+//		delivery_button_form.setId("form");
+//
+//		// Add text boxes
+//		delivery_name_form.getChildren().add(new Label("Dropoff Name:"));
+//		TextField delivery_name = new TextField();
+//		delivery_name_form.getChildren().add(delivery_name);
+//
+//		delivery_latitude_form.getChildren().add(new Label("Latitude:"));
+//		TextField delivery_latitude = new TextField();
+//		delivery_latitude_form.getChildren().add(delivery_latitude);
+//
+//		delivery_longitude_form.getChildren().add(new Label("Longitude:"));
+//		TextField delivery_longitude = new TextField();
+//		delivery_longitude_form.getChildren().add(delivery_longitude);
+//
+//		// Button to get back from modal
+//		Button delivery_cancel_button = new Button(CANCEL_TEXT); // $NON-NLS-1$
+//		delivery_cancel_button.setOnAction(event -> modal.close());
+//		delivery_button_form.getChildren().add(delivery_cancel_button);
+//
+//		// Submit Button
+//		Button delivery_submit_button = new Button(SUBMIT_TEXT); // $NON-NLS-1$
 //		delivery_submit_button.setOnAction(new EventHandler<ActionEvent>() {
 //			@Override
 //			public void handle(ActionEvent event) {
@@ -129,7 +122,7 @@ public class Overview extends GridPane {
 //				modal.close();
 //			}
 //		});
-		//delivery_button_form.getChildren().add(delivery_submit_button);
+//		delivery_button_form.getChildren().add(delivery_submit_button);
 		/* End Add Delivery Location Modal */
 
 		/* Run Simulation Modal */
@@ -276,7 +269,7 @@ public class Overview extends GridPane {
 		Button newDeliveryButon = new Button("New Delivery Location");
 		newDeliveryButon.setOnAction(event -> {
 			// Open modal
-			createAndShowModal("Add Delivery Location", addDL);
+			createAndShowModal("Add Delivery Location", add_delivery_scene);
 		});
 
 		// Run Simulation Button
@@ -287,7 +280,7 @@ public class Overview extends GridPane {
 
 		simulationMenu.getChildren().addAll(newDeliveryButon, runButton);
 
-		addDL.getStylesheets().add(getClass().getResource(CSS).toExternalForm());
+		add_delivery_scene.getStylesheets().add(getClass().getResource(CSS).toExternalForm());
 		run_simulation_scene.getStylesheets().add(getClass().getResource(CSS).toExternalForm());
 	}
 
