@@ -45,7 +45,7 @@ public class Overview implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		/*// Pickup Points
+		// Pickup Points
 		Series<Number, Number> pickupLocationSeries = new Series<>();
 		pickupLocationSeries.setName("Shop Location");
 		mapPickupLocations = pickupLocationSeries.getData();
@@ -58,7 +58,7 @@ public class Overview implements Initializable{
 		campusMap.getData().add(pickupLocationSeries);
 		campusMap.getData().add(dropoffLocationSeries);
 		
-		setMapLocationData(new Campus("Test"));*/
+		setMapLocationData(new Campus("Test"));
 	}
 	
 	public void setMapLocationData(final Campus campus) {

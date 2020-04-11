@@ -30,7 +30,7 @@
       </HBox>
       <ScatterChart fx:id="campusMap" title="Campus Map">
         <xAxis>
-          <CategoryAxis side="BOTTOM" />
+          <NumberAxis side="BOTTOM" />
         </xAxis>
         <yAxis>
           <NumberAxis side="LEFT" />
