@@ -1,7 +1,5 @@
 package edu.gcc.gui;
 
-import static edu.gcc.gui.UiText.CSS;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,8 @@ import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.simulation.Simulation;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -38,9 +38,6 @@ public class Gui extends Application {
 
 	private Map<String, Scene> scenes = new HashMap<>();
 
-	private Overview overview = new Overview();
-	private Statistics statistics = new Statistics();
-
 	public void navigateTo(final String id) {
 		if (!scenes.containsKey(id))
 			throw new IllegalArgumentException(String.format("No scene registered as %s", id));
@@ -52,21 +49,25 @@ public class Gui extends Application {
 		Thread thread = new Thread(() -> {
 			Simulation sim = new Simulation(meals, shopLocation, dropoffLocations, packingAlgorithm, 1);
 			sim.runSimulation();
-			statistics.setSimulation(sim);
+			//statistics.setSimulation(sim);
 			navigateTo(UiText.STATISTICS_ID);
 		});
 		thread.start();
 	}
 
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws Exception{
 		this.primaryState = primaryStage;
 
-		scenes.put(UiText.OVERVIEW_ID, new Scene(overview, 500, 500));
-		scenes.put(UiText.STATISTICS_ID, new Scene(statistics, 500, 500));
+		Parent root = FXMLLoader.load(getClass().getResource("overview_fxml.fxml"));
+		
+		scenes.put("overview", new Scene(root, 500, 500));
+		
+		//scenes.put(UiText.OVERVIEW_ID, new Scene(overview, 500, 500));
+		//scenes.put(UiText.STATISTICS_ID, new Scene(statistics, 500, 500));
 
-		scenes.get(UiText.OVERVIEW_ID).getStylesheets().add(getClass().getResource(CSS).toExternalForm());
-		scenes.get(UiText.STATISTICS_ID).getStylesheets().add(getClass().getResource(CSS).toExternalForm());
+		//scenes.get(UiText.OVERVIEW_ID).getStylesheets().add(getClass().getResource(CSS).toExternalForm());
+		//scenes.get(UiText.STATISTICS_ID).getStylesheets().add(getClass().getResource(CSS).toExternalForm());
 
 		primaryStage.setScene(scenes.get(UiText.OVERVIEW_ID));
 		primaryStage.show();
