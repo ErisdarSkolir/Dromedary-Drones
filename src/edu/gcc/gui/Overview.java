@@ -45,6 +45,11 @@ public class Overview implements Initializable {
 	}
 	
 	@FXML
+	protected void addDeliveryLocationClicked() {
+		System.out.println("Add delivery location clicked");
+	}
+	
+	@FXML
 	protected void runSimulation() {
 		System.out.println("run button clicked");
 		

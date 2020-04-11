@@ -40,7 +40,7 @@
       </ScatterChart>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <Button mnemonicParsing="false" text="New Delivery Location">
+            <Button mnemonicParsing="false" onAction="#addDeliveryLocationClicked" text="New Delivery Location">
                <HBox.margin>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                </HBox.margin>

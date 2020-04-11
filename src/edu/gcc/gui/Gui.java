@@ -13,6 +13,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Gui extends Application {
@@ -59,9 +61,17 @@ public class Gui extends Application {
 	public void start(Stage primaryStage) throws Exception{
 		this.primaryState = primaryStage;
 
-		Parent root = FXMLLoader.load(getClass().getResource("overview_fxml.fxml"));
+		FXMLLoader loader = new FXMLLoader();
 		
-		scenes.put("overview", new Scene(root, 500, 500));
+		//Parent root = loader.load(getClass().getResource("overview_fxml.fxml"));
+		Pane stackPane = new Pane();
+		//stackPane.getChildren().add(root);
+		
+		Parent addLocation = loader.load(getClass().getResource("add_dropoff_modal.fxml"));
+		stackPane.getChildren().add(addLocation);
+		addLocation.setVisible(true);
+		
+		scenes.put("overview", new Scene(stackPane, 500, 500));
 		
 		//scenes.put(UiText.OVERVIEW_ID, new Scene(overview, 500, 500));
 		//scenes.put(UiText.STATISTICS_ID, new Scene(statistics, 500, 500));
