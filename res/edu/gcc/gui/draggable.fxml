@@ -3,8 +3,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox fx:id="container" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.Draggable">
+<VBox fx:id="container" style="-fx-background-color: -fx-base; -fx-border-color: #b2bec3;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.Modal">
    <children>
       <MenuBar onMouseDragged="#onMenuDrag" onMousePressed="#onMenuPressed" prefHeight="20.0" />
    </children>

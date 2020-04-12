@@ -16,6 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 public class Gui extends Application {
 	private static Gui instance;
@@ -63,15 +65,13 @@ public class Gui extends Application {
 
 		FXMLLoader loader = new FXMLLoader();
 		
-		//Parent root = loader.load(getClass().getResource("overview_fxml.fxml"));
-		Pane stackPane = new Pane();
-		//stackPane.getChildren().add(root);
+		Parent overview = loader.load(getClass().getResource("overview.fxml"));
+		overview.setVisible(true);
 		
-		Parent addLocation = loader.load(getClass().getResource("add_dropoff_modal.fxml"));
-		stackPane.getChildren().add(addLocation);
-		addLocation.setVisible(true);
+		scenes.put("overview", new Scene(overview, 500, 500));
 		
-		scenes.put("overview", new Scene(stackPane, 500, 500));
+		JMetro jmetro = new JMetro(Style.LIGHT);
+		jmetro.setScene(scenes.get("overview"));
 		
 		//scenes.put(UiText.OVERVIEW_ID, new Scene(overview, 500, 500));
 		//scenes.put(UiText.STATISTICS_ID, new Scene(statistics, 500, 500));

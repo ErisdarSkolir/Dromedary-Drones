@@ -37,5 +37,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/byte-buddy-1.10.8/byte-buddy-1.10.8-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/jmetro-8.6.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

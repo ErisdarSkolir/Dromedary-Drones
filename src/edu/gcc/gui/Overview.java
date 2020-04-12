@@ -9,7 +9,6 @@ import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
-import edu.gcc.simulation.Simulation;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -29,6 +28,12 @@ public class Overview implements Initializable {
 	private ComboBox<Campus> campusDropdown;
 
 	@FXML
+	private DeliveryModal deliveryModalController;
+	
+	@FXML
+	private CampusModal campusModalController;
+	
+	@FXML
 	private ScatterChart<Number, Number> campusMap;
 	// Map data
 	private ObservableList<XYChart.Data<Number, Number>> mapDropoffLocations;
@@ -36,7 +41,7 @@ public class Overview implements Initializable {
 
 	@FXML
 	protected void newCampusButtonClicked() {
-		System.out.println("New Campus button clicked");
+		campusModalController.show();
 	}
 
 	@FXML
@@ -46,7 +51,7 @@ public class Overview implements Initializable {
 	
 	@FXML
 	protected void addDeliveryLocationClicked() {
-		System.out.println("Add delivery location clicked");
+		deliveryModalController.show(campusDropdown.getValue());
 	}
 	
 	@FXML
