@@ -11,6 +11,8 @@
 
 <Pane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.Overview">
    <children>
+      <fx:include fx:id="campusModal" source="add_campus_modal.fxml" />
+      <fx:include fx:id="deliveryModal" source="add_dropoff_modal.fxml" />
       <VBox alignment="CENTER">
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
@@ -60,7 +62,5 @@
             </HBox>
          </children>
       </VBox>
-      <fx:include fx:id="deliveryModal" source="add_dropoff_modal.fxml" />
-      <fx:include fx:id="campusModal" source="add_campus_modal.fxml" />
    </children>
 </Pane>
