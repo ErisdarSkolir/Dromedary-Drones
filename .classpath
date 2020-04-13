@@ -37,7 +37,23 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/byte-buddy-1.10.8/byte-buddy-1.10.8-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jmetro-8.6.9.jar"/>
-	<classpathentry kind="lib" path="lib/GMapsFX-2.12.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="lib/logback-classic-1.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/logback-core-1.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/mapjfx-1.32.0/mapjfx-1.32.0.jar" sourcepath="lib/mapjfx-1.32.0/mapjfx-1.32.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/mapjfx-1.32.0/mapjfx-1.32.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/controlsfx-8.40.16/controlsfx-8.40.16.jar" sourcepath="lib/controlsfx-8.40.16/controlsfx-8.40.16-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/controlsfx-8.40.16/controlsfx-8.40.16-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jmetro-8.6.9/jmetro-8.6.9.jar" sourcepath="lib/jmetro-8.6.9/jmetro-8.6.9-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/jmetro-8.6.9/jmetro-8.6.9-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

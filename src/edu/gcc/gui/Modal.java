@@ -16,6 +16,9 @@ public class Modal implements Initializable {
 	private VBox container;
 
 	public void show() {
+		container.setLayoutX((container.getScene().getWidth() / 2) - (container.getWidth() / 2));
+		container.setLayoutY((container.getScene().getHeight() / 2) - (container.getHeight() / 2));
+		
 		container.setVisible(true);
 	}
 

@@ -68,16 +68,11 @@ public class Gui extends Application {
 		Parent overview = loader.load(getClass().getResource("overview.fxml"));
 		overview.setVisible(true);
 		
-		scenes.put("overview", new Scene(overview, 500, 500));
+		Scene scene = new Scene(overview);
+		scenes.put("overview", scene);
 		
 		JMetro jmetro = new JMetro(Style.LIGHT);
 		jmetro.setScene(scenes.get("overview"));
-		
-		//scenes.put(UiText.OVERVIEW_ID, new Scene(overview, 500, 500));
-		//scenes.put(UiText.STATISTICS_ID, new Scene(statistics, 500, 500));
-
-		//scenes.get(UiText.OVERVIEW_ID).getStylesheets().add(getClass().getResource(CSS).toExternalForm());
-		//scenes.get(UiText.STATISTICS_ID).getStylesheets().add(getClass().getResource(CSS).toExternalForm());
 
 		primaryStage.setScene(scenes.get(UiText.OVERVIEW_ID));
 		primaryStage.show();
