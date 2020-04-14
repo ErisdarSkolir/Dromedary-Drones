@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToolBar;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -25,6 +27,9 @@ public class WindowBar implements Initializable {
 	private boolean draggable = true;
 
 	@FXML
+	private ToolBar toolbar;
+
+	@FXML
 	private Region spacer;
 
 	@FXML
@@ -32,12 +37,15 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	protected void toggleDarkMode(ActionEvent event) {
-		if(((CheckMenuItem) event.getSource()).isSelected())
+		if (((CheckMenuItem) event.getSource()).isSelected()) {
 			Gui.getInstance().darkMode();
-		else
+			toolbar.setBlendMode(BlendMode.ADD);
+		} else {
 			Gui.getInstance().lightMode();
+			toolbar.setBlendMode(BlendMode.MULTIPLY);
+		}
 	}
-	
+
 	@FXML
 	protected void onMinimizeButtonPressed() {
 		Gui.getInstance().minimize();
@@ -93,7 +101,7 @@ public class WindowBar implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		title.textProperty().bind(Gui.getInstance().getTitleProperty());
-		
+
 		spacer.sceneProperty().addListener((obs, old, newValue) -> {
 			if (newValue != null)
 				window = newValue.getWindow();
