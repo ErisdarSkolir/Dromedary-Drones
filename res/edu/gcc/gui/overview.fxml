@@ -11,56 +11,54 @@
 
 <AnchorPane styleClass="background" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.Overview">
    <children>
-      <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox alignment="CENTER">
+            <fx:include source="menubar.fxml" />
+            <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
-                  <ComboBox fx:id="campusDropdown" onAction="#campusDropdownClicked" prefWidth="150.0" promptText="Select Campus">
-                     <HBox.margin>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                     </HBox.margin>
-                  </ComboBox>
-                  <Button fx:id="newCampusButton" mnemonicParsing="false" onAction="#newCampusButtonClicked" text="New Campus">
-                     <HBox.margin>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                     </HBox.margin>
-                     <graphic>
-                        <Mdl2Icon iconCode="E710" />
-                     </graphic>
-                  </Button>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <ComboBox fx:id="campusDropdown" onAction="#campusDropdownClicked" prefWidth="150.0" promptText="Select Campus">
+                           <HBox.margin>
+                              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                           </HBox.margin>
+                        </ComboBox>
+                        <Button fx:id="newCampusButton" mnemonicParsing="false" onAction="#newCampusButtonClicked" text="New Campus">
+                           <HBox.margin>
+                              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                           </HBox.margin>
+                           <graphic>
+                              <Mdl2Icon iconCode="E710" />
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#addDeliveryLocationClicked" text="New Delivery Location">
+                           <HBox.margin>
+                              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                           </HBox.margin>
+                           <graphic>
+                              <Mdl2Icon iconCode="E710" />
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#runSimulation" text="Run Simulation">
+                           <HBox.margin>
+                              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                           </HBox.margin>
+                           <graphic>
+                              <Mdl2Icon iconCode="E768" />
+                           </graphic>
+                        </Button>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <MapView fx:id="mapView" minHeight="400.0" minWidth="600.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </MapView>
                </children>
-               <VBox.margin>
-                  <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
-               </VBox.margin>
-            </HBox>
-            <MapView fx:id="mapView" minHeight="400.0" minWidth="600.0" VBox.vgrow="ALWAYS">
-               <VBox.margin>
-                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-               </VBox.margin>
-            </MapView>
-            <HBox alignment="CENTER">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#addDeliveryLocationClicked" text="New Delivery Location">
-                     <HBox.margin>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                     </HBox.margin>
-                     <graphic>
-                        <Mdl2Icon iconCode="E710" />
-                     </graphic>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#runSimulation" text="Run Simulation">
-                     <HBox.margin>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                     </HBox.margin>
-                     <graphic>
-                        <Mdl2Icon iconCode="E768" />
-                     </graphic>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
-               </VBox.margin>
-            </HBox>
+            </VBox>
          </children>
       </VBox>
       <fx:include fx:id="campusModal" source="add_campus_modal.fxml" />

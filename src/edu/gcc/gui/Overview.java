@@ -51,7 +51,7 @@ public class Overview implements Initializable {
 
 	@FXML
 	protected void campusDropdownClicked() {
-
+		Gui.getInstance().setTitle(campusDropdown.getValue().getName());
 	}
 
 	@FXML
