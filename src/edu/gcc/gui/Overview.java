@@ -20,7 +20,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import jfxtras.styles.jmetro.MDL2IconFont;
 
 public class Overview implements Initializable {
 	private static final Logger logger = LoggerFactory.getLogger(Overview.class);

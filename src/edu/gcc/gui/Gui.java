@@ -91,7 +91,7 @@ public class Gui extends Application {
 	}
 
 	public void maximize() {
-		//primaryStage.setMaximized(true);
+		primaryStage.setMaximized(true);
 		
 		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
 		
@@ -102,7 +102,7 @@ public class Gui extends Application {
 	}
 	
 	public void restoreDown() {
-		//primaryStage.setMaximized(false);
+		primaryStage.setMaximized(false);
 	}
 	
 	public void darkMode() {
