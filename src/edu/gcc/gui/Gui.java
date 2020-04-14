@@ -48,7 +48,7 @@ public class Gui extends Application {
 	private Map<String, Scene> scenes = new HashMap<>();
 
 	private JMetro jmetro = new JMetro(Style.LIGHT);
-	
+
 	private StringProperty titleProperty = new SimpleStringProperty();
 
 	public void navigateTo(final String id) {
@@ -72,7 +72,7 @@ public class Gui extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
-		
+
 		setTitle("");
 
 		FXMLLoader loader = new FXMLLoader();
@@ -82,7 +82,7 @@ public class Gui extends Application {
 
 		Scene scene = new Scene(overview);
 		scenes.put("overview", scene);
-		
+
 		jmetro.setScene(scenes.get("overview"));
 
 		primaryStage.initStyle(StageStyle.UNDECORATED);
@@ -92,33 +92,34 @@ public class Gui extends Application {
 
 	public void maximize() {
 		primaryStage.setMaximized(true);
-		
-		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-		
+
+		Rectangle2D bounds = Screen.getScreensForRectangle(primaryStage.getX(), primaryStage.getY(),
+				primaryStage.getWidth(), primaryStage.getHeight()).get(0).getVisualBounds();
+
 		primaryStage.setX(bounds.getMinX());
 		primaryStage.setY(bounds.getMinY());
 		primaryStage.setWidth(bounds.getWidth());
 		primaryStage.setHeight(bounds.getHeight());
 	}
-	
+
 	public void restoreDown() {
 		primaryStage.setMaximized(false);
 	}
-	
+
 	public void darkMode() {
 		jmetro.setStyle(Style.DARK);
 		jmetro.reApplyTheme();
 	}
-	
+
 	public void lightMode() {
 		jmetro.setStyle(Style.LIGHT);
 		jmetro.reApplyTheme();
 	}
-	
+
 	public void minimize() {
 		primaryStage.setIconified(true);
 	}
-	
+
 	public StringProperty getTitleProperty() {
 		return this.titleProperty;
 	}
