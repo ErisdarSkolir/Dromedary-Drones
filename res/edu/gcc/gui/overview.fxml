@@ -65,7 +65,7 @@
                         <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
                      </VBox.margin>
                   </HBox>
-                  <MapView fx:id="mapView" minHeight="400.0" minWidth="600.0" VBox.vgrow="ALWAYS" animationDuration="1500">
+                  <MapView fx:id="mapView" animationDuration="1500" minHeight="400.0" minWidth="600.0" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -76,5 +76,6 @@
       </VBox>
       <fx:include fx:id="campusModal" source="add_campus_modal.fxml" />
       <fx:include fx:id="deliveryModal" source="add_dropoff_modal.fxml" />
+      <fx:include fx:id="mealConfigurationModal" source="run_simulation_modal.fxml" />
    </children>
 </AnchorPane>

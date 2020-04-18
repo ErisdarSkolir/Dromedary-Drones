@@ -37,6 +37,9 @@ public class Overview implements Initializable {
 
 	@FXML
 	private CampusModal campusModalController;
+	
+	@FXML
+	private MealConfigurationModal mealConfigurationModalController;
 
 	@FXML
 	private MapView mapView;
@@ -66,7 +69,7 @@ public class Overview implements Initializable {
 
 	@FXML
 	protected void runSimulation() {
-		System.out.println("run button clicked");
+		/*System.out.println("run button clicked");
 
 		new Thread(() -> {
 			System.out.println("Simulation run");
@@ -76,7 +79,9 @@ public class Overview implements Initializable {
 			// sim.runSimulation();
 			// statistics.setSimulation(sim);
 			// Gui.getInstance().navigateTo(UiText.STATISTICS_ID);
-		}).start();
+		}).start();*/
+		
+		mealConfigurationModalController.show();
 	}
 
 	@Override
