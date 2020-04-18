@@ -34,6 +34,9 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	private Label title;
+	
+	@FXML
+	private Mdl2Icon restoreIcon;
 
 	@FXML
 	protected void toggleDarkMode(ActionEvent event) {
@@ -54,9 +57,11 @@ public class WindowBar implements Initializable {
 	@FXML
 	protected void onRestoreButtonPressed() {
 		if (draggable) {
+			restoreIcon.setIconCode("E923");
 			Gui.getInstance().maximize();
 			draggable = false;
 		} else {
+			restoreIcon.setIconCode("E922");
 			Gui.getInstance().restoreDown();
 			draggable = true;
 		}
@@ -71,9 +76,11 @@ public class WindowBar implements Initializable {
 	protected void onDoubleClick(MouseEvent event) {
 		if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
 			if (draggable) {
+				restoreIcon.setIconCode("E923");
 				Gui.getInstance().maximize();
 				draggable = false;
 			} else {
+				restoreIcon.setIconCode("E922");
 				Gui.getInstance().restoreDown();
 				draggable = true;
 			}
@@ -89,6 +96,7 @@ public class WindowBar implements Initializable {
 	@FXML
 	protected void onMouseDragged(MouseEvent event) {
 		if (!draggable) {
+			restoreIcon.setIconCode("E922");
 			Gui.getInstance().restoreDown();
 			draggable = true;
 		}

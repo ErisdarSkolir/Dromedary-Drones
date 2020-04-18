@@ -12,6 +12,7 @@ import com.sothawo.mapjfx.MapView;
 import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.CampusXml;
 import edu.gcc.maplocation.CampusXmlDao;
+import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
 import javafx.beans.value.ChangeListener;
@@ -23,7 +24,7 @@ import javafx.scene.control.ComboBox;
 
 public class Overview implements Initializable {
 	private static final Logger logger = LoggerFactory.getLogger(Overview.class);
-	
+
 	// XML
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
@@ -39,10 +40,10 @@ public class Overview implements Initializable {
 
 	@FXML
 	private MapView mapView;
-	
+
 	@FXML
 	private Button newCampusButton;
-	
+
 	@FXML
 	protected void newCampusButtonClicked() {
 		campusModalController.show();
@@ -50,7 +51,12 @@ public class Overview implements Initializable {
 
 	@FXML
 	protected void campusDropdownClicked() {
-		Gui.getInstance().setTitle(campusDropdown.getValue().getName());
+		Campus campus = campusDropdown.getValue();
+
+		Gui.getInstance().setTitle(campus.getName());
+		
+		mapView.setCenter(mapLocationToCoordinate(locationXml.getPickupLocationForCampus(campus.getName())));
+		mapView.setZoom(17);
 	}
 
 	@FXML
@@ -75,19 +81,23 @@ public class Overview implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		//newCampusButton.setGraphic(new MDL2IconFont("\uE710"));
-		
+		// newCampusButton.setGraphic(new MDL2IconFont("\uE710"));
+
 		mapView.initialize();
-		
-        mapView.initializedProperty().addListener(new ChangeListener<Boolean>() {
+
+		mapView.initializedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				mapView.setCenter(new Coordinate(41.15514, -80.0786));
-				mapView.setZoom(18);
+				mapView.setCenter(new Coordinate(0.0, 0.0));
+				mapView.setZoom(0);
 			}
 		});
-		
+
 		campusDropdown.setItems(campusXml.getAll());
+	}
+
+	public Coordinate mapLocationToCoordinate(final MapLocation location) {
+		return new Coordinate(location.getxCoord(), location.getyCoord());
 	}
 }

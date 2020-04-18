@@ -84,7 +84,7 @@ public class Gui extends Application {
 		scenes.put("overview", scene);
 
 		jmetro.setScene(scenes.get("overview"));
-
+		
 		primaryStage.initStyle(StageStyle.UNDECORATED);
 		primaryStage.setScene(scenes.get(UiText.OVERVIEW_ID));
 		primaryStage.show();

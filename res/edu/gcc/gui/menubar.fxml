@@ -44,7 +44,7 @@
           </Menu>
           <Menu mnemonicParsing="false">
                <graphic>
-                  <Mdl2Icon alignment="CENTER" graphicTextGap="0.0" iconCode="E922" maxHeight="-Infinity" maxWidth="-Infinity" onMouseReleased="#onRestoreButtonPressed" prefHeight="15.0" prefWidth="25.0" textAlignment="CENTER" />
+                  <Mdl2Icon fx:id="restoreIcon" alignment="CENTER" graphicTextGap="0.0" iconCode="E922" maxHeight="-Infinity" maxWidth="-Infinity" onMouseReleased="#onRestoreButtonPressed" prefHeight="15.0" prefWidth="25.0" textAlignment="CENTER" />
                </graphic>
           </Menu>
           <Menu mnemonicParsing="false" onAction="#onCloseButtonPressed" style=".h: #E81123;">
