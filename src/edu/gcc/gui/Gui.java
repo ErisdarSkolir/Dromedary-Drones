@@ -64,7 +64,7 @@ public class Gui extends Application {
 			Simulation sim = new Simulation(meals, shopLocation, dropoffLocations, packingAlgorithm, 1);
 			sim.runSimulation();
 			// statistics.setSimulation(sim);
-			navigateTo(UiText.STATISTICS_ID);
+			navigateTo("statistics");
 		});
 		thread.start();
 	}
@@ -86,7 +86,7 @@ public class Gui extends Application {
 		jmetro.setScene(scenes.get("overview"));
 		
 		primaryStage.initStyle(StageStyle.UNDECORATED);
-		primaryStage.setScene(scenes.get(UiText.OVERVIEW_ID));
+		primaryStage.setScene(scenes.get("overview"));
 		primaryStage.show();
 	}
 
