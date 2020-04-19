@@ -75,7 +75,6 @@ public class MealConfigurationModal extends Modal {
 		mealList.setItems(mealXml.getAllObservable());
 		
 		mealList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			System.out.println(newValue);
 			setFields(newValue);
 		});
 	}
