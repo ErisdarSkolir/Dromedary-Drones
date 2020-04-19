@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sothawo.mapjfx.Configuration;
 import com.sothawo.mapjfx.Coordinate;
 import com.sothawo.mapjfx.MapView;
 
@@ -15,8 +16,6 @@ import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -37,7 +36,7 @@ public class Overview implements Initializable {
 
 	@FXML
 	private CampusModal campusModalController;
-	
+
 	@FXML
 	private MealConfigurationModal mealConfigurationModalController;
 
@@ -57,7 +56,7 @@ public class Overview implements Initializable {
 		Campus campus = campusDropdown.getValue();
 
 		Gui.getInstance().setTitle(campus.getName());
-		
+
 		mapView.setCenter(mapLocationToCoordinate(locationXml.getPickupLocationForCampus(campus.getName())));
 		mapView.setZoom(17);
 	}
@@ -69,18 +68,17 @@ public class Overview implements Initializable {
 
 	@FXML
 	protected void runSimulation() {
-		/*System.out.println("run button clicked");
+		/*
+		 * System.out.println("run button clicked");
+		 * 
+		 * new Thread(() -> { System.out.println("Simulation run");
+		 * 
+		 * // Simulation sim = new Simulation(meals, shopLocation, dropoffLocations, //
+		 * packingAlgorithm, 1); // sim.runSimulation(); //
+		 * statistics.setSimulation(sim); //
+		 * Gui.getInstance().navigateTo(UiText.STATISTICS_ID); }).start();
+		 */
 
-		new Thread(() -> {
-			System.out.println("Simulation run");
-
-			// Simulation sim = new Simulation(meals, shopLocation, dropoffLocations,
-			// packingAlgorithm, 1);
-			// sim.runSimulation();
-			// statistics.setSimulation(sim);
-			// Gui.getInstance().navigateTo(UiText.STATISTICS_ID);
-		}).start();*/
-		
 		mealConfigurationModalController.show();
 	}
 
@@ -88,15 +86,11 @@ public class Overview implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		// newCampusButton.setGraphic(new MDL2IconFont("\uE710"));
 
-		mapView.initialize();
+		mapView.initialize(Configuration.builder().showZoomControls(false).build());
 
-		mapView.initializedProperty().addListener(new ChangeListener<Boolean>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				mapView.setCenter(new Coordinate(0.0, 0.0));
-				mapView.setZoom(0);
-			}
+		mapView.initializedProperty().addListener((observalbe, newValue, oldValue) -> {
+			mapView.setCenter(new Coordinate(0.0, 0.0));
+			mapView.setZoom(0);
 		});
 
 		campusDropdown.setItems(campusXml.getAll());
