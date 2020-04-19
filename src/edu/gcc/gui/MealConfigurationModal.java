@@ -1,7 +1,11 @@
 package edu.gcc.gui;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import edu.gcc.meal.Meal;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
@@ -36,5 +40,10 @@ public class MealConfigurationModal extends Modal {
 	@FXML
 	protected void cancelButtonClicked() {
 		hide();
+	}
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		super.initialize(location, resources);
 	}
 }

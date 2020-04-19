@@ -76,6 +76,6 @@
       </VBox>
       <fx:include fx:id="campusModal" source="add_campus_modal.fxml" />
       <fx:include fx:id="deliveryModal" source="add_dropoff_modal.fxml" />
-      <fx:include fx:id="mealConfigurationModal" source="run_simulation_modal.fxml" />
+      <fx:include fx:id="mealConfigurationModal" source="meal_configuration_modal.fxml" />
    </children>
 </AnchorPane>
