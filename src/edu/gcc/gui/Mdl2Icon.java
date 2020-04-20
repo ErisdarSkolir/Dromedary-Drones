@@ -7,12 +7,16 @@ import javax.xml.bind.DatatypeConverter;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
+import javafx.scene.text.Font;
 
 public class Mdl2Icon extends Label {
+	private static final Font mdlIconFont = Font.loadFont(Mdl2Icon.class.getResourceAsStream("SegMDL2.ttf"), 12);
+
 	private final StringProperty iconCode = new SimpleStringProperty();
 
 	public Mdl2Icon() {
 		super();
+		setFont(mdlIconFont);
 		setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
 		getStyleClass().addAll("icon-font", "mdl2-assets");
 		iconCode.addListener((obs, old, newValue) -> textProperty()
