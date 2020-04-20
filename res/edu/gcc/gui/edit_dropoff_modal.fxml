@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import edu.gcc.gui.Mdl2Icon?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -12,10 +13,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="container" alignment="CENTER" style="-fx-border-color: #b2bec3;" styleClass="background" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.AddDeliveryModal">
+<VBox fx:id="container" alignment="CENTER" style="-fx-border-color: #b2bec3;" styleClass="background" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.EditDeliveryModal">
    <children>
       <MenuBar blendMode="ADD" onMouseDragged="#onMenuDrag" onMousePressed="#onMenuPressed" prefHeight="20.0" />
-      <Label contentDisplay="CENTER" text="Add Delivery Point">
+      <Label contentDisplay="CENTER" text="Edit Delivery Point">
          <font>
             <Font size="18.0" />
          </font>
@@ -69,12 +70,24 @@
             <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
          </VBox.margin>
       </GridPane>
-      <HBox alignment="CENTER">
+      <HBox alignment="CENTER_RIGHT">
          <VBox.margin>
             <Insets bottom="16.0" top="32.0" />
          </VBox.margin>
          <children>
-            <Button mnemonicParsing="false" onAction="#onAddButtonClicked" prefWidth="70.0" text="Add" textAlignment="CENTER">
+            <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#deleteButtonClicked">
+                     <HBox.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                     </HBox.margin>
+                     <graphic>
+                        <Mdl2Icon iconCode="E74D" />
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#onSaveButtonClicked" prefWidth="70.0" text="Save" textAlignment="CENTER">
                <HBox.margin>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                </HBox.margin>

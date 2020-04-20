@@ -20,11 +20,14 @@ public class Mdl2Icon extends Label {
 	/**
 	 * Loads the packaged MDL2 Icon Font and keeps a static reference.
 	 */
-	private static final Font MDL2_ICON_FONT = Font.loadFont(Mdl2Icon.class.getResourceAsStream("SegMDL2.ttf"), 12);
+	private static final Font MDL2_ICON_FONT = Font.loadFont(
+		Mdl2Icon.class.getResourceAsStream("SegMDL2.ttf"),
+		12
+	);
 
 	/**
-	 * Property representing the hexadecimal Unicode number to display from the MDL2
-	 * Icon Font.
+	 * Property representing the hexadecimal Unicode number to display from the
+	 * MDL2 Icon Font.
 	 */
 	private final StringProperty iconCode = new SimpleStringProperty();
 
@@ -36,8 +39,14 @@ public class Mdl2Icon extends Label {
 		super();
 		setFont(MDL2_ICON_FONT);
 		getStyleClass().addAll("icon-font", "mdl2-assets");
-		iconCode.addListener((obs, old, newValue) -> textProperty()
-				.set(new String(DatatypeConverter.parseHexBinary(newValue), StandardCharsets.UTF_16)));
+		iconCode.addListener(
+			(obs, old, newValue) -> textProperty().set(
+				new String(
+						DatatypeConverter.parseHexBinary(newValue),
+						StandardCharsets.UTF_16
+				)
+			)
+		);
 	}
 
 	/**

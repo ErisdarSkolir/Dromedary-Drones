@@ -40,7 +40,9 @@ public class Gui extends Application {
 		if (instance != null)
 			return instance;
 
-		throw new IllegalStateException(String.format("%s is not initialized", Gui.class));
+		throw new IllegalStateException(
+				String.format("%s is not initialized", Gui.class)
+		);
 	}
 
 	private Stage primaryStage;
@@ -53,15 +55,24 @@ public class Gui extends Application {
 
 	public void navigateTo(final String id) {
 		if (!scenes.containsKey(id))
-			throw new IllegalArgumentException(String.format("No scene registered as %s", id));
+			throw new IllegalArgumentException(
+					String.format("No scene registered as %s", id)
+			);
 
 		Platform.runLater(() -> primaryStage.setScene(scenes.get(id)));
 	}
 
-	public void runSimulation(List<Meal> meals, MapLocation shopLocation, List<MapLocation> dropoffLocations,
+	public void runSimulation(List<Meal> meals, MapLocation shopLocation,
+			List<MapLocation> dropoffLocations,
 			PackingAlgorithm packingAlgorithm) {
 		Thread thread = new Thread(() -> {
-			Simulation sim = new Simulation(meals, shopLocation, dropoffLocations, packingAlgorithm, 1);
+			Simulation sim = new Simulation(
+					meals,
+					shopLocation,
+					dropoffLocations,
+					packingAlgorithm,
+					1
+			);
 			sim.runSimulation();
 			// statistics.setSimulation(sim);
 			navigateTo("statistics");
@@ -84,7 +95,7 @@ public class Gui extends Application {
 		scenes.put("overview", scene);
 
 		jmetro.setScene(scenes.get("overview"));
-		
+
 		primaryStage.initStyle(StageStyle.UNDECORATED);
 		primaryStage.setScene(scenes.get("overview"));
 		primaryStage.show();
@@ -93,8 +104,12 @@ public class Gui extends Application {
 	public void maximize() {
 		primaryStage.setMaximized(true);
 
-		Rectangle2D bounds = Screen.getScreensForRectangle(primaryStage.getX(), primaryStage.getY(),
-				primaryStage.getWidth(), primaryStage.getHeight()).get(0).getVisualBounds();
+		Rectangle2D bounds = Screen.getScreensForRectangle(
+			primaryStage.getX(),
+			primaryStage.getY(),
+			primaryStage.getWidth(),
+			primaryStage.getHeight()
+		).get(0).getVisualBounds();
 
 		primaryStage.setX(bounds.getMinX());
 		primaryStage.setY(bounds.getMinY());

@@ -29,12 +29,16 @@ public class Modal implements Initializable {
 	private VBox container;
 
 	/**
-	 * Makes this modal visible and resets its position to be in the middel of the
-	 * current window.
+	 * Makes this modal visible and resets its position to be in the middle of
+	 * the current window.
 	 */
 	public void show() {
-		container.setLayoutX((container.getScene().getWidth() / 2) - (container.getWidth() / 2));
-		container.setLayoutY((container.getScene().getHeight() / 2) - (container.getHeight() / 2));
+		container.setLayoutX(
+			(container.getScene().getWidth() - container.getWidth()) / 2
+		);
+		container.setLayoutY(
+			(container.getScene().getHeight() - container.getHeight()) / 2
+		);
 
 		container.setVisible(true);
 	}
@@ -47,8 +51,8 @@ public class Modal implements Initializable {
 	}
 
 	/**
-	 * Sets the deltaX and deltaY offsets for dragging the modal when its menu is
-	 * pressed.
+	 * Sets the deltaX and deltaY offsets for dragging the modal when its menu
+	 * is pressed.
 	 * 
 	 * @param event The mouse event to get coordinates from.
 	 */
@@ -59,9 +63,9 @@ public class Modal implements Initializable {
 	}
 
 	/**
-	 * Sets the layout coordinates of this modal when the menu is dragged. DeltaX
-	 * and deltaY must be set before hand for this to put the modal in the correct
-	 * position.
+	 * Sets the layout coordinates of this modal when the menu is dragged.
+	 * DeltaX and deltaY must be set before hand for this to put the modal in
+	 * the correct position.
 	 * 
 	 * @param event The mouse event to get coordinates from.
 	 */

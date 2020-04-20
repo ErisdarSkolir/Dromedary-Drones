@@ -34,7 +34,7 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	private Label title;
-	
+
 	@FXML
 	private Mdl2Icon restoreIcon;
 
@@ -75,7 +75,8 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	protected void onDoubleClick(MouseEvent event) {
-		if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+		if (event.getButton().equals(MouseButton.PRIMARY) && event
+				.getClickCount() == 2) {
 			if (draggable) {
 				restoreIcon.setIconCode("E923");
 				Gui.getInstance().maximize();

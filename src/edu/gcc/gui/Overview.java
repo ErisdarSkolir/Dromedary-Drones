@@ -1,11 +1,10 @@
 package edu.gcc.gui;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.controlsfx.control.PopOver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,26 +30,29 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 
 public class Overview implements Initializable {
-	private static final Logger logger = LoggerFactory.getLogger(Overview.class);
+	private static final Logger logger = LoggerFactory.getLogger(
+		Overview.class
+	);
 
 	// XML
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 
-	private ObservableList<MapLocation> dropOffLocations = FXCollections.observableArrayList();
-	private List<Marker> currentMarker = new ArrayList<>();
-	
+	private ObservableList<MapLocation> dropOffLocations = FXCollections
+			.observableArrayList();
+	private Map<Marker, MapLocation> currentMarkers = new HashMap<>();
+
 	@FXML
 	private ComboBox<Campus> campusDropdown;
 
 	@FXML
-	private DeliveryModal deliveryModalController;
-
+	private AddDeliveryModal deliveryModalController;
 	@FXML
 	private CampusModal campusModalController;
-
 	@FXML
 	private MealConfigurationModal mealConfigurationModalController;
+	@FXML
+	private EditDeliveryModal editDeliveryModalController;
 
 	@FXML
 	private MapView mapView;
@@ -69,10 +71,16 @@ public class Overview implements Initializable {
 
 		Gui.getInstance().setTitle(campus.getName());
 
-		mapView.setCenter(mapLocationToCoordinate(locationXml.getPickupLocationForCampus(campus.getName())));
+		mapView.setCenter(
+			mapLocationToCoordinate(
+				locationXml.getPickupLocationForCampus(campus.getName())
+			)
+		);
 		mapView.setZoom(17);
-		
-		dropOffLocations = locationXml.getDropoffReactiveForCampus(campus.getName());
+
+		dropOffLocations = locationXml.getDropoffReactiveForCampus(
+			campus.getName()
+		);
 		setMapMarkers(dropOffLocations);
 	}
 
@@ -88,8 +96,8 @@ public class Overview implements Initializable {
 		 * 
 		 * new Thread(() -> { System.out.println("Simulation run");
 		 * 
-		 * // Simulation sim = new Simulation(meals, shopLocation, dropoffLocations, //
-		 * packingAlgorithm, 1); // sim.runSimulation(); //
+		 * // Simulation sim = new Simulation(meals, shopLocation,
+		 * dropoffLocations, // packingAlgorithm, 1); // sim.runSimulation(); //
 		 * statistics.setSimulation(sim); //
 		 * Gui.getInstance().navigateTo(UiText.STATISTICS_ID); }).start();
 		 */
@@ -99,9 +107,13 @@ public class Overview implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		mapView.initialize(Configuration.builder().showZoomControls(false).build());
-		mapView.initializedProperty().addListener((observalbe, newValue, oldValue) -> mapPostInitialization());
-		
+		mapView.initialize(
+			Configuration.builder().showZoomControls(false).build()
+		);
+		mapView.initializedProperty().addListener(
+			(observalbe, newValue, oldValue) -> mapPostInitialization()
+		);
+
 		campusDropdown.setItems(campusXml.getAll());
 	}
 
@@ -109,54 +121,49 @@ public class Overview implements Initializable {
 		mapView.setCenter(new Coordinate(0.0, 0.0));
 		mapView.setZoom(0);
 
-		mapView.addEventHandler(MapViewEvent.MAP_RIGHTCLICKED, this::mapViewRightClicked);
-		mapView.addEventHandler(MarkerEvent.MARKER_CLICKED, this::markerClicked);
+		mapView.addEventHandler(
+			MapViewEvent.MAP_RIGHTCLICKED,
+			this::mapViewRightClicked
+		);
+		mapView.addEventHandler(
+			MarkerEvent.MARKER_CLICKED,
+			this::markerClicked
+		);
 	}
 
 	private void setMapMarkers(final ObservableList<MapLocation> locations) {
-		//Remove any previous markers
-		if(!currentMarker.isEmpty())
-			currentMarker.stream().forEach(mapView::removeMarker);
-		
-		//Add new markers;
+		// Remove any previous markers
+		if (!currentMarkers.isEmpty()) {
+			currentMarkers.keySet().stream().forEach(mapView::removeMarker);
+			currentMarkers.clear();
+		}
+
+		// Add new markers
 		for (MapLocation location : locations) {
-			Marker marker = Marker.createProvided(Marker.Provided.RED).setPosition(mapLocationToCoordinate(location)).setVisible(true);
-			currentMarker.add(marker);
+			Marker marker = Marker.createProvided(Marker.Provided.RED)
+					.setPosition(mapLocationToCoordinate(location)).setVisible(
+						true
+					);
+			currentMarkers.put(marker, location);
 			mapView.addMarker(marker);
 		}
-		
-		locations.addListener(new ListChangeListener<MapLocation>() {
-			@Override
-			public void onChanged(Change<? extends MapLocation> c) {
-				while(c.next()) {
-					for (MapLocation location : c.getAddedSubList()) {
-						Marker marker = Marker.createProvided(Marker.Provided.RED).setPosition(mapLocationToCoordinate(location)).setVisible(true);
-						currentMarker.add(marker);
-						mapView.addMarker(marker);
-					}
-				}
-			}
-		});
+
+		// TODO: add location listener
 	}
 
 	private void markerClicked(final MarkerEvent event) {
-		System.out.println(event.getMarker().getId() + " was clicked");
-		
-		/*PopOver popOver = new PopOver();
-		popOver.setDetachable(false);
-		
-		popOver.show(mapView, event.getMarker().getOffsetX(), event.getMarker().getOffsetY());*/
-		
-		System.out.println(event.getMarker().getOffsetX() + " " + event.getMarker().getOffsetY());
-		System.out.println(mapView.getCenter());
-		
+		editDeliveryModalController.show(currentMarkers.get(event.getMarker()));
 	}
-	
+
 	private void mapViewRightClicked(final MapViewEvent event) {
 		event.consume();
 
-		deliveryModalController.setMapLocation(coordinateToMapLocation(event.getCoordinate()));
-		deliveryModalController.show(campusDropdown.getSelectionModel().getSelectedItem());
+		deliveryModalController.setMapLocation(
+			coordinateToMapLocation(event.getCoordinate())
+		);
+		deliveryModalController.show(
+			campusDropdown.getSelectionModel().getSelectedItem()
+		);
 	}
 
 	private void addMarkers() {
@@ -164,7 +171,11 @@ public class Overview implements Initializable {
 	}
 
 	private MapLocation coordinateToMapLocation(final Coordinate coordinate) {
-		return new MapLocation(coordinate.getLatitude(), coordinate.getLongitude(), MapLocation.DROPOFF);
+		return new MapLocation(
+				coordinate.getLatitude(),
+				coordinate.getLongitude(),
+				MapLocation.DROPOFF
+		);
 	}
 
 	private Coordinate mapLocationToCoordinate(final MapLocation location) {
