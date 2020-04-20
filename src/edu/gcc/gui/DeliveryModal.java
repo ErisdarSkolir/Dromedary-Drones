@@ -25,6 +25,8 @@ public class DeliveryModal extends Modal {
 
 	@FXML
 	protected void onAddButtonClicked() {
+		System.out.println(campus);
+		
 		locationXml.insert(new MapLocation(Double.parseDouble(latitudeTextField.getText()),
 				Double.parseDouble(longitudeTextField.getText()), MapLocation.DROPOFF, "name", campus.getName()));
 
@@ -33,13 +35,18 @@ public class DeliveryModal extends Modal {
 		hide();
 	}
 	
-	private void clearTextFields() {
-		latitudeTextField.clear();
-		longitudeTextField.clear();
+	public void setMapLocation(final MapLocation location) {
+		latitudeTextField.setText(Double.toString(location.getxCoord()));
+		longitudeTextField.setText(Double.toString(location.getyCoord()));
 	}
 
 	public void show(final Campus campus) {
 		super.show();
 		this.campus = campus;
+	}
+	
+	private void clearTextFields() {
+		latitudeTextField.clear();
+		longitudeTextField.clear();
 	}
 }

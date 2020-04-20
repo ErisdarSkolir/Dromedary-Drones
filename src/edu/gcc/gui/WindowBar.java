@@ -70,6 +70,7 @@ public class WindowBar implements Initializable {
 	@FXML
 	protected void onCloseButtonPressed() {
 		Platform.exit();
+		System.exit(0);
 	}
 
 	@FXML
