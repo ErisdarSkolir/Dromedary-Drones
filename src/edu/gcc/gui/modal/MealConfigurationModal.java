@@ -1,8 +1,9 @@
-package edu.gcc.gui;
+package edu.gcc.gui.modal;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import edu.gcc.gui.Modal;
 import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
