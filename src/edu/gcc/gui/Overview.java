@@ -1,15 +1,16 @@
 package edu.gcc.gui;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.sothawo.mapjfx.Configuration;
 import com.sothawo.mapjfx.Coordinate;
+import com.sothawo.mapjfx.MapLabel;
 import com.sothawo.mapjfx.MapView;
 import com.sothawo.mapjfx.Marker;
 import com.sothawo.mapjfx.event.MapViewEvent;
@@ -23,6 +24,7 @@ import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,7 +42,7 @@ public class Overview implements Initializable {
 
 	private ObservableList<MapLocation> dropOffLocations = FXCollections
 			.observableArrayList();
-	private Map<Marker, MapLocation> currentMarkers = new HashMap<>();
+	private BiMap<Marker, MapLocation> currentMarkers = HashBiMap.create();
 
 	@FXML
 	private ComboBox<Campus> campusDropdown;
@@ -143,12 +145,36 @@ public class Overview implements Initializable {
 			Marker marker = Marker.createProvided(Marker.Provided.RED)
 					.setPosition(mapLocationToCoordinate(location)).setVisible(
 						true
-					);
+					).attachLabel(new MapLabel(location.getName()));
 			currentMarkers.put(marker, location);
 			mapView.addMarker(marker);
 		}
 
-		// TODO: add location listener
+		// Set listener on location list
+		locations.addListener(this::locationChangeListener);
+	}
+
+	private void locationChangeListener(Change<? extends MapLocation> change) {
+		while (change.next()) {
+			if (change.wasAdded()) {
+				// Add markers for added locations
+				for (MapLocation location : change.getAddedSubList()) {
+					Marker marker = Marker.createProvided(Marker.Provided.RED)
+							.setPosition(mapLocationToCoordinate(location))
+							.setVisible(true).attachLabel(
+								new MapLabel(location.getName())
+							);
+					currentMarkers.put(marker, location);
+					mapView.addMarker(marker);
+				}
+			} else if (change.wasRemoved()) {
+				// Remove markers for deleted locations
+				for (MapLocation location : change.getRemoved()) {
+					Marker marker = currentMarkers.inverse().remove(location);
+					mapView.removeMarker(marker);
+				}
+			}
+		}
 	}
 
 	private void markerClicked(final MarkerEvent event) {
