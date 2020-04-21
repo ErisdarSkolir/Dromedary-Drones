@@ -87,13 +87,13 @@ public class Gui extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 
-		setTitle("");
-
-		//addScene("overview", "overview.fxml");
-		addScene("statistcs", "statistics.fxml");
-		
 		if (SystemUtils.IS_OS_WINDOWS)
 			primaryStage.initStyle(StageStyle.UNDECORATED);
+		
+		setTitle("");
+
+		addScene("overview", "overview.fxml");
+		addScene("statistcs", "statistics.fxml");
 
 		primaryStage.setScene(scenes.get("statistcs"));
 		primaryStage.show();
