@@ -62,9 +62,12 @@ public class Gui extends Application {
 		Platform.runLater(() -> primaryStage.setScene(scenes.get(id)));
 	}
 
-	public void runSimulation(List<Meal> meals, MapLocation shopLocation,
+	public void runSimulation(
+			List<Meal> meals,
+			MapLocation shopLocation,
 			List<MapLocation> dropoffLocations,
-			PackingAlgorithm packingAlgorithm) {
+			PackingAlgorithm packingAlgorithm
+	) {
 		Thread thread = new Thread(() -> {
 			Simulation sim = new Simulation(
 					meals,

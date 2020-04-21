@@ -16,14 +16,16 @@ import javafx.scene.control.TextField;
  * 
  * @author Luke Donmoyer
  */
-public class CampusModal extends Modal {
+public class AddCampusModal extends Modal {
 	// XML DAOs
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 
 	// Text fields
 	@FXML
-	private TextField nameField;
+	private TextField campusNameField;
+	@FXML
+	private TextField pickupLocationNameField;
 	@FXML
 	private TextField latitudeField;
 	@FXML
@@ -47,14 +49,14 @@ public class CampusModal extends Modal {
 	 */
 	@FXML
 	protected void onAddButtonClicked() {
-		campusXml.insert(new Campus(nameField.getText()));
+		campusXml.insert(new Campus(campusNameField.getText()));
 		locationXml.insert(
 			new MapLocation(
 					Double.parseDouble(latitudeField.getText()),
 					Double.parseDouble(longitudeField.getText()),
 					MapLocation.PICKUP,
-					"",
-					nameField.getText()
+					pickupLocationNameField.getText(),
+					campusNameField.getText()
 			)
 		);
 
@@ -66,7 +68,8 @@ public class CampusModal extends Modal {
 	 * Clears all text fields.
 	 */
 	private void clearFields() {
-		nameField.clear();
+		campusNameField.clear();
+		pickupLocationNameField.clear();
 		latitudeField.clear();
 		longitudeField.clear();
 	}

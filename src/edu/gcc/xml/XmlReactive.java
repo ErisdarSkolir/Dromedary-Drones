@@ -49,7 +49,9 @@ public class XmlReactive<O extends Observable> {
 	public boolean matches(final String element) {
 		try {
 			InputSource xml = new InputSource(new StringReader(element));
-			return xPath.evaluate(xml) != null;
+			
+			String result = xPath.evaluate(xml);
+			return !(result == null || result.isEmpty());
 		} catch (XPathExpressionException e) {
 			throw new XmlReadException(String.format("Could not evaulate element for reactive %s", element), e);
 		}

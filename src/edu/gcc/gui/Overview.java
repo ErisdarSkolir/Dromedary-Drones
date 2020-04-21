@@ -3,9 +3,6 @@ package edu.gcc.gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.sothawo.mapjfx.Configuration;
@@ -16,8 +13,9 @@ import com.sothawo.mapjfx.Marker;
 import com.sothawo.mapjfx.event.MapViewEvent;
 import com.sothawo.mapjfx.event.MarkerEvent;
 
+import edu.gcc.gui.modal.AddCampusModal;
 import edu.gcc.gui.modal.AddDeliveryModal;
-import edu.gcc.gui.modal.CampusModal;
+import edu.gcc.gui.modal.EditCampusModal;
 import edu.gcc.gui.modal.EditDeliveryModal;
 import edu.gcc.gui.modal.MealConfigurationModal;
 import edu.gcc.maplocation.Campus;
@@ -27,19 +25,13 @@ import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 
 public class Overview implements Initializable {
-	private static final Logger logger = LoggerFactory.getLogger(
-		Overview.class
-	);
-
 	// XML
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
@@ -54,17 +46,32 @@ public class Overview implements Initializable {
 	@FXML
 	private AddDeliveryModal deliveryModalController;
 	@FXML
-	private CampusModal campusModalController;
+	private EditDeliveryModal editDeliveryModalController;
+	@FXML
+	private AddCampusModal campusModalController;
+	@FXML
+	private EditCampusModal editCampusModalController;
 	@FXML
 	private MealConfigurationModal mealConfigurationModalController;
-	@FXML
-	private EditDeliveryModal editDeliveryModalController;
 
 	@FXML
 	private MapView mapView;
 
 	@FXML
-	private Button newCampusButton;
+	protected void editCampusButtonClicked() {
+		Campus selectedCampus = campusDropdown.getSelectionModel()
+				.getSelectedItem();
+
+		if (selectedCampus == null)
+			return;
+
+		long selectedId = selectedCampus.getId();
+
+		editCampusModalController.show(selectedCampus);
+		editCampusModalController.setOnHideListener(
+			() -> campusDropdown.setValue(campusXml.getCampusForId(selectedId))
+		);
+	}
 
 	@FXML
 	protected void newCampusButtonClicked() {
@@ -75,19 +82,21 @@ public class Overview implements Initializable {
 	protected void campusDropdownClicked() {
 		Campus campus = campusDropdown.getValue();
 
+		if (campus == null)
+			return;
+
 		Gui.getInstance().setTitle(campus.getName());
 
 		mapView.setCenter(
-			mapLocationToCoordinate(
-				locationXml.getPickupLocationForCampus(campus.getName())
-			)
+			locationXml.getPickupLocationForCampus(campus).toCoordinate()
 		);
 		mapView.setZoom(17);
 
-		dropOffLocations = locationXml.getDropoffReactiveForCampus(
-			campus.getName()
+		dropOffLocations = locationXml.getDropoffReactiveForCampus(campus);
+		setMapMarkers(
+			locationXml.getPickupLocationForCampus(campus),
+			dropOffLocations
 		);
-		setMapMarkers(dropOffLocations);
 	}
 
 	@FXML
@@ -116,9 +125,10 @@ public class Overview implements Initializable {
 		mapView.initialize(
 			Configuration.builder().showZoomControls(false).build()
 		);
-		mapView.initializedProperty().addListener(
-			(observalbe, newValue, oldValue) -> mapPostInitialization()
-		);
+		mapView.initializedProperty()
+				.addListener(
+					(observalbe, newValue, oldValue) -> mapPostInitialization()
+				);
 
 		campusDropdown.setItems(campusXml.getAll());
 	}
@@ -137,25 +147,35 @@ public class Overview implements Initializable {
 		);
 	}
 
-	private void setMapMarkers(final ObservableList<MapLocation> locations) {
+	private void setMapMarkers(
+			final MapLocation pickupLocation,
+			final ObservableList<MapLocation> deliveryLocations
+	) {
 		// Remove any previous markers
 		if (!currentMarkers.isEmpty()) {
 			currentMarkers.keySet().stream().forEach(mapView::removeMarker);
 			currentMarkers.clear();
 		}
 
-		// Add new markers
-		for (MapLocation location : locations) {
-			Marker marker = Marker.createProvided(Marker.Provided.RED)
-					.setPosition(mapLocationToCoordinate(location)).setVisible(
-						true
-					).attachLabel(new MapLabel(location.getName()));
-			currentMarkers.put(marker, location);
-			mapView.addMarker(marker);
+		// Add pickup location marker
+		Marker pickupMarker = Marker.createProvided(Marker.Provided.BLUE)
+				.setPosition(pickupLocation.toCoordinate())
+				.setVisible(true);
+		mapView.addMarker(pickupMarker);
+		currentMarkers.put(pickupMarker, pickupLocation);
+
+		// Add dropoff location markers
+		for (MapLocation location : deliveryLocations) {
+			Marker dropoffMarker = Marker.createProvided(Marker.Provided.RED)
+					.setPosition(location.toCoordinate())
+					.setVisible(true)
+					.attachLabel(new MapLabel(location.getName()));
+			currentMarkers.put(dropoffMarker, location);
+			mapView.addMarker(dropoffMarker);
 		}
 
 		// Set listener on location list
-		locations.addListener(this::locationChangeListener);
+		deliveryLocations.addListener(this::locationChangeListener);
 	}
 
 	private void locationChangeListener(Change<? extends MapLocation> change) {
@@ -163,17 +183,24 @@ public class Overview implements Initializable {
 			if (change.wasAdded()) {
 				// Add markers for added locations
 				for (MapLocation location : change.getAddedSubList()) {
+					System.out.println(
+						"CHANGE LISTENER --------------" + location
+					);
+
 					Marker marker = Marker.createProvided(Marker.Provided.RED)
-							.setPosition(mapLocationToCoordinate(location))
-							.setVisible(true).attachLabel(
-								new MapLabel(location.getName())
-							);
+							.setPosition(location.toCoordinate())
+							.setVisible(true)
+							.attachLabel(new MapLabel(location.getName()));
 					currentMarkers.put(marker, location);
 					mapView.addMarker(marker);
 				}
 			} else if (change.wasRemoved()) {
 				// Remove markers for deleted locations
 				for (MapLocation location : change.getRemoved()) {
+					System.out.println(
+						location + " " + currentMarkers.inverse().get(location)
+					);
+
 					Marker marker = currentMarkers.inverse().remove(location);
 					mapView.removeMarker(marker);
 				}
@@ -181,34 +208,35 @@ public class Overview implements Initializable {
 		}
 	}
 
+	/**
+	 * Event hander for when a marker is clicked. This opens the location editor
+	 * modal and auto fills with that locations information.
+	 * 
+	 * @param event The input event.
+	 */
 	private void markerClicked(final MarkerEvent event) {
 		editDeliveryModalController.show(currentMarkers.get(event.getMarker()));
 	}
 
+	/**
+	 * Event handler for when the map is right clicked. This opens the add
+	 * location modal with the latitude and longitude auto-filled with the click
+	 * location from the map. If no campus is currently selected this method
+	 * returns immediately.
+	 * 
+	 * @param event The map event.
+	 */
 	private void mapViewRightClicked(final MapViewEvent event) {
-		event.consume();
+		Campus selectedCampus = campusDropdown.getSelectionModel()
+				.getSelectedItem();
 
-		deliveryModalController.setMapLocation(
-			coordinateToMapLocation(event.getCoordinate())
-		);
+		if (selectedCampus == null)
+			return;
+
 		deliveryModalController.show(
-			campusDropdown.getSelectionModel().getSelectedItem()
+			campusDropdown.getSelectionModel().getSelectedItem(),
+			event.getCoordinate().getLatitude(),
+			event.getCoordinate().getLongitude()
 		);
-	}
-
-	private void addMarkers() {
-
-	}
-
-	private MapLocation coordinateToMapLocation(final Coordinate coordinate) {
-		return new MapLocation(
-				coordinate.getLatitude(),
-				coordinate.getLongitude(),
-				MapLocation.DROPOFF
-		);
-	}
-
-	private Coordinate mapLocationToCoordinate(final MapLocation location) {
-		return new Coordinate(location.getxCoord(), location.getyCoord());
 	}
 }

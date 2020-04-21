@@ -3,6 +3,7 @@ package edu.gcc.gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import edu.gcc.gui.modal.OnHideListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
@@ -21,6 +22,8 @@ public class Modal implements Initializable {
 	// Offsets for dragging the modal
 	private double deltaX;
 	private double deltaY;
+
+	private OnHideListener listener;
 
 	/**
 	 * The main container of this modal.
@@ -44,10 +47,11 @@ public class Modal implements Initializable {
 	}
 
 	/**
-	 * Makes this modal invisible.
+	 * Makes this modal invisible and calls the on hide listener.
 	 */
 	public void hide() {
 		container.setVisible(false);
+		notifyListeners();
 	}
 
 	/**
@@ -81,5 +85,29 @@ public class Modal implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		hide();
+	}
+
+	/**
+	 * Sets the on hide listener.
+	 * 
+	 * @param listener
+	 */
+	public void setOnHideListener(final OnHideListener listener) {
+		this.listener = listener;
+	}
+
+	/**
+	 * Removes the current on hide listener.
+	 */
+	public void removeOnHideListeners() {
+		this.listener = null;
+	}
+
+	/**
+	 * Calls the on hide listener.
+	 */
+	private void notifyListeners() {
+		if (listener != null)
+			listener.onHide();
 	}
 }

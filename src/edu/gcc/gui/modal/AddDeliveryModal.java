@@ -61,17 +61,6 @@ public class AddDeliveryModal extends Modal {
 	}
 
 	/**
-	 * Sets the text fields to the given map location position.
-	 * 
-	 * @param location The location to get the latitude and longitude from.
-	 */
-	public void setMapLocation(final MapLocation location) {
-		nameTextField.setText(location.getName());
-		latitudeTextField.setText(Double.toString(location.getxCoord()));
-		longitudeTextField.setText(Double.toString(location.getyCoord()));
-	}
-
-	/**
 	 * Show the modal and sets the campus member variable.
 	 * 
 	 * @param campus The current campus to add to.
@@ -79,6 +68,23 @@ public class AddDeliveryModal extends Modal {
 	public void show(final Campus campus) {
 		super.show();
 		this.campus = campus;
+	}
+
+	/**
+	 * Show the modal and sets the campus member variable as well as auto-fills
+	 * information from the given latitude and longitude.
+	 * 
+	 * @param campus    The current campus to add to.
+	 * @param latitude  The latitude to auto-fill.
+	 * @param longitude The longitude to auto-fill.
+	 */
+	public void show(final Campus campus, final double latitude,
+			final double longitude) {
+		super.show();
+		this.campus = campus;
+
+		latitudeTextField.setText(Double.toString(latitude));
+		longitudeTextField.setText(Double.toString(longitude));
 	}
 
 	/**
