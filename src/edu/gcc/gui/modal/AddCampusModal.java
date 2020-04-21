@@ -17,11 +17,9 @@ import javafx.scene.control.TextField;
  * @author Luke Donmoyer
  */
 public class AddCampusModal extends Modal {
-	// XML DAOs
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 
-	// Text fields
 	@FXML
 	private TextField campusNameField;
 	@FXML

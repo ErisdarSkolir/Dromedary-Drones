@@ -35,7 +35,7 @@
          </padding>
       </Label>
       <Region fx:id="spacer" mouseTransparent="true" />
-      <MenuBar style="-fx-padding: 0;">
+      <MenuBar fx:id="windowControlMenu" style="-fx-padding: 0;">
         <menus>
           <Menu mnemonicParsing="false">
                <graphic>

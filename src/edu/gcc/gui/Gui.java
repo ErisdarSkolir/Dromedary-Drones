@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.meal.Meal;
 import edu.gcc.packing.PackingAlgorithm;
@@ -44,7 +46,7 @@ public class Gui extends Application {
 				String.format("%s is not initialized", Gui.class)
 		);
 	}
-
+	
 	private Stage primaryStage;
 
 	private Map<String, Scene> scenes = new HashMap<>();
@@ -99,7 +101,9 @@ public class Gui extends Application {
 
 		jmetro.setScene(scenes.get("overview"));
 
-		primaryStage.initStyle(StageStyle.UNDECORATED);
+		if(SystemUtils.IS_OS_WINDOWS)
+			primaryStage.initStyle(StageStyle.UNDECORATED);
+		
 		primaryStage.setScene(scenes.get("overview"));
 		primaryStage.show();
 	}
@@ -147,5 +151,9 @@ public class Gui extends Application {
 			titleProperty.set("Dromedary Drones");
 		else
 			titleProperty.set("Dromedary Drones: " + title);
+	}
+	
+	public Stage getStage() {
+		return primaryStage;
 	}
 }

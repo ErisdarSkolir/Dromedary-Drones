@@ -18,13 +18,11 @@ import javafx.scene.control.TextField;
  * @author Luke Donmoyer
  */
 public class EditCampusModal extends Modal {
-	// XML DAOs
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 
 	private Campus currentCampus;
 
-	// Text fields
 	@FXML
 	private TextField campusNameField;
 	@FXML
@@ -62,6 +60,8 @@ public class EditCampusModal extends Modal {
 	 */
 	@FXML
 	protected void onCancelButtonClicked() {
+		removeOnHideListeners();
+		
 		clearFields();
 		hide();
 	}

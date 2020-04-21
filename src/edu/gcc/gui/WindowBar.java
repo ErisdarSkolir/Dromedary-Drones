@@ -3,12 +3,18 @@ package edu.gcc.gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
@@ -16,15 +22,25 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class WindowBar implements Initializable {
-	private Window window;
+	private static final double RESTORE_THRESHOLD = 3.0;
 
 	private double deltaX;
 	private double deltaY;
 
-	private boolean draggable = true;
+	private boolean maximized;
+
+	private Window window;
+
+	private BooleanProperty windowControls = new SimpleBooleanProperty(true);
+	private BooleanProperty draggable = new SimpleBooleanProperty(true);
+
+	@FXML
+	private MenuBar windowControlMenu;
 
 	@FXML
 	private ToolBar toolbar;
@@ -56,15 +72,10 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	protected void onRestoreButtonPressed() {
-		if (draggable) {
-			restoreIcon.setIconCode("E923");
-			Gui.getInstance().maximize();
-			draggable = false;
-		} else {
-			restoreIcon.setIconCode("E922");
-			Gui.getInstance().restoreDown();
-			draggable = true;
-		}
+		if (maximized)
+			restoreDown();
+		else
+			maximize();
 	}
 
 	@FXML
@@ -75,32 +86,42 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	protected void onDoubleClick(MouseEvent event) {
-		if (event.getButton().equals(MouseButton.PRIMARY) && event
-				.getClickCount() == 2) {
-			if (draggable) {
-				restoreIcon.setIconCode("E923");
-				Gui.getInstance().maximize();
-				draggable = false;
-			} else {
-				restoreIcon.setIconCode("E922");
-				Gui.getInstance().restoreDown();
-				draggable = true;
-			}
+		if (!(event.getButton().equals(MouseButton.PRIMARY) &&
+				event.getClickCount() == 2)) {
+			return;
 		}
+
+		if (maximized)
+			restoreDown();
+		else
+			maximize();
 	}
 
 	@FXML
 	protected void onMousePressed(MouseEvent event) {
+		if (!isDraggable())
+			return;
+
 		deltaX = event.getX();
 		deltaY = event.getY();
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	protected void onMouseDragged(MouseEvent event) {
-		if (!draggable) {
-			restoreIcon.setIconCode("E922");
-			Gui.getInstance().restoreDown();
-			draggable = true;
+		if (!isDraggable())
+			return;
+
+		if (maximized) {
+			if (dragOutsideRestoreThreshold(RESTORE_THRESHOLD, event)) {
+				restoreDown();
+				alignWindowToMouse(event);
+				return;
+			} else {
+				return;
+			}
 		}
 
 		window.setX(event.getScreenX() - deltaX);
@@ -116,5 +137,70 @@ public class WindowBar implements Initializable {
 			if (newValue != null)
 				window = newValue.getWindow();
 		});
+
+		windowControlMenu.visibleProperty().bind(windowControls);
+
+		if (!SystemUtils.IS_OS_WINDOWS) {
+			setWindowControls(false);
+			setDraggable(false);
+		}
+	}
+
+	public void maximize() {
+		if (maximized)
+			return;
+
+		restoreIcon.setIconCode("E923");
+		Gui.getInstance().maximize();
+		maximized = true;
+	}
+
+	public void restoreDown() {
+		if (!maximized)
+			return;
+
+		restoreIcon.setIconCode("E922");
+		Gui.getInstance().restoreDown();
+		maximized = false;
+	}
+
+	public void setWindowControls(final boolean enabled) {
+		windowControls.set(enabled);
+	}
+
+	public boolean isDraggable() {
+		return draggable.get();
+	}
+
+	public void setDraggable(boolean draggable) {
+		this.draggable.set(draggable);
+	}
+
+	private boolean dragOutsideRestoreThreshold(
+			double threshold,
+			MouseEvent event
+	) {
+		return Math.abs(deltaX - event.getX()) > threshold ||
+				Math.abs(deltaY - event.getY()) > threshold;
+	}
+
+	private void alignWindowToMouse(final MouseEvent event) {
+		Stage primaryStage = Gui.getInstance().getStage();
+
+		Rectangle2D bounds = Screen.getScreensForRectangle(
+			primaryStage.getX(),
+			primaryStage.getY(),
+			primaryStage.getWidth(),
+			primaryStage.getHeight()
+		).get(0).getVisualBounds();
+
+		double xRatio = primaryStage.getWidth() / bounds.getMaxX();
+		double yRatio = primaryStage.getHeight() / bounds.getMaxY();
+
+		window.setX(event.getScreenX() - (xRatio * event.getScreenX()));
+		window.setY(event.getScreenY() - (yRatio * event.getScreenY()));
+
+		deltaX = (xRatio * event.getScreenX());
+		deltaY = (yRatio * event.getScreenY());
 	}
 }
