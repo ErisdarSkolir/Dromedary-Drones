@@ -59,7 +59,12 @@ public class Gui extends Application {
 					String.format("No scene registered as %s", id)
 			);
 
-		Platform.runLater(() -> primaryStage.setScene(scenes.get(id)));
+		Platform.runLater(() -> {
+			Scene scene = scenes.get(id);
+			
+			primaryStage.setScene(scene);
+			jmetro.setScene(scene);
+		});
 	}
 
 	public void runSimulation(
@@ -95,7 +100,7 @@ public class Gui extends Application {
 		addScene("overview", "overview.fxml");
 		addScene("statistcs", "statistics.fxml");
 
-		primaryStage.setScene(scenes.get("statistcs"));
+		navigateTo("overview");
 		primaryStage.show();
 	}
 
