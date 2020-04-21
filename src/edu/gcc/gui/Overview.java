@@ -76,6 +76,12 @@ public class Overview implements Initializable {
 	@FXML
 	protected void newCampusButtonClicked() {
 		campusModalController.show();
+		campusModalController.setOnHideListener(
+			() -> campusDropdown.setValue(
+				campusDropdown.getItems()
+						.get(campusDropdown.getItems().size() - 1)
+			)
+		);
 	}
 
 	@FXML
@@ -183,10 +189,6 @@ public class Overview implements Initializable {
 			if (change.wasAdded()) {
 				// Add markers for added locations
 				for (MapLocation location : change.getAddedSubList()) {
-					System.out.println(
-						"CHANGE LISTENER --------------" + location
-					);
-
 					Marker marker = Marker.createProvided(Marker.Provided.RED)
 							.setPosition(location.toCoordinate())
 							.setVisible(true)
@@ -197,10 +199,6 @@ public class Overview implements Initializable {
 			} else if (change.wasRemoved()) {
 				// Remove markers for deleted locations
 				for (MapLocation location : change.getRemoved()) {
-					System.out.println(
-						location + " " + currentMarkers.inverse().get(location)
-					);
-
 					Marker marker = currentMarkers.inverse().remove(location);
 					mapView.removeMarker(marker);
 				}

@@ -50,6 +50,8 @@ public class EditCampusModal extends Modal {
 				.stream()
 				.forEach(locationXml::delete);
 
+		removeOnHideListeners();
+		
 		clearFields();
 		hide();
 	}
