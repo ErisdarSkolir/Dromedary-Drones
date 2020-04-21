@@ -1,5 +1,6 @@
 package edu.gcc.gui;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +17,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -46,7 +44,7 @@ public class Gui extends Application {
 				String.format("%s is not initialized", Gui.class)
 		);
 	}
-	
+
 	private Stage primaryStage;
 
 	private Map<String, Scene> scenes = new HashMap<>();
@@ -91,21 +89,33 @@ public class Gui extends Application {
 
 		setTitle("");
 
-		FXMLLoader loader = new FXMLLoader();
-
-		Parent overview = loader.load(getClass().getResource("overview.fxml"));
-		overview.setVisible(true);
-
-		Scene scene = new Scene(overview);
-		scenes.put("overview", scene);
-
-		jmetro.setScene(scenes.get("overview"));
-
-		if(SystemUtils.IS_OS_WINDOWS)
-			primaryStage.initStyle(StageStyle.UNDECORATED);
+		//addScene("overview", "overview.fxml");
+		addScene("statistcs", "statistics.fxml");
 		
-		primaryStage.setScene(scenes.get("overview"));
+		if (SystemUtils.IS_OS_WINDOWS)
+			primaryStage.initStyle(StageStyle.UNDECORATED);
+
+		primaryStage.setScene(scenes.get("statistcs"));
 		primaryStage.show();
+	}
+
+	public void addScene(final String id, final String fxmlResource) {
+		try {
+			Scene scene = new Scene(
+					FXMLLoader.load(getClass().getResource(fxmlResource))
+			);
+			scenes.put(id, scene);
+			jmetro.setScene(scene);
+		} catch (IOException e) {
+			throw new RuntimeException(
+					String.format(
+						"Could not create fxml scene %s from fxml file %s.",
+						id,
+						fxmlResource
+					),
+					e
+			);
+		}
 	}
 
 	public void maximize() {
@@ -152,7 +162,7 @@ public class Gui extends Application {
 		else
 			titleProperty.set("Dromedary Drones: " + title);
 	}
-	
+
 	public Stage getStage() {
 		return primaryStage;
 	}

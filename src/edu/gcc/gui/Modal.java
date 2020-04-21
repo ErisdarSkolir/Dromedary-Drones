@@ -25,9 +25,6 @@ public class Modal implements Initializable {
 
 	private OnHideListener listener;
 
-	/**
-	 * The main container of this modal.
-	 */
 	@FXML
 	private VBox container;
 
