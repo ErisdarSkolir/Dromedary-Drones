@@ -17,6 +17,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -48,10 +49,20 @@ public class Gui extends Application {
 	private Stage primaryStage;
 
 	private Map<String, Scene> scenes = new HashMap<>();
+	private Map<String, Object> controllers = new HashMap<>();
 
 	private JMetro jmetro = new JMetro(Style.LIGHT);
 
 	private StringProperty titleProperty = new SimpleStringProperty();
+
+	public <T> T getControllerForScene(final String id, final Class<T> clazz) {
+		if (!controllers.containsKey(id))
+			throw new IllegalArgumentException(
+					String.format("No controller for scene with id %s", id)
+			);
+
+		return clazz.cast(controllers.get(id));
+	}
 
 	public void navigateTo(final String id) {
 		if (!scenes.containsKey(id))
@@ -61,9 +72,9 @@ public class Gui extends Application {
 
 		Platform.runLater(() -> {
 			Scene scene = scenes.get(id);
-			
-			primaryStage.setScene(scene);
+
 			jmetro.setScene(scene);
+			primaryStage.setScene(scene);
 		});
 	}
 
@@ -94,11 +105,11 @@ public class Gui extends Application {
 
 		if (SystemUtils.IS_OS_WINDOWS)
 			primaryStage.initStyle(StageStyle.UNDECORATED);
-		
+
 		setTitle("");
 
 		addScene("overview", "overview.fxml");
-		addScene("statistcs", "statistics.fxml");
+		addScene("statistics", "statistics.fxml");
 
 		navigateTo("overview");
 		primaryStage.show();
@@ -106,10 +117,16 @@ public class Gui extends Application {
 
 	public void addScene(final String id, final String fxmlResource) {
 		try {
-			Scene scene = new Scene(
-					FXMLLoader.load(getClass().getResource(fxmlResource))
+			FXMLLoader loader = new FXMLLoader(
+					getClass().getResource(fxmlResource)
 			);
+
+			Scene scene = new Scene(loader.load());
+
 			scenes.put(id, scene);
+			controllers.put(id, loader.getController());
+			System.out.println(loader.getController().getClass());
+
 			jmetro.setScene(scene);
 		} catch (IOException e) {
 			throw new RuntimeException(
