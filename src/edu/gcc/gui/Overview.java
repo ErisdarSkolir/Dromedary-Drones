@@ -28,12 +28,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 
+/**
+ * Represents the main map/overview screen for the Dromedary Drones application.
+ * 
+ * @author Luke Donmoyer, Ethan Harvey
+ */
 public class Overview implements Initializable {
-	// XML
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 
@@ -58,6 +61,12 @@ public class Overview implements Initializable {
 	@FXML
 	private MapView mapView;
 
+	/**
+	 * Event handler for when the edit campus button is clicked. This opens the
+	 * modal and then ensures that the edited campus is selected when the modal
+	 * closes. If no campus is currenlty selected, this method returns
+	 * immediately.
+	 */
 	@FXML
 	protected void editCampusButtonClicked() {
 		Campus selectedCampus = campusDropdown.getSelectionModel()
@@ -74,6 +83,11 @@ public class Overview implements Initializable {
 		);
 	}
 
+	/**
+	 * Event handler for when the new campus button is clicked. Opens the create
+	 * campus modal and makes the newly create campus the selected one when the
+	 * modal closes.
+	 */
 	@FXML
 	protected void newCampusButtonClicked() {
 		campusModalController.show();
@@ -85,6 +99,11 @@ public class Overview implements Initializable {
 		);
 	}
 
+	/**
+	 * Event handler for when the campus dropdown is clicked. This loads the
+	 * selected campus, re centers the map, and sets the map locations. If the
+	 * selected campus ends up being null this method returns immediately.
+	 */
 	@FXML
 	protected void campusDropdownClicked() {
 		Campus campus = campusDropdown.getValue();
@@ -106,11 +125,19 @@ public class Overview implements Initializable {
 		);
 	}
 
+	/**
+	 * Event handler for when the add delivery location is clicked. Opens the
+	 * modal for adding a new location.
+	 */
 	@FXML
 	protected void addDeliveryLocationClicked() {
 		deliveryModalController.show(campusDropdown.getValue());
 	}
 
+	/**
+	 * Event handler for when the run simulation button is called. This opens
+	 * the run configuration modal.
+	 */
 	@FXML
 	protected void runSimulation() {
 		/*
@@ -124,14 +151,19 @@ public class Overview implements Initializable {
 		 * Gui.getInstance().navigateTo(UiText.STATISTICS_ID); }).start();
 		 */
 
-		//mealConfigurationModalController.show();
-		
-		Statistics statsController = Gui.getInstance().getControllerForScene("statistics", Statistics.class);
+		// mealConfigurationModalController.show();
+
+		Statistics statsController = Gui.getInstance()
+				.getControllerForScene("statistics", Statistics.class);
 		statsController.message("Hello World");
-		
+
 		Gui.getInstance().navigateTo("statistics");
 	}
 
+	/**
+	 * The initialize method creates the map view and sets the campus dropdown
+	 * items.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		mapView.initialize(
@@ -145,6 +177,10 @@ public class Overview implements Initializable {
 		campusDropdown.setItems(campusXml.getAll());
 	}
 
+	/**
+	 * This method is called after the map is initialized. Sets up map event
+	 * handlers and some configuration options.
+	 */
 	private void mapPostInitialization() {
 		mapView.setCenter(new Coordinate(0.0, 0.0));
 		mapView.setZoom(0);
@@ -159,6 +195,13 @@ public class Overview implements Initializable {
 		);
 	}
 
+	/**
+	 * Removes any previous map markers and creates new ones for the given
+	 * pickup and dropoff locations.
+	 * 
+	 * @param pickupLocation    The pickup location to add to the map.
+	 * @param deliveryLocations A list of dropoff locations to add the map.
+	 */
 	private void setMapMarkers(
 			final MapLocation pickupLocation,
 			final ObservableList<MapLocation> deliveryLocations
@@ -190,6 +233,12 @@ public class Overview implements Initializable {
 		deliveryLocations.addListener(this::locationChangeListener);
 	}
 
+	/**
+	 * Event handler for when the dropoff locations observable list changes.
+	 * This will remove any unnecessary locations and add any new ones.
+	 * 
+	 * @param change
+	 */
 	private void locationChangeListener(Change<? extends MapLocation> change) {
 		while (change.next()) {
 			if (change.wasAdded()) {
