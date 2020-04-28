@@ -3,8 +3,6 @@ package edu.gcc.gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.apache.commons.lang3.SystemUtils;
-
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -54,13 +52,18 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	private Mdl2Icon restoreIcon;
+	
+	@FXML
+	private CheckMenuItem darkModeToggle;
 
 	@FXML
 	protected void toggleDarkMode(ActionEvent event) {
 		if (((CheckMenuItem) event.getSource()).isSelected()) {
+			Config.get().putBoolean("dark_mode", true);
 			Gui.getInstance().darkMode();
 			toolbar.setBlendMode(BlendMode.ADD);
 		} else {
+			Config.get().putBoolean("dark_mode", false);
 			Gui.getInstance().lightMode();
 			toolbar.setBlendMode(BlendMode.MULTIPLY);
 		}
@@ -144,6 +147,12 @@ public class WindowBar implements Initializable {
 		if (Gui.getInstance().getStage().getStyle() != StageStyle.UNDECORATED) {
 			setWindowControls(false);
 			setDraggable(false);
+		}
+		
+		if(Config.get().getBoolean("dark_mode", false))
+		{
+			toolbar.setBlendMode(BlendMode.ADD);
+			darkModeToggle.setSelected(true);
 		}
 	}
 

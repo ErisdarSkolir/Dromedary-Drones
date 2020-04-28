@@ -18,7 +18,7 @@
         <menus>
           <Menu text="File">
             <items>
-                  <CheckMenuItem mnemonicParsing="false" onAction="#toggleDarkMode" text="Dark Mode" />
+                  <CheckMenuItem fx:id="darkModeToggle" mnemonicParsing="false" onAction="#toggleDarkMode" text="Dark Mode" />
               <MenuItem mnemonicParsing="false" onAction="#onCloseButtonPressed" text="Exit" />
             </items>
           </Menu>
