@@ -43,68 +43,37 @@ public class Simulation {
 	}
 
 	public void runSimulation() {
-		// Orders filled
-		List<Order> filled = new ArrayList<>();
 		// Order path
 		List<Order> path = new ArrayList<>();
 		// Distance from order to next order
 		double distance_to_next;
 		// Feet per second drone speed
 		double drone_speed = 0.02933;
-		//
-		// TODO: we need to sort orders by time
+		
 		this.simulation_time = orders.get(0).getTime();
 		ArrayList<Long> delivery_times = new ArrayList<Long>();
 
-		// Order temp
-		Order temp;
-
 		while (!this.orders.isEmpty()) {
 			// FIFO
-			filled.add(new Order(shopLocation));
-			for (int i = 0; i < orders.size(); i++) {
-				temp = packingAlgorithm.nextFit(orders, filled, CAPACITY_WEIGHT);
-				orders.remove(temp);
-				if (temp != null) {
-					System.out.println(temp.dropoffLocation.getxCoord() + " " + temp.dropoffLocation.getyCoord());
-					filled.add(temp);
-				}
-			}
+			List<Order> filledOrders = runKnapsack(orders);
 			
-		
-
 			// Greedy
 			if (traveling == 1) {
-				Graph g = new Graph(filled);
-				path = GBFS(g, filled.get(0));
+				path = runGreedyTSP(filledOrders);
 			}
 			
-			//System.out.println("First thing in path: " + path.get(0).dropoffLocation.getxCoord());
-			System.out.println("******************************************************");
-			//print everything in path
-			for (int i = 0 ; i < path.size(); i++) {
-				System.out.println(path.get(i).dropoffLocation.getxCoord() + " " + path.get(i).dropoffLocation.getyCoord());
-			}
-
 			// Set times
 			for (int i = 0; i < path.size() - 1; i++) {
-				//print the trip
-				System.out.println("The drone is flying from (" + path.get(i).dropoffLocation.getxCoord() + "," + path.get(i).dropoffLocation.getyCoord() + ") to (" + path.get(i + 1).dropoffLocation.getxCoord() + "," + path.get(i + 1).dropoffLocation.getyCoord() + ")");
-				
 				distance_to_next = path.get(i).getDistanceTo(path.get(i + 1));				
 				simulation_time += (distance_to_next / drone_speed);
 				delivery_times.add(simulation_time);
-				//time_statistics.add(simulation_time - path.get(i).getTime());
 				this.time_statistics.add(delivery_times.get(i) - path.get(i).getTime());
-				//System.out.println(time_statistics.get(i));
+				
 			}
-			//System.out.println(simulation_time);
 			simulation_time += 180_000;
-			//System.out.println(simulation_time);
 			
-			
-			for (int ind = filled.size() - 1; ind >= 0; ind--) {
-				filled.remove(ind);
+			for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
+				filledOrders.remove(ind);
 			}
 		}
 	}
@@ -113,6 +82,46 @@ public class Simulation {
 		return this.time_statistics;
 	}
 
+	/*
+	 * Method that runs FIFO on orders to be packed
+	 */
+	public List<Order> runKnapsack(List<Order> ords){
+
+		// Orders filled
+		List<Order> filled = new ArrayList<>();
+		
+		// Order temp
+		Order temp;
+		
+		// Add initial shop location to be used for path finding
+		filled.add(new Order(shopLocation));
+		
+		// Fill orders in FIFO style
+		for (int i = 0; i < orders.size(); i++) {
+			temp = packingAlgorithm.nextFit(orders, filled, CAPACITY_WEIGHT);
+			orders.remove(temp);
+			if (temp != null) {
+				filled.add(temp);
+			}
+		}
+		
+		return filled;	
+	}
+	
+	
+	/*
+	 * Method that actually runs the Greedy algorithm
+	 */
+	public List<Order> runGreedyTSP(List<Order> filled){
+		
+		Graph g = new Graph(filled);
+		return GBFS(g, filled.get(0));
+		
+	}
+	
+	/*
+	 * Method that does the bulk of the greedy algorithm's work
+	 */
 	public List<Order> GBFS(Graph g, Order start) {
 		List<Order> path = new ArrayList<>();
 
@@ -139,7 +148,6 @@ public class Simulation {
 				path.add(current);
 
 				if (current == start && !isBeginning) {
-					System.out.println("******************************************************\nFound a path...\n");
 					isDone = true;
 				}
 
