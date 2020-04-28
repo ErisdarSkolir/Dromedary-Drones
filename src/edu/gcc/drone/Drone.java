@@ -7,19 +7,19 @@ public class Drone {
 	// ID
 	private long id;
 	// Campus ID
-	private long campus_id;
+	private long campusId;
 	// Name
 	private String name;
 	// In feet per second
 	private double speed;
 	// In lbs
-	private double max_capacity;
+	private double maxCapacity;
 	
 	public Drone(long campus_id, String name, double speed, double max_capacity) {
-		this.campus_id = campus_id;
+		this.campusId = campus_id;
 		this.name = name;
 		this.speed = speed;
-		this.max_capacity = max_capacity;
+		this.maxCapacity = max_capacity;
 	}
 
 	public final long getId() {
@@ -27,11 +27,11 @@ public class Drone {
 	}
 
 	public long getCampus_id() {
-		return campus_id;
+		return campusId;
 	}
 
 	public void setCampus_id(long campus_id) {
-		this.campus_id = campus_id;
+		this.campusId = campusId;
 	}
 	
 	public String getName() {
@@ -51,11 +51,11 @@ public class Drone {
 	}
 
 	public double getMax_capacity() {
-		return max_capacity;
+		return maxCapacity;
 	}
 
 	public void setMax_capacity(double max_capacity) {
-		this.max_capacity = max_capacity;
+		this.maxCapacity = maxCapacity;
 	}
 	
 	@Override
