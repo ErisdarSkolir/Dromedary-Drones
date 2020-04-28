@@ -28,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 
@@ -123,7 +124,12 @@ public class Overview implements Initializable {
 		 * Gui.getInstance().navigateTo(UiText.STATISTICS_ID); }).start();
 		 */
 
-		mealConfigurationModalController.show();
+		//mealConfigurationModalController.show();
+		
+		Statistics statsController = Gui.getInstance().getControllerForScene("statistics", Statistics.class);
+		statsController.message("Hello World");
+		
+		Gui.getInstance().navigateTo("statistics");
 	}
 
 	@Override
