@@ -20,4 +20,7 @@ public interface CampusXmlDao {
 	
 	@XPathQuery(value = "//Campus", list = true, reactive = true)
 	public ObservableList<Campus> getAll();
+	
+	@XPathQuery("//Campus[id[text()='{0}']]")
+	public Campus getCampusForId(final long id);
 }

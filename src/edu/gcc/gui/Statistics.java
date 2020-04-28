@@ -1,80 +1,58 @@
 package edu.gcc.gui;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JFileChooser;
-import edu.gcc.simulation.Simulation;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
+import java.net.URL;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class Statistics extends GridPane {
-	private Button backButton = new Button("Back");
-	private LineChart<Number, Number> line_chart;
-	private List<Long> times = new ArrayList<Long>();
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
 
-	public Statistics() {
-		setId(UiText.STATISTICS_ID);
+public class Statistics implements Initializable{
+	// TODO: add xml dao for run history stuff here
 
-		backButton.setOnAction(e -> {
-			this.line_chart.setVisible(false);
-			Gui.getInstance().navigateTo(UiText.OVERVIEW_ID);
-		});
+	private String data;
+	
+	@FXML
+	private WindowBar windowBarController;
 
-		// Export button
-		Button export_button = new Button("Export");
-		export_button.setOnAction(event -> {
-			String sb = "Order Number, Delivery Time\n";
-			for (int i = 0; i < this.times.size(); i++) {
-				sb += (i+1) + ", " + this.times.get(i) + "\n";
-			}
-			JFileChooser chooser = new JFileChooser();
-			chooser.setCurrentDirectory(new File("/home/me/Desktop"));
-			int retrival = chooser.showSaveDialog(null);
-			if (retrival == JFileChooser.APPROVE_OPTION) {
-				try (FileWriter fw = new FileWriter(chooser.getSelectedFile() + ".csv")) {
-					fw.write(sb);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
+	// TODO: change this to whatever run history object we come up with
+	@FXML
+	private ListView<String> runHistory;
+
+	@FXML
+	private void onDeleteButtonClicked() {
+		// TODO: delete currenlty selected run history object from xml here
+	}
+	
+	@FXML
+	private void onExportButtonClicked() {
+		askForFile().ifPresent(this::saveCsvFile);
+	}
+
+	private void saveCsvFile(final File file) {
+		// TODO: save to csv file here
+	}
+	
+	public void message(String message) {
+		data = message;
+		System.out.println(message);
+	}
+
+	private Optional<File> askForFile() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters()
+				.add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+
+		File file = fileChooser.showSaveDialog(Gui.getInstance().getStage());
+
+		return Optional.ofNullable(file);
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
 		
-		this.backButton.setId("back");
-		export_button.setId("export");
-		add(this.backButton, 0, 0);
-		add(export_button, 0, 2);
-	}
-
-	public void setSimulation(Simulation sim) {
-		this.times = sim.getTimeStatistics();
-		this.line_chart = createChart(sim.getTimeStatistics());
-		add(this.line_chart, 0, 1);
-	}
-
-	public LineChart<Number, Number> createChart(List<Long> times) { // defining the axes
-		final NumberAxis xAxis2 = new NumberAxis();
-		final NumberAxis yAxis2 = new NumberAxis();
-		xAxis2.setLabel("Order Number");
-		yAxis2.setLabel("Time (minutes)"); // creating the chart final
-		LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis2, yAxis2);
-
-		lineChart.setTitle("Drone Data");
-		lineChart.setMaxWidth(500);
-		lineChart.setMaxHeight(300);
-
-		// defining a series
-		XYChart.Series series = new XYChart.Series();
-		series.setName("Delivery time for each order");
-		for (int i = 0; i < times.size(); i++) {
-			// Dividing by 60 to get minutes
-			series.getData().add(new XYChart.Data(i, times.get(i)/60));
-		}
-		lineChart.getData().add(series);
-		return lineChart;
 	}
 }
