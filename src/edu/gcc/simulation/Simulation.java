@@ -13,16 +13,12 @@ import edu.gcc.salesman.greedy.Graph;
 
 public class Simulation {
 	private static final int CAPACITY_WEIGHT = 12;
-
 	private OrderGenerator orderGen;
 	private List<Order> orders = new ArrayList<>();
 	private PackingAlgorithm packingAlgorithm;
 	private int traveling;
 	private long simulationTime;
 	private MapLocation shopLocation;
-	ArrayList<Long> timesPerOrder = new ArrayList<Long>();
-	ArrayList<Long> ordersPerTrip = new ArrayList<Long>();
-	ArrayList<Long> distancePerTrip = new ArrayList<Long>();
 
 	// Orders
 	// Algorithms
@@ -33,7 +29,7 @@ public class Simulation {
 		this.traveling = traveling;
 		this.shopLocation = shopLocation;
 		
-		List<String> customers = new ArrayList<>();
+		ArrayList<String> customers = new ArrayList<>();
 		customers.add("Bob");
 		customers.add("John");
 		customers.add("Jane");
@@ -46,12 +42,18 @@ public class Simulation {
 	}
 
 	public Results runSimulation() {
+		// Results data to be filled
+		ArrayList<Long> timesPerOrder = new ArrayList<Long>();
+		ArrayList<Integer> ordersPerTrip = new ArrayList<Integer>();
+		ArrayList<Long> distancePerTrip = new ArrayList<Long>();
+		// 
+		long tripDistance;
 		// Order path
 		List<Order> path = new ArrayList<>();
 		// Distance from order to next order
-		double distance_to_next;
+		double distanceToNext;
 		// Feet per second drone speed
-		double drone_speed = 0.02933;
+		double droneSpeed = 0.02933;
 		
 		this.simulationTime = orders.get(0).getTime();
 		ArrayList<Long> deliveryTimes = new ArrayList<Long>();
@@ -65,14 +67,22 @@ public class Simulation {
 				path = runGreedyTSP(filledOrders);
 			}
 			
+			// Init trip distance
+			tripDistance = 0;
 			// Set times
 			for (int i = 0; i < path.size() - 1; i++) {
-				distance_to_next = path.get(i).getDistanceTo(path.get(i + 1));				
-				simulationTime += (distance_to_next / drone_speed);
+				// Times per order
+				distanceToNext = path.get(i).getDistanceTo(path.get(i + 1));
+				simulationTime += (distanceToNext / droneSpeed);
 				deliveryTimes.add(simulationTime);
-				this.timesPerOrder.add(deliveryTimes.get(i) - path.get(i).getTime());
-				
+				timesPerOrder.add(deliveryTimes.get(i) - path.get(i).getTime());
+				// Distance per trip
+				tripDistance += distanceToNext;
 			}
+			// Order per trip
+			ordersPerTrip.add(filledOrders.size());
+			// Distance per trip
+			distancePerTrip.add(tripDistance);
 			simulationTime += 180_000;
 			
 			for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
@@ -82,10 +92,6 @@ public class Simulation {
 		
 		return new Results(timesPerOrder, ordersPerTrip, distancePerTrip);
 		
-	}
-
-	public List<Long> getTimeStatistics() {
-		return this.timesPerOrder;
 	}
 
 	/*
