@@ -5,21 +5,21 @@ import java.util.ArrayList;
 
 public class Results {
 	// Chart 1
-	private List<Long> timePerOrder;
+	private ArrayList<Long> timePerOrder = new ArrayList<Long>();
 	private long averageTimePerOrder;
 	private long longestTime;
 	// Chart 2
-	private List<Long> ordersPerTrip;
+	private ArrayList<Integer> ordersPerTrip = new ArrayList<Integer>();
 	private long averageOrdersPerTrip;
 	// Chart 3
-	private List<Long> distancePerTrip;
+	private ArrayList<Long> distancePerTrip = new ArrayList<Long>();
 	private long averageDistancePerTrip;
 	
 	private String simType;
 	
 	public Results(
 			ArrayList<Long> timePerOrder,
-			ArrayList<Long> ordersPerTrip,
+			ArrayList<Integer> ordersPerTrip,
 			ArrayList<Long> distancePerTrip,
 			String simType
 			) {
@@ -41,7 +41,7 @@ public class Results {
 		
 		// Set average orders per trip
 		this.averageOrdersPerTrip = 0;
-		for(Long orders : this.ordersPerTrip) {
+		for(int orders : this.ordersPerTrip) {
 			this.averageOrdersPerTrip += orders;
 		}
 		this.averageOrdersPerTrip = this.averageOrdersPerTrip / this.ordersPerTrip.size();
@@ -58,7 +58,7 @@ public class Results {
 		return timePerOrder;
 	}
 
-	public void setTimePerOrder(List<Long> timePerOrder) {
+	public void setTimePerOrder(ArrayList<Long> timePerOrder) {
 		this.timePerOrder = timePerOrder;
 	}
 
@@ -70,11 +70,11 @@ public class Results {
 		this.averageTimePerOrder = averageTimePerOrder;
 	}
 
-	public List<Long> getordersPerTrip() {
+	public List<Integer> getordersPerTrip() {
 		return ordersPerTrip;
 	}
 
-	public void setordersPerTrip(List<Long> ordersPerTrip) {
+	public void setordersPerTrip(ArrayList<Integer> ordersPerTrip) {
 		this.ordersPerTrip = ordersPerTrip;
 	}
 
@@ -98,7 +98,7 @@ public class Results {
 		return distancePerTrip;
 	}
 
-	public void setDistancePerTrip(List<Long> distancePerTrip) {
+	public void setDistancePerTrip(ArrayList<Long> distancePerTrip) {
 		this.distancePerTrip = distancePerTrip;
 	}
 
