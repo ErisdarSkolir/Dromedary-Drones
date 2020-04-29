@@ -71,7 +71,14 @@ public class Statistics implements Initializable{
 		// TODO: save to csv file here
 	}
 	
-	public void sendToFirstChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+	public void sendToAllCharts(CompletableFuture<Results> results) throws InterruptedException, ExecutionException{
+		Results localResults = results.get();
+		sendToFirstChart(localResults);
+		sendToSecondChart(localResults);
+		sendToThirdChart(localResults);
+	}
+	
+	private void sendToFirstChart(Results results) throws InterruptedException, ExecutionException {
 		xAxis2.setLabel("Order Number");
 		yAxis2.setLabel("Time (minutes)"); // creating the chart final
 		chart_one.setTitle("Drone Data");
@@ -79,11 +86,10 @@ public class Statistics implements Initializable{
 		chart_one.setMaxHeight(300);
 		XYChart.Series series = new XYChart.Series();
 		
-		Results localResults = results.get();
 		
 		
-		series.setName(localResults.getSimType());
-		List<Long> deliveryTimes = localResults.getTimePerOrder();
+		series.setName(results.getSimType());
+		List<Long> deliveryTimes = results.getTimePerOrder();
 		
 		for (int i = 0; i < deliveryTimes.size(); i++) {
 			// Dividing by 60 to get minutes
@@ -94,7 +100,7 @@ public class Statistics implements Initializable{
 		
 	}
 	
-	public void sendToSecondChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+	private void sendToSecondChart(Results results) throws InterruptedException, ExecutionException {
 		
 		//TODO Chart Labels
 		
@@ -106,11 +112,10 @@ public class Statistics implements Initializable{
 		chart_one.setMaxHeight(300);
 		XYChart.Series series = new XYChart.Series();
 		
-		Results localResults = results.get();
 		
 		
-		series.setName(localResults.getSimType());
-		List<Long> deliveryTimes = localResults.getTimePerOrder();
+		series.setName(results.getSimType());
+		List<Long> deliveryTimes = results.getTimePerOrder();
 		
 		//TODO change algorithm for chart stats
 //		for (int i = 0; i < deliveryTimes.size(); i++) {
@@ -122,7 +127,7 @@ public class Statistics implements Initializable{
 		
 	}
 	
-	public void sendToThirdChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+	private void sendToThirdChart(Results results) throws InterruptedException, ExecutionException {
 		
 		//TODO Chart Labels
 		
@@ -133,12 +138,11 @@ public class Statistics implements Initializable{
 		chart_one.setMaxWidth(500);
 		chart_one.setMaxHeight(300);
 		XYChart.Series series = new XYChart.Series();
+	
 		
-		Results localResults = results.get();
 		
-		
-		series.setName(localResults.getSimType());
-		List<Long> deliveryTimes = localResults.getTimePerOrder();
+		series.setName(results.getSimType());
+		List<Long> deliveryTimes = results.getTimePerOrder();
 		
 		//TODO change algorithm for chart stats
 //		for (int i = 0; i < deliveryTimes.size(); i++) {
