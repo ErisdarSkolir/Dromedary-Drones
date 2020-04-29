@@ -12,22 +12,51 @@ import edu.gcc.results.Results;
 import edu.gcc.simulation.Simulation;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
 
 public class Statistics implements Initializable{
 	// TODO: add xml dao for run history stuff here
 
-	private CompletableFuture<Simulation> sim1;
-	private CompletableFuture<Simulation> sim2;
+	
+	
+	/*
+	 * Line Charts
+	 */
+
+	//Chart Axes
+	private NumberAxis xAxis1 = new NumberAxis();
+	private NumberAxis yAxis1 = new NumberAxis();
+	private NumberAxis xAxis2 = new NumberAxis();
+	private NumberAxis yAxis2 = new NumberAxis();
+	private NumberAxis xAxis3 = new NumberAxis();
+	private NumberAxis yAxis3 = new NumberAxis();
+	 
+   /*
+    * LineCharts
+    */
+	@FXML
+	private LineChart<Number,Number> chart_one = new LineChart<Number, Number>(xAxis1, yAxis1);
+	@FXML
+	private LineChart<Number,Number> chart_two = new LineChart<Number, Number>(xAxis2, yAxis2);
+	@FXML
+	private LineChart<Number,Number> chart_three = new LineChart<Number, Number>(xAxis3, yAxis3);
+	
 	
 	@FXML
 	private WindowBar windowBarController;
 
+	
+	
 	// TODO: change this to whatever run history object we come up with
 	@FXML
 	private ListView<String> runHistory;
 
+	
+	
 	@FXML
 	private void onDeleteButtonClicked() {
 		// TODO: delete currenlty selected run history object from xml here
@@ -42,9 +71,83 @@ public class Statistics implements Initializable{
 		// TODO: save to csv file here
 	}
 	
-	public void sendFirstChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+	public void sendToFirstChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+		xAxis2.setLabel("Order Number");
+		yAxis2.setLabel("Time (minutes)"); // creating the chart final
+		chart_one.setTitle("Drone Data");
+		chart_one.setMaxWidth(500);
+		chart_one.setMaxHeight(300);
+		XYChart.Series series = new XYChart.Series();
+		
 		Results localResults = results.get();
+		
+		
+		series.setName(localResults.getSimType());
 		List<Long> deliveryTimes = localResults.getTimePerOrder();
+		
+		for (int i = 0; i < deliveryTimes.size(); i++) {
+			// Dividing by 60 to get minutes
+			series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
+		}
+		
+		chart_one.getData().add(series);
+		
+	}
+	
+	public void sendToSecondChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+		
+		//TODO Chart Labels
+		
+		//xAxis2.setLabel("Order Number");
+		//yAxis2.setLabel("Time (minutes)"); // creating the chart final
+		
+		chart_one.setTitle("Drone Data");
+		chart_one.setMaxWidth(500);
+		chart_one.setMaxHeight(300);
+		XYChart.Series series = new XYChart.Series();
+		
+		Results localResults = results.get();
+		
+		
+		series.setName(localResults.getSimType());
+		List<Long> deliveryTimes = localResults.getTimePerOrder();
+		
+		//TODO change algorithm for chart stats
+//		for (int i = 0; i < deliveryTimes.size(); i++) {
+//			 Dividing by 60 to get minutes
+//			series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
+//		}
+		
+		chart_two.getData().add(series);
+		
+	}
+	
+	public void sendToThirdChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+		
+		//TODO Chart Labels
+		
+		//xAxis2.setLabel("Order Number");
+		//yAxis2.setLabel("Time (minutes)"); // creating the chart final
+		
+		chart_one.setTitle("Drone Data");
+		chart_one.setMaxWidth(500);
+		chart_one.setMaxHeight(300);
+		XYChart.Series series = new XYChart.Series();
+		
+		Results localResults = results.get();
+		
+		
+		series.setName(localResults.getSimType());
+		List<Long> deliveryTimes = localResults.getTimePerOrder();
+		
+		//TODO change algorithm for chart stats
+//		for (int i = 0; i < deliveryTimes.size(); i++) {
+//			 Dividing by 60 to get minutes
+//			series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
+//		}
+		
+		chart_three.getData().add(series);
+		
 	}
 
 	private Optional<File> askForFile() {

@@ -14,15 +14,19 @@ public class Results {
 	// Chart 3
 	private List<Long> distancePerTrip;
 	private long averageDistancePerTrip;
-
+	
+	private String simType;
+	
 	public Results(
 			ArrayList<Long> timePerOrder,
 			ArrayList<Long> ordersPerTrip,
-			ArrayList<Long> distancePerTrip
+			ArrayList<Long> distancePerTrip,
+			String simType
 			) {
 		this.timePerOrder = timePerOrder;
 		this.ordersPerTrip = ordersPerTrip;
 		this.distancePerTrip = distancePerTrip;
+		this.simType = simType;
 		
 		// Set average time per order
 		this.averageTimePerOrder = 0;
@@ -104,6 +108,14 @@ public class Results {
 
 	public void setAverageDistancePerTrip(long averageDistancePerTrip) {
 		this.averageDistancePerTrip = averageDistancePerTrip;
+	}
+	
+	public String getSimType() {
+		return simType;
+	}
+	
+	public void setSimType(String simType) {
+		this.simType = simType;
 	}
 	
 }

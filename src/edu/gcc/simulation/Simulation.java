@@ -20,6 +20,8 @@ public class Simulation {
 	private int traveling;
 	private long simulationTime;
 	private MapLocation shopLocation;
+	private String simType;
+	
 	ArrayList<Long> timesPerOrder = new ArrayList<Long>();
 	ArrayList<Long> ordersPerTrip = new ArrayList<Long>();
 	ArrayList<Long> distancePerTrip = new ArrayList<Long>();
@@ -59,10 +61,12 @@ public class Simulation {
 		while (!this.orders.isEmpty()) {
 			// FIFO
 			List<Order> filledOrders = runKnapsack(orders);
-			
+			simType = "FIFO";
+					
 			// Greedy
 			if (traveling == 1) {
 				path = runGreedyTSP(filledOrders);
+				simType = "Greedy";
 			}
 			
 			// Set times
@@ -80,7 +84,7 @@ public class Simulation {
 			}
 		}
 		
-		return new Results(timesPerOrder, ordersPerTrip, distancePerTrip);
+		return new Results(timesPerOrder, ordersPerTrip, distancePerTrip, simType);
 		
 	}
 
