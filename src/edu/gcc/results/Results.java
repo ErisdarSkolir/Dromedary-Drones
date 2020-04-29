@@ -9,7 +9,7 @@ public class Results {
 	private long averageTimePerOrder;
 	private long longestTime;
 	// Chart 2
-	private List<Long> odersPerTrip;
+	private List<Long> ordersPerTrip;
 	private long averageOrdersPerTrip;
 	// Chart 3
 	private List<Long> distancePerTrip;
@@ -17,11 +17,11 @@ public class Results {
 
 	public Results(
 			ArrayList<Long> timePerOrder,
-			ArrayList<Long> odersPerTrip,
+			ArrayList<Long> ordersPerTrip,
 			ArrayList<Long> distancePerTrip
 			) {
 		this.timePerOrder = timePerOrder;
-		this.odersPerTrip = odersPerTrip;
+		this.ordersPerTrip = ordersPerTrip;
 		this.distancePerTrip = distancePerTrip;
 		
 		// Set average time per order
@@ -37,10 +37,10 @@ public class Results {
 		
 		// Set average orders per trip
 		this.averageOrdersPerTrip = 0;
-		for(Long orders : this.odersPerTrip) {
+		for(Long orders : this.ordersPerTrip) {
 			this.averageOrdersPerTrip += orders;
 		}
-		this.averageOrdersPerTrip = this.averageOrdersPerTrip / this.odersPerTrip.size();
+		this.averageOrdersPerTrip = this.averageOrdersPerTrip / this.ordersPerTrip.size();
 		
 		// Set average distance traveled per trip
 		this.averageDistancePerTrip = 0;
@@ -66,12 +66,12 @@ public class Results {
 		this.averageTimePerOrder = averageTimePerOrder;
 	}
 
-	public List<Long> getOdersPerTrip() {
-		return odersPerTrip;
+	public List<Long> getordersPerTrip() {
+		return ordersPerTrip;
 	}
 
-	public void setOdersPerTrip(List<Long> odersPerTrip) {
-		this.odersPerTrip = odersPerTrip;
+	public void setordersPerTrip(List<Long> ordersPerTrip) {
+		this.ordersPerTrip = ordersPerTrip;
 	}
 
 	public long getAverageOrdersPerTrip() {

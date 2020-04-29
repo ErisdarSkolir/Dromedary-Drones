@@ -8,6 +8,7 @@ import edu.gcc.meal.Meal;
 import edu.gcc.order.Order;
 import edu.gcc.order.OrderGenerator;
 import edu.gcc.packing.PackingAlgorithm;
+import edu.gcc.results.Results;
 import edu.gcc.salesman.greedy.Graph;
 
 public class Simulation {
@@ -17,9 +18,11 @@ public class Simulation {
 	private List<Order> orders = new ArrayList<>();
 	private PackingAlgorithm packingAlgorithm;
 	private int traveling;
-	private long simulation_time;
+	private long simulationTime;
 	private MapLocation shopLocation;
-	ArrayList<Long> time_statistics = new ArrayList<Long>();
+	ArrayList<Long> timesPerOrder = new ArrayList<Long>();
+	ArrayList<Long> ordersPerTrip = new ArrayList<Long>();
+	ArrayList<Long> distancePerTrip = new ArrayList<Long>();
 
 	// Orders
 	// Algorithms
@@ -42,7 +45,7 @@ public class Simulation {
 		System.out.println(orders);
 	}
 
-	public void runSimulation() {
+	public Results runSimulation() {
 		// Order path
 		List<Order> path = new ArrayList<>();
 		// Distance from order to next order
@@ -50,8 +53,8 @@ public class Simulation {
 		// Feet per second drone speed
 		double drone_speed = 0.02933;
 		
-		this.simulation_time = orders.get(0).getTime();
-		ArrayList<Long> delivery_times = new ArrayList<Long>();
+		this.simulationTime = orders.get(0).getTime();
+		ArrayList<Long> deliveryTimes = new ArrayList<Long>();
 
 		while (!this.orders.isEmpty()) {
 			// FIFO
@@ -65,21 +68,24 @@ public class Simulation {
 			// Set times
 			for (int i = 0; i < path.size() - 1; i++) {
 				distance_to_next = path.get(i).getDistanceTo(path.get(i + 1));				
-				simulation_time += (distance_to_next / drone_speed);
-				delivery_times.add(simulation_time);
-				this.time_statistics.add(delivery_times.get(i) - path.get(i).getTime());
+				simulationTime += (distance_to_next / drone_speed);
+				deliveryTimes.add(simulationTime);
+				this.timesPerOrder.add(deliveryTimes.get(i) - path.get(i).getTime());
 				
 			}
-			simulation_time += 180_000;
+			simulationTime += 180_000;
 			
 			for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
 				filledOrders.remove(ind);
 			}
 		}
+		
+		return new Results(timesPerOrder, ordersPerTrip, distancePerTrip);
+		
 	}
 
 	public List<Long> getTimeStatistics() {
-		return this.time_statistics;
+		return this.timesPerOrder;
 	}
 
 	/*
