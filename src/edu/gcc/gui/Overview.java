@@ -155,7 +155,7 @@ public class Overview implements Initializable {
 
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
-		statsController.message("Hello World");
+		//statsController.message("Hello World");
 
 		Gui.getInstance().navigateTo("statistics");
 	}
