@@ -79,8 +79,8 @@ public class Statistics implements Initializable{
 	}
 	
 	private void sendToFirstChart(Results results) throws InterruptedException, ExecutionException {
-		xAxis2.setLabel("Order Number");
-		yAxis2.setLabel("Time (minutes)"); // creating the chart final
+		xAxis1.setLabel("Order Number");
+		yAxis1.setLabel("Time (minutes)"); // creating the chart final
 		chart_one.setTitle("Drone Data");
 		chart_one.setMaxWidth(500);
 		chart_one.setMaxHeight(300);
@@ -104,12 +104,12 @@ public class Statistics implements Initializable{
 		
 		//TODO Chart Labels
 		
-		//xAxis2.setLabel("Order Number");
-		//yAxis2.setLabel("Time (minutes)"); // creating the chart final
+		xAxis2.setLabel("Order Number");
+		yAxis2.setLabel("Time (minutes)"); // creating the chart final
 		
-		chart_one.setTitle("Drone Data");
-		chart_one.setMaxWidth(500);
-		chart_one.setMaxHeight(300);
+		chart_two.setTitle("Drone Data");
+		chart_two.setMaxWidth(500);
+		chart_two.setMaxHeight(300);
 		XYChart.Series series = new XYChart.Series();
 		
 		
@@ -118,10 +118,10 @@ public class Statistics implements Initializable{
 		List<Long> deliveryTimes = results.getTimePerOrder();
 		
 		//TODO change algorithm for chart stats
-//		for (int i = 0; i < deliveryTimes.size(); i++) {
-//			 Dividing by 60 to get minutes
-//			series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
-//		}
+		for (int i = 0; i < deliveryTimes.size(); i++) {
+			// Dividing by 60 to get minutes
+			series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
+		}
 		
 		chart_two.getData().add(series);
 		
@@ -131,12 +131,12 @@ public class Statistics implements Initializable{
 		
 		//TODO Chart Labels
 		
-		//xAxis2.setLabel("Order Number");
-		//yAxis2.setLabel("Time (minutes)"); // creating the chart final
+	//	xAxis3.setLabel("Order Number");
+		yAxis3.setLabel("Time (minutes)"); // creating the chart final
 		
-		chart_one.setTitle("Drone Data");
-		chart_one.setMaxWidth(500);
-		chart_one.setMaxHeight(300);
+		chart_three.setTitle("Drone Data");
+		chart_three.setMaxWidth(500);
+		chart_three.setMaxHeight(300);
 		XYChart.Series series = new XYChart.Series();
 	
 		
@@ -145,10 +145,10 @@ public class Statistics implements Initializable{
 		List<Long> deliveryTimes = results.getTimePerOrder();
 		
 		//TODO change algorithm for chart stats
-//		for (int i = 0; i < deliveryTimes.size(); i++) {
-//			 Dividing by 60 to get minutes
-//			series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
-//		}
+	for (int i = 0; i < deliveryTimes.size(); i++) {
+		// Dividing by 60 to get minutes
+		series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
+	}
 		
 		chart_three.getData().add(series);
 		

@@ -1,7 +1,10 @@
 package edu.gcc.gui;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -24,6 +27,7 @@ import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
+import edu.gcc.results.Results;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -137,9 +141,11 @@ public class Overview implements Initializable {
 	/**
 	 * Event handler for when the run simulation button is called. This opens
 	 * the run configuration modal.
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
 	@FXML
-	protected void runSimulation() {
+	protected void runSimulation() throws InterruptedException, ExecutionException {
 		/*
 		 * System.out.println("run button clicked");
 		 * 
@@ -153,11 +159,34 @@ public class Overview implements Initializable {
 
 		// mealConfigurationModalController.show();
 
+		ArrayList<Long> timePerOrder = new ArrayList<>();
+		ArrayList<Integer> ordersPerTrip = new ArrayList<>();
+		ArrayList<Long> distancePerTrip= new ArrayList<>();
+		String simType= "test";
+		
+		timePerOrder.add((long) 3);
+		timePerOrder.add((long) 9.5);
+		timePerOrder.add((long) 1);
+		timePerOrder.add((long) 5.3);
+		ordersPerTrip.add(4);
+		ordersPerTrip.add(2);
+		ordersPerTrip.add(7);
+		ordersPerTrip.add(1);
+		distancePerTrip.add((long) 450);
+		distancePerTrip.add((long) 520);
+		distancePerTrip.add((long) 190);
+		distancePerTrip.add((long) 487);
+		Results r = new Results(timePerOrder,ordersPerTrip,distancePerTrip,simType);
+		CompletableFuture<Results> f = CompletableFuture.completedFuture(r);
+		
+		
+		
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
 		//statsController.message("Hello World");
-
+		
 		Gui.getInstance().navigateTo("statistics");
+		statsController.sendToAllCharts(f);
 	}
 
 	/**
