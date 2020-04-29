@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
+import edu.gcc.results.Results;
 import edu.gcc.simulation.Simulation;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -42,14 +42,10 @@ public class Statistics implements Initializable{
 		// TODO: save to csv file here
 	}
 	
-	public void sendFirstChart(CompletableFuture<SimulationResults> results) throws InterruptedException, ExecutionException {
-		SimulationResults localResults = results.get();
-		List<Long> deliveryTimes = localResults.getSimTimes();
-		
+	public void sendFirstChart(CompletableFuture<Results> results) throws InterruptedException, ExecutionException {
+		Results localResults = results.get();
+		List<Long> deliveryTimes = localResults.getTimePerOrder();
 	}
-	
-	
-	
 
 	private Optional<File> askForFile() {
 		FileChooser fileChooser = new FileChooser();
