@@ -159,6 +159,10 @@ public class Overview implements Initializable {
 
 		// mealConfigurationModalController.show();
 
+		
+		/*
+		 * TEST COMPLETABLE FUTURE: DELETE BEFORE SUBMISSIN
+		 */
 		ArrayList<Long> timePerOrder = new ArrayList<>();
 		ArrayList<Integer> ordersPerTrip = new ArrayList<>();
 		ArrayList<Long> distancePerTrip= new ArrayList<>();
@@ -179,14 +183,17 @@ public class Overview implements Initializable {
 		Results r = new Results(timePerOrder,ordersPerTrip,distancePerTrip,simType);
 		CompletableFuture<Results> f = CompletableFuture.completedFuture(r);
 		
-		
+		/*
+		 * END TEST OBJECT
+		 */
 		
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
 		//statsController.message("Hello World");
 		
 		Gui.getInstance().navigateTo("statistics");
-		statsController.sendToAllCharts(f);
+		
+		statsController.sendToAllCharts(f);//TEST
 	}
 
 	/**
