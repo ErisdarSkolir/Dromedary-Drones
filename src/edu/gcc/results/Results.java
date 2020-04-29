@@ -4,27 +4,50 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Results {
+	// Chart 1
 	private List<Long> timePerOrder;
 	private long averageTimePerOrder;
+	private long longestTime;
+	// Chart 2
 	private List<Long> odersPerTrip;
 	private long averageOrdersPerTrip;
-	private List<Long> distanceTraveledPerTrip;
-	private long averageDistanceTraveledPerTrip;
+	// Chart 3
+	private List<Long> distancePerTrip;
+	private long averageDistancePerTrip;
 
 	public Results(
 			ArrayList<Long> timePerOrder,
-			long averageTimePerOrder,
 			ArrayList<Long> odersPerTrip,
-			long averageOrdersPerTrip,
-			ArrayList<Long> distanceTraveledPerTrip,
-			long averageDistanceTraveledPerTrip
+			ArrayList<Long> distancePerTrip
 			) {
 		this.timePerOrder = timePerOrder;
-		this.averageTimePerOrder = averageTimePerOrder;
 		this.odersPerTrip = odersPerTrip;
-		this.averageOrdersPerTrip = averageOrdersPerTrip;
-		this.distanceTraveledPerTrip = distanceTraveledPerTrip;
-		this.averageDistanceTraveledPerTrip = averageDistanceTraveledPerTrip;
+		this.distancePerTrip = distancePerTrip;
+		
+		// Set average time per order
+		this.averageTimePerOrder = 0;
+		this.longestTime = 0;
+		for(Long time : this.timePerOrder) {
+			this.averageTimePerOrder += time;
+			if(time > this.longestTime) {
+				this.longestTime = time;
+			}
+		}
+		this.averageTimePerOrder = this.averageTimePerOrder / this.timePerOrder.size();
+		
+		// Set average orders per trip
+		this.averageOrdersPerTrip = 0;
+		for(Long orders : this.odersPerTrip) {
+			this.averageOrdersPerTrip += orders;
+		}
+		this.averageOrdersPerTrip = this.averageOrdersPerTrip / this.odersPerTrip.size();
+		
+		// Set average distance traveled per trip
+		this.averageDistancePerTrip = 0;
+		for(Long distance : this.distancePerTrip) {
+			this.averageDistancePerTrip += distance;
+		}
+		this.averageDistancePerTrip = this.averageDistancePerTrip / this.distancePerTrip.size();
 	}
 
 	public List<Long> getTimePerOrder() {
@@ -59,19 +82,28 @@ public class Results {
 		this.averageOrdersPerTrip = averageOrdersPerTrip;
 	}
 
-	public List<Long> getDistanceTraveledPerTrip() {
-		return distanceTraveledPerTrip;
+	public long getLongestTime() {
+		return longestTime;
 	}
 
-	public void setDistanceTraveledPerTrip(List<Long> distanceTraveledPerTrip) {
-		this.distanceTraveledPerTrip = distanceTraveledPerTrip;
+	public void setLongestTime(long longestTime) {
+		this.longestTime = longestTime;
 	}
 
-	public long getAverageDistanceTraveledPerTrip() {
-		return averageDistanceTraveledPerTrip;
+	public List<Long> getDistancePerTrip() {
+		return distancePerTrip;
 	}
 
-	public void setAverageDistanceTraveledPerTrip(long averageDistanceTraveledPerTrip) {
-		this.averageDistanceTraveledPerTrip = averageDistanceTraveledPerTrip;
+	public void setDistancePerTrip(List<Long> distancePerTrip) {
+		this.distancePerTrip = distancePerTrip;
 	}
+
+	public long getAverageDistancePerTrip() {
+		return averageDistancePerTrip;
+	}
+
+	public void setAverageDistancePerTrip(long averageDistancePerTrip) {
+		this.averageDistancePerTrip = averageDistancePerTrip;
+	}
+	
 }
