@@ -1,7 +1,6 @@
 package edu.gcc.gui;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -172,7 +171,9 @@ public class WindowBar implements Initializable {
 		fileMenuSeparator.setVisible(true);
 		
 		ObservableList<MenuItem> fileMenuItems = fileMenu.getItems();
-		Arrays.stream(menuItems).forEach(item -> fileMenuItems.add(0, item));
+		for(int i = 0; i < menuItems.length; i++) {
+			fileMenuItems.add(i, menuItems[i]);
+		}
 	}
 
 	public void setMenuItems(MenuItem... menuItems) {

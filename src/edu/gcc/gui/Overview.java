@@ -163,6 +163,9 @@ public class Overview implements Initializable {
 
 		// mealConfigurationModalController.show();
 
+		if(campusDropdown.getSelectionModel().getSelectedItem() == null)
+			return;
+		
 		/*
 		 * TEST COMPLETABLE FUTURE: DELETE BEFORE SUBMISSION
 		 */
@@ -251,8 +254,6 @@ public class Overview implements Initializable {
 
 		MenuItem runSimulationMenuItem = new MenuItem("Run Simulation");
 		runSimulationMenuItem.setOnAction(event -> this.runSimulation());
-
-		// MenuItem item2 = new
 
 		windowBarController.setFileMenuItems(
 			addCampusMenuItem,
