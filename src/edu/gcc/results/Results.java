@@ -10,7 +10,7 @@ public class Results {
 	private long longestTime;
 	// Chart 2
 	private ArrayList<Integer> ordersPerTrip = new ArrayList<Integer>();
-	private long averageOrdersPerTrip;
+	private int averageOrdersPerTrip;
 	// Chart 3
 	private ArrayList<Long> distancePerTrip = new ArrayList<Long>();
 	private long averageDistancePerTrip;
@@ -82,7 +82,7 @@ public class Results {
 		return averageOrdersPerTrip;
 	}
 
-	public void setAverageOrdersPerTrip(long averageOrdersPerTrip) {
+	public void setAverageOrdersPerTrip(int averageOrdersPerTrip) {
 		this.averageOrdersPerTrip = averageOrdersPerTrip;
 	}
 
