@@ -30,9 +30,13 @@ public class Statistics implements Initializable{
 	//Chart Axes
 	private NumberAxis xAxis1 = new NumberAxis();
 	private NumberAxis yAxis1 = new NumberAxis();
+	@FXML
 	private NumberAxis xAxis2 = new NumberAxis();
+	@FXML
 	private NumberAxis yAxis2 = new NumberAxis();
+	@FXML
 	private NumberAxis xAxis3 = new NumberAxis();
+	@FXML
 	private NumberAxis yAxis3 = new NumberAxis();
 	 
    /*
@@ -102,8 +106,8 @@ public class Statistics implements Initializable{
 		
 		//TODO Chart Labels
 		
-		xAxis2.setLabel("Order Number");
-		yAxis2.setLabel("Time (minutes)"); // creating the chart final
+		xAxis2.setLabel("Trip Number");
+		yAxis2.setLabel("Orders"); // creating the chart final
 		
 		chart_two.setTitle("Orders per Trip");
 		XYChart.Series series = new XYChart.Series();
@@ -127,8 +131,8 @@ public class Statistics implements Initializable{
 		
 		//TODO Chart Labels
 		
-		xAxis3.setLabel("Order Number");
-		yAxis3.setLabel("Time (minutes)"); // creating the chart final
+		xAxis3.setLabel("Distance");
+		yAxis3.setLabel("Trip Number"); // creating the chart final
 		
 		chart_three.setTitle("Distance per Trip");
 
