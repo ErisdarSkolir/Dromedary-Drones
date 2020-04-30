@@ -28,9 +28,7 @@ public class Statistics implements Initializable{
 	 */
 
 	//Chart Axes
-	@FXML
 	private NumberAxis xAxis1 = new NumberAxis();
-	@FXML
 	private NumberAxis yAxis1 = new NumberAxis();
 	private NumberAxis xAxis2 = new NumberAxis();
 	private NumberAxis yAxis2 = new NumberAxis();
