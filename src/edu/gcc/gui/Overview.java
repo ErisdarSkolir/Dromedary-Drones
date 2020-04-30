@@ -161,17 +161,17 @@ public class Overview implements Initializable {
 
 		
 		/*
-		 * TEST COMPLETABLE FUTURE: DELETE BEFORE SUBMISSIN
+		 * TEST COMPLETABLE FUTURE: DELETE BEFORE SUBMISSION
 		 */
 		ArrayList<Long> timePerOrder = new ArrayList<>();
 		ArrayList<Integer> ordersPerTrip = new ArrayList<>();
 		ArrayList<Long> distancePerTrip= new ArrayList<>();
 		String simType= "test";
 		
-		timePerOrder.add((long) 3);
-		timePerOrder.add((long) 9.5);
-		timePerOrder.add((long) 1);
-		timePerOrder.add((long) 5.3);
+		timePerOrder.add((long) 6000);
+		timePerOrder.add((long) 5500);
+		timePerOrder.add((long) 9000);
+		timePerOrder.add((long) 7242);
 		ordersPerTrip.add(4);
 		ordersPerTrip.add(2);
 		ordersPerTrip.add(7);
