@@ -34,6 +34,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.MenuItem;
 
 /**
  * Represents the main map/overview screen for the Dromedary Drones application.
@@ -51,6 +52,8 @@ public class Overview implements Initializable {
 	@FXML
 	private ComboBox<Campus> campusDropdown;
 
+	@FXML
+	private WindowBar windowBarController;
 	@FXML
 	private AddDeliveryModal deliveryModalController;
 	@FXML
@@ -141,11 +144,12 @@ public class Overview implements Initializable {
 	/**
 	 * Event handler for when the run simulation button is called. This opens
 	 * the run configuration modal.
-	 * @throws ExecutionException 
-	 * @throws InterruptedException 
+	 * 
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	@FXML
-	protected void runSimulation() throws InterruptedException, ExecutionException {
+	protected void runSimulation() {
 		/*
 		 * System.out.println("run button clicked");
 		 * 
@@ -159,15 +163,14 @@ public class Overview implements Initializable {
 
 		// mealConfigurationModalController.show();
 
-		
 		/*
 		 * TEST COMPLETABLE FUTURE: DELETE BEFORE SUBMISSION
 		 */
 		ArrayList<Long> timePerOrder = new ArrayList<>();
 		ArrayList<Integer> ordersPerTrip = new ArrayList<>();
-		ArrayList<Long> distancePerTrip= new ArrayList<>();
-		String simType= "test";
-		
+		ArrayList<Long> distancePerTrip = new ArrayList<>();
+		String simType = "test";
+
 		timePerOrder.add((long) 6000);
 		timePerOrder.add((long) 5500);
 		timePerOrder.add((long) 9000);
@@ -180,14 +183,19 @@ public class Overview implements Initializable {
 		distancePerTrip.add((long) 520);
 		distancePerTrip.add((long) 190);
 		distancePerTrip.add((long) 487);
-		Results r = new Results(timePerOrder,ordersPerTrip,distancePerTrip,simType);
+		Results r = new Results(
+				timePerOrder,
+				ordersPerTrip,
+				distancePerTrip,
+				simType
+		);
 		CompletableFuture<Results> f = CompletableFuture.completedFuture(r);
-		
+
 		ArrayList<Long> timePerOrder2 = new ArrayList<>();
 		ArrayList<Integer> ordersPerTrip2 = new ArrayList<>();
 		ArrayList<Long> distancePerTrip2 = new ArrayList<>();
-		String simType2= "test";
-		
+		String simType2 = "test";
+
 		timePerOrder2.add((long) 6600);
 		timePerOrder2.add((long) 5400);
 		timePerOrder2.add((long) 7400);
@@ -200,21 +208,26 @@ public class Overview implements Initializable {
 		distancePerTrip2.add((long) 502);
 		distancePerTrip2.add((long) 100);
 		distancePerTrip2.add((long) 420);
-		Results r2 = new Results(timePerOrder2,ordersPerTrip2,distancePerTrip2,simType2);
+		Results r2 = new Results(
+				timePerOrder2,
+				ordersPerTrip2,
+				distancePerTrip2,
+				simType2
+		);
 		CompletableFuture<Results> f2 = CompletableFuture.completedFuture(r2);
-		
+
 		/*
 		 * END TEST OBJECT
 		 */
-		
+
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
-		//statsController.message("Hello World");
-		
+		// statsController.message("Hello World");
+
 		Gui.getInstance().navigateTo("statistics");
-		
-		statsController.sendToAllCharts(f);//TEST
-		statsController.sendToAllCharts(f2);//TEST
+
+		statsController.sendToAllCharts(f);// TEST
+		statsController.sendToAllCharts(f2);// TEST
 	}
 
 	/**
@@ -232,6 +245,19 @@ public class Overview implements Initializable {
 				);
 
 		campusDropdown.setItems(campusXml.getAll());
+
+		MenuItem addCampusMenuItem = new MenuItem("Add Campus");
+		addCampusMenuItem.setOnAction(event -> this.newCampusButtonClicked());
+
+		MenuItem runSimulationMenuItem = new MenuItem("Run Simulation");
+		runSimulationMenuItem.setOnAction(event -> this.runSimulation());
+
+		// MenuItem item2 = new
+
+		windowBarController.setFileMenuItems(
+			addCampusMenuItem,
+			runSimulationMenuItem
+		);
 	}
 
 	/**

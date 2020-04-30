@@ -1,9 +1,8 @@
-package edu.gcc.gui;
+package edu.gcc.gui.modal;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import edu.gcc.gui.modal.OnHideListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;

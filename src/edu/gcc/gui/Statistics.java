@@ -75,14 +75,22 @@ public class Statistics implements Initializable{
 		// TODO: save to csv file here
 	}
 	
-	public void sendToAllCharts(CompletableFuture<Results> results) throws InterruptedException, ExecutionException{
-		Results localResults = results.get();
-		sendToFirstChart(localResults);
-		sendToSecondChart(localResults);
-		sendToThirdChart(localResults);
+	public void sendToAllCharts(CompletableFuture<Results> results) {
+		//FIXME: CompletableFuture should not block here.
+		
+		Results localResults;
+		try {
+			localResults = results.get();
+			
+			sendToFirstChart(localResults);
+			sendToSecondChart(localResults);
+			sendToThirdChart(localResults);
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private void sendToFirstChart(Results results) throws InterruptedException, ExecutionException {
+	private void sendToFirstChart(Results results) {
 		xAxis1.setLabel("Order Number");
 		yAxis1.setLabel("Time (minutes)"); // creating the chart final
 		chart_one.setTitle("Time per Delivery");
@@ -102,7 +110,7 @@ public class Statistics implements Initializable{
 		
 	}
 	
-	private void sendToSecondChart(Results results) throws InterruptedException, ExecutionException {
+	private void sendToSecondChart(Results results) {
 		
 		//TODO Chart Labels
 		
@@ -127,7 +135,7 @@ public class Statistics implements Initializable{
 		
 	}
 	
-	private void sendToThirdChart(Results results) throws InterruptedException, ExecutionException {
+	private void sendToThirdChart(Results results) {
 		
 		//TODO Chart Labels
 		

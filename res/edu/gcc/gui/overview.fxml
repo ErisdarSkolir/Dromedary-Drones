@@ -14,7 +14,7 @@
    <children>
       <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <fx:include source="menubar.fxml" />
+            <fx:include fx:id="windowBar" source="menubar.fxml" />
             <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
                   <HBox alignment="CENTER">

@@ -1,18 +1,23 @@
 package edu.gcc.gui;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
@@ -39,6 +44,14 @@ public class WindowBar implements Initializable {
 	private BooleanProperty draggable = new SimpleBooleanProperty(true);
 
 	@FXML
+	private Menu helpMenu;
+
+	@FXML
+	private Menu fileMenu;
+	@FXML
+	private SeparatorMenuItem fileMenuSeparator;
+
+	@FXML
 	private MenuBar windowControlMenu;
 
 	@FXML
@@ -52,7 +65,7 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	private Mdl2Icon restoreIcon;
-	
+
 	@FXML
 	private CheckMenuItem darkModeToggle;
 
@@ -148,12 +161,22 @@ public class WindowBar implements Initializable {
 			setWindowControls(false);
 			setDraggable(false);
 		}
-		
-		if(Config.get().getBoolean("dark_mode", false))
-		{
+
+		if (Config.get().getBoolean("dark_mode", false)) {
 			toolbar.setBlendMode(BlendMode.ADD);
 			darkModeToggle.setSelected(true);
 		}
+	}
+
+	public void setFileMenuItems(MenuItem... menuItems) {
+		fileMenuSeparator.setVisible(true);
+		
+		ObservableList<MenuItem> fileMenuItems = fileMenu.getItems();
+		Arrays.stream(menuItems).forEach(item -> fileMenuItems.add(0, item));
+	}
+
+	public void setMenuItems(MenuItem... menuItems) {
+		helpMenu.getItems().addAll(menuItems);
 	}
 
 	public void maximize() {

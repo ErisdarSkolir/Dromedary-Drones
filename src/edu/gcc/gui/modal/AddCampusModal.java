@@ -1,6 +1,5 @@
 package edu.gcc.gui.modal;
 
-import edu.gcc.gui.Modal;
 import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.CampusXml;
 import edu.gcc.maplocation.CampusXmlDao;
@@ -36,6 +35,8 @@ public class AddCampusModal extends Modal {
 	@FXML
 	protected void onCancelButtonClicked() {
 		clearFields();
+		removeOnHideListeners();
+		
 		hide();
 	}
 

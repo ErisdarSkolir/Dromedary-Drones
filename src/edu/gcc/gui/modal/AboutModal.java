@@ -1,4 +1,4 @@
-package edu.gcc.gui;
+package edu.gcc.gui.modal;
 
 import javafx.fxml.FXML;
 

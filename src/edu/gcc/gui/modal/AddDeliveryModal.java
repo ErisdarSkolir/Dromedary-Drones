@@ -1,6 +1,5 @@
 package edu.gcc.gui.modal;
 
-import edu.gcc.gui.Modal;
 import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
