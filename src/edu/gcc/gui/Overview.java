@@ -183,6 +183,26 @@ public class Overview implements Initializable {
 		Results r = new Results(timePerOrder,ordersPerTrip,distancePerTrip,simType);
 		CompletableFuture<Results> f = CompletableFuture.completedFuture(r);
 		
+		ArrayList<Long> timePerOrder2 = new ArrayList<>();
+		ArrayList<Integer> ordersPerTrip2 = new ArrayList<>();
+		ArrayList<Long> distancePerTrip2 = new ArrayList<>();
+		String simType2= "test";
+		
+		timePerOrder2.add((long) 6600);
+		timePerOrder2.add((long) 5400);
+		timePerOrder2.add((long) 7400);
+		timePerOrder2.add((long) 7212);
+		ordersPerTrip2.add(1);
+		ordersPerTrip2.add(3);
+		ordersPerTrip2.add(4);
+		ordersPerTrip2.add(2);
+		distancePerTrip2.add((long) 470);
+		distancePerTrip2.add((long) 502);
+		distancePerTrip2.add((long) 100);
+		distancePerTrip2.add((long) 420);
+		Results r2 = new Results(timePerOrder2,ordersPerTrip2,distancePerTrip2,simType2);
+		CompletableFuture<Results> f2 = CompletableFuture.completedFuture(r2);
+		
 		/*
 		 * END TEST OBJECT
 		 */
@@ -194,6 +214,7 @@ public class Overview implements Initializable {
 		Gui.getInstance().navigateTo("statistics");
 		
 		statsController.sendToAllCharts(f);//TEST
+		statsController.sendToAllCharts(f2);//TEST
 	}
 
 	/**

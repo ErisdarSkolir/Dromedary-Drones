@@ -28,7 +28,9 @@ public class Statistics implements Initializable{
 	 */
 
 	//Chart Axes
+	@FXML
 	private NumberAxis xAxis1 = new NumberAxis();
+	@FXML
 	private NumberAxis yAxis1 = new NumberAxis();
 	private NumberAxis xAxis2 = new NumberAxis();
 	private NumberAxis yAxis2 = new NumberAxis();
@@ -81,9 +83,7 @@ public class Statistics implements Initializable{
 	private void sendToFirstChart(Results results) throws InterruptedException, ExecutionException {
 		xAxis1.setLabel("Order Number");
 		yAxis1.setLabel("Time (minutes)"); // creating the chart final
-		chart_one.setTitle("Drone Data");
-		chart_one.setMaxWidth(500);
-		chart_one.setMaxHeight(300);
+		chart_one.setTitle("Time per Delivery");
 		XYChart.Series series = new XYChart.Series();
 		
 		
@@ -107,20 +107,18 @@ public class Statistics implements Initializable{
 		xAxis2.setLabel("Order Number");
 		yAxis2.setLabel("Time (minutes)"); // creating the chart final
 		
-		chart_two.setTitle("Drone Data");
-		chart_two.setMaxWidth(500);
-		chart_two.setMaxHeight(300);
+		chart_two.setTitle("Orders per Trip");
 		XYChart.Series series = new XYChart.Series();
 		
 		
 		
 		series.setName(results.getSimType());
-		List<Long> deliveryTimes = results.getTimePerOrder();
-		
+		List<Integer> ordersPerTrip = results.getordersPerTrip();
+
 		//TODO change algorithm for chart stats
-		for (int i = 0; i < deliveryTimes.size(); i++) {
-			// Dividing by 60 to get minutes
-			series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
+		for (int i = 0; i < ordersPerTrip.size(); i++) {
+		
+			series.getData().add(new XYChart.Data(i,ordersPerTrip.get(i)));
 		}
 		
 		chart_two.getData().add(series);
@@ -131,23 +129,22 @@ public class Statistics implements Initializable{
 		
 		//TODO Chart Labels
 		
-	//	xAxis3.setLabel("Order Number");
+		xAxis3.setLabel("Order Number");
 		yAxis3.setLabel("Time (minutes)"); // creating the chart final
 		
-		chart_three.setTitle("Drone Data");
-		chart_three.setMaxWidth(500);
-		chart_three.setMaxHeight(300);
+		chart_three.setTitle("Distance per Trip");
+
 		XYChart.Series series = new XYChart.Series();
 	
 		
 		
 		series.setName(results.getSimType());
-		List<Long> deliveryTimes = results.getTimePerOrder();
+		List<Long> tripDistances = results.getDistancePerTrip();
 		
 		//TODO change algorithm for chart stats
-	for (int i = 0; i < deliveryTimes.size(); i++) {
-		// Dividing by 60 to get minutes
-		series.getData().add(new XYChart.Data(i, deliveryTimes.get(i)/60));
+	for (int i = 0; i < tripDistances.size(); i++) {
+		
+		series.getData().add(new XYChart.Data(i, tripDistances.get(i)));
 	}
 		
 		chart_three.getData().add(series);
