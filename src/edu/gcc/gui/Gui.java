@@ -8,6 +8,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -135,14 +136,7 @@ public class Gui extends Application {
 		this.primaryStage = primaryStage;
 
 		setDarkMode(Config.get().getBoolean(Config.DARK_MODE_KEY, false));
-		darkModeProperty.addListener((observable, oldValue, newValue) -> {
-			Config.get().putBoolean(Config.DARK_MODE_KEY, newValue);
-
-			if (newValue)
-				darkMode();
-			else
-				lightMode();
-		});
+		darkModeProperty.addListener(this::darkModeChangeListener);
 
 		if (SystemUtils.IS_OS_WINDOWS)
 			primaryStage.initStyle(StageStyle.UNDECORATED);
@@ -151,9 +145,6 @@ public class Gui extends Application {
 
 		addScene("overview", "overview.fxml");
 		addScene("statistics", "statistics.fxml");
-
-		if (Config.get().getBoolean("dark_mode", false))
-			darkMode();
 
 		navigateTo("overview");
 		primaryStage.show();
@@ -223,21 +214,28 @@ public class Gui extends Application {
 	}
 
 	/**
-	 * Sets the JMetro scene to dark mode.
+	 * Change listener for dark mode property. Will set the configuration key,
+	 * and automatically apply the selected theme with JMetro.
+	 * 
+	 * @param observable
+	 * @param oldValue
+	 * @param newValue
 	 */
-	private void darkMode() {
-		jmetro.setStyle(Style.DARK);
+	private void darkModeChangeListener(
+			Observable observable,
+			Boolean oldValue,
+			Boolean newValue
+	) {
+		Config.get().putBoolean(Config.DARK_MODE_KEY, newValue);
+
+		if (Boolean.TRUE.equals(newValue))
+			jmetro.setStyle(Style.DARK);
+		else
+			jmetro.setStyle(Style.LIGHT);
+
 		jmetro.reApplyTheme();
 	}
 
-	/**
-	 * Sets the JMetro scene to light mode.
-	 */
-	private void lightMode() {
-		jmetro.setStyle(Style.LIGHT);
-		jmetro.reApplyTheme();
-	}
-	
 	/**
 	 * Restores down the JavaFX window.
 	 */
