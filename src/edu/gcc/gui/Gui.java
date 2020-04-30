@@ -8,6 +8,8 @@ import org.apache.commons.lang3.SystemUtils;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
@@ -79,6 +81,12 @@ public class Gui extends Application {
 	private StringProperty titleProperty = new SimpleStringProperty();
 
 	/**
+	 * Boolean property for whether the application should be in dark mode or
+	 * not.
+	 */
+	private BooleanProperty darkModeProperty = new SimpleBooleanProperty();
+
+	/**
 	 * Returns the JavaFX controller for the given id and automatically casts it
 	 * to the correct class.
 	 * 
@@ -126,6 +134,16 @@ public class Gui extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 
+		setDarkMode(Config.get().getBoolean(Config.DARK_MODE_KEY, false));
+		darkModeProperty.addListener((observable, oldValue, newValue) -> {
+			Config.get().putBoolean(Config.DARK_MODE_KEY, newValue);
+
+			if (newValue)
+				darkMode();
+			else
+				lightMode();
+		});
+
 		if (SystemUtils.IS_OS_WINDOWS)
 			primaryStage.initStyle(StageStyle.UNDECORATED);
 
@@ -134,9 +152,9 @@ public class Gui extends Application {
 		addScene("overview", "overview.fxml");
 		addScene("statistics", "statistics.fxml");
 
-		if(Config.get().getBoolean("dark_mode", false))
+		if (Config.get().getBoolean("dark_mode", false))
 			darkMode();
-		
+
 		navigateTo("overview");
 		primaryStage.show();
 	}
@@ -205,16 +223,9 @@ public class Gui extends Application {
 	}
 
 	/**
-	 * Restores down the JavaFX window.
-	 */
-	public void restoreDown() {
-		primaryStage.setMaximized(false);
-	}
-
-	/**
 	 * Sets the JMetro scene to dark mode.
 	 */
-	public void darkMode() {
+	private void darkMode() {
 		jmetro.setStyle(Style.DARK);
 		jmetro.reApplyTheme();
 	}
@@ -222,9 +233,16 @@ public class Gui extends Application {
 	/**
 	 * Sets the JMetro scene to light mode.
 	 */
-	public void lightMode() {
+	private void lightMode() {
 		jmetro.setStyle(Style.LIGHT);
 		jmetro.reApplyTheme();
+	}
+	
+	/**
+	 * Restores down the JavaFX window.
+	 */
+	public void restoreDown() {
+		primaryStage.setMaximized(false);
 	}
 
 	/**
@@ -253,6 +271,34 @@ public class Gui extends Application {
 			titleProperty.set("Dromedary Drones");
 		else
 			titleProperty.set("Dromedary Drones: " + title);
+	}
+
+	/**
+	 * Returns the dark mode property.
+	 * 
+	 * @return The dark mode property.
+	 */
+	public BooleanProperty getDarkModeProperty() {
+		return darkModeProperty;
+	}
+
+	/**
+	 * Sets the dark mode property.
+	 * 
+	 * @param darkMode True if the application is in dark mode, false for light
+	 *                 mode.
+	 */
+	public void setDarkMode(boolean darkMode) {
+		this.darkModeProperty.set(darkMode);
+	}
+
+	/**
+	 * Returns true if the application is in dark mode, otherwise false.
+	 * 
+	 * @return True if the pplication is in dark mode.
+	 */
+	public boolean isDarkMode() {
+		return darkModeProperty.get();
 	}
 
 	/**

@@ -8,6 +8,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
@@ -43,6 +44,9 @@ public class WindowBar implements Initializable {
 	private BooleanProperty draggable = new SimpleBooleanProperty(true);
 
 	@FXML
+	private Menu backButton;
+
+	@FXML
 	private Menu helpMenu;
 
 	@FXML
@@ -70,15 +74,8 @@ public class WindowBar implements Initializable {
 
 	@FXML
 	protected void toggleDarkMode(ActionEvent event) {
-		if (((CheckMenuItem) event.getSource()).isSelected()) {
-			Config.get().putBoolean("dark_mode", true);
-			Gui.getInstance().darkMode();
-			toolbar.setBlendMode(BlendMode.ADD);
-		} else {
-			Config.get().putBoolean("dark_mode", false);
-			Gui.getInstance().lightMode();
-			toolbar.setBlendMode(BlendMode.MULTIPLY);
-		}
+		Gui.getInstance()
+				.setDarkMode(((CheckMenuItem) event.getSource()).isSelected());
 	}
 
 	@FXML
@@ -161,17 +158,30 @@ public class WindowBar implements Initializable {
 			setDraggable(false);
 		}
 
-		if (Config.get().getBoolean("dark_mode", false)) {
-			toolbar.setBlendMode(BlendMode.ADD);
-			darkModeToggle.setSelected(true);
-		}
+		Gui.getInstance()
+				.getDarkModeProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					if (newValue) {
+						toolbar.setBlendMode(BlendMode.ADD);
+						darkModeToggle.setSelected(true);
+					} else {
+						toolbar.setBlendMode(BlendMode.MULTIPLY);
+						darkModeToggle.setSelected(false);
+					}
+				});
+	}
+
+	public void backButtonEnableAndAction(EventHandler<MouseEvent> event) {
+		backButton.setVisible(true);
+
+		backButton.getGraphic().setOnMouseReleased(event);
 	}
 
 	public void setFileMenuItems(MenuItem... menuItems) {
 		fileMenuSeparator.setVisible(true);
-		
+
 		ObservableList<MenuItem> fileMenuItems = fileMenu.getItems();
-		for(int i = 0; i < menuItems.length; i++) {
+		for (int i = 0; i < menuItems.length; i++) {
 			fileMenuItems.add(i, menuItems[i]);
 		}
 	}

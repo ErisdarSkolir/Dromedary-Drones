@@ -8,6 +8,8 @@ import java.util.prefs.Preferences;
  * @author Luke Donmoyer
  */
 public class Config {
+	public static final String DARK_MODE_KEY = "dark_mode";
+	
 	private static Preferences preferences;
 
 	/*
