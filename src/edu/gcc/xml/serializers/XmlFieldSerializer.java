@@ -6,6 +6,10 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.ximpleware.NavException;
+import com.ximpleware.VTDGen;
+import com.ximpleware.VTDNav;
+
 import edu.gcc.xml.exception.XmlDeserializeException;
 import edu.gcc.xml.exception.XmlSerializationException;
 
@@ -32,7 +36,14 @@ public abstract class XmlFieldSerializer {
 	public String objToXml(final String elementName, final Object object) {
 		try {
 			stringWriter.getBuffer().setLength(0);
-			subclassToXML(elementName, object);
+
+			xmlWriter.writeStartElement(elementName);
+
+			subclassToXML(object);
+
+			xmlWriter.writeEndElement();
+			xmlWriter.close();
+
 			return stringWriter.toString();
 		} catch (Exception e) {
 			throw new XmlSerializationException(
@@ -45,14 +56,17 @@ public abstract class XmlFieldSerializer {
 		}
 	}
 
-	protected abstract void subclassToXML(
-			final String elementName,
-			final Object object
-	) throws XMLStreamException;
+	protected abstract void subclassToXML(final Object object)
+			throws XMLStreamException;
 
 	public Object xmlToObj(final String xml) {
 		try {
-			return subclassToObject(xml);
+			VTDGen gen = new VTDGen();
+
+			gen.setDoc(xml.getBytes());
+			gen.parse(false);
+
+			return subclassToObject(gen.getNav());
 		} catch (Exception e) {
 			throw new XmlDeserializeException(
 					String.format(
@@ -64,5 +78,6 @@ public abstract class XmlFieldSerializer {
 		}
 	}
 
-	protected abstract Object subclassToObject(final String xml);
+	protected abstract Object subclassToObject(final VTDNav navigator)
+			throws NavException;
 }

@@ -5,10 +5,10 @@ import javax.xml.stream.XMLStreamException;
 import com.ximpleware.NavException;
 import com.ximpleware.VTDNav;
 
-public class IntegerSerializer extends XmlFieldSerializer {
+public class LongSerializer extends XmlFieldSerializer {
 	@Override
 	public Class<?>[] getClassesForSerializer() {
-		return new Class<?>[] { Integer.class, int.class };
+		return new Class<?>[] { Long.class, long.class };
 	}
 
 	@Override
@@ -18,13 +18,14 @@ public class IntegerSerializer extends XmlFieldSerializer {
 	}
 
 	@Override
-	protected Object subclassToObject(VTDNav navigator) throws NavException {
+	protected Object subclassToObject(final VTDNav navigator)
+			throws NavException {
 		navigator.toElement(VTDNav.FIRST_CHILD);
 
 		int value = navigator.getText();
 
 		if (value != -1)
-			return Integer.parseInt(navigator.toString(value));
+			return Long.parseLong(navigator.toString(value));
 
 		throw new NavException("This element does not have text");
 	}

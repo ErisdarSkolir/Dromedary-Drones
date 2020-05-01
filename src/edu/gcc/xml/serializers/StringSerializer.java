@@ -1,22 +1,30 @@
 package edu.gcc.xml.serializers;
 
-import java.util.stream.Stream;
+import javax.xml.stream.XMLStreamException;
 
-public class StringSerializer implements XmlFieldSerializer {
+import com.ximpleware.NavException;
+import com.ximpleware.VTDNav;
+
+public class StringSerializer extends XmlFieldSerializer {
 	@Override
-	public Stream<Class<?>> getClassesForSerializer() {
-		return Stream.of(String.class);
+	public Class<?>[] getClassesForSerializer() {
+		return new Class<?>[] { String.class };
 	}
 
 	@Override
-	public String toXML(Object object) {
-		// TODO Auto-generated method stub
-		return null;
+	protected void subclassToXML(Object object) throws XMLStreamException {
+		xmlWriter.writeCharacters(object.toString());
 	}
 
 	@Override
-	public Object toObject(String xml) {
-		// TODO Auto-generated method stub
-		return null;
+	protected Object subclassToObject(VTDNav navigator) throws NavException {
+		navigator.toElement(VTDNav.FIRST_CHILD);
+
+		int value = navigator.getText();
+
+		if (value != -1)
+			return navigator.toString(value);
+
+		throw new NavException("This element does not have text");
 	}
 }

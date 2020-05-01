@@ -1,25 +1,42 @@
 package edu.gcc.xml.serializers;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 
 public class XmlFieldSerializerRegistry {
-	public static Map<Class<?>, XmlFieldSerializer<?>> serializers = new HashMap<>();
-	
+	public static final SetMultimap<Class<?>, XmlFieldSerializer> serializers = MultimapBuilder
+			.hashKeys()
+			.linkedHashSetValues(1)
+			.build();
+
 	static {
 		registerSerializer(new IntegerSerializer());
+		registerSerializer(new DoubleSerializer());
+		registerSerializer(new FloatSerializer());
+		registerSerializer(new LongSerializer());
+		registerSerializer(new ShortSerializer());
+		registerSerializer(new CharacterSerializer());
+		registerSerializer(new StringSerializer());
+		registerSerializer(new BooleanSerializer());
+	}
+
+	public static XmlFieldSerializer getSerializer(final Class<?> clazz) {
+		return serializers.get(clazz).iterator().next();
 	}
 	
-	public static <T> void registerSerializer(
-			final XmlFieldSerializer<T> serializer
-	) {
-		Class<?> clazz = serializer.getClassForSerializer();
+	public static void registerSerializer(final XmlFieldSerializer serializer) {
+		Class<?>[] classes = serializer.getClassesForSerializer();
 
-		if (serializers.containsKey(clazz))
-			throw new IllegalArgumentException(
-					String.format("Serializer already registered for %s", clazz)
-			);
-		
-		serializers.put(clazz, serializer);
+		for (Class<?> clazz : classes) {
+			if (serializers.containsKey(clazz))
+				throw new IllegalArgumentException(
+						String.format(
+							"Serializer already registered for %s",
+							clazz
+						)
+				);
+
+			serializers.put(clazz, serializer);
+		}
 	}
 }
