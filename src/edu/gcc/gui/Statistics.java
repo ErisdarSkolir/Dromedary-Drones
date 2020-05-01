@@ -26,7 +26,9 @@ public class Statistics implements Initializable {
 	 */
 
 	// Chart Axes
+	@FXML
 	private NumberAxis xAxis1 = new NumberAxis();
+	@FXML
 	private NumberAxis yAxis1 = new NumberAxis();
 	@FXML
 	private NumberAxis xAxis2 = new NumberAxis();
@@ -41,17 +43,17 @@ public class Statistics implements Initializable {
 	 * LineCharts
 	 */
 	@FXML
-	private LineChart<Number, Number> chart_one = new LineChart<Number, Number>(
+	private LineChart<Number, Number> chart_one = new LineChart<>(
 			xAxis1,
 			yAxis1
 	);
 	@FXML
-	private LineChart<Number, Number> chart_two = new LineChart<Number, Number>(
+	private LineChart<Number, Number> chart_two = new LineChart<>(
 			xAxis2,
 			yAxis2
 	);
 	@FXML
-	private LineChart<Number, Number> chart_three = new LineChart<Number, Number>(
+	private LineChart<Number, Number> chart_three = new LineChart<>(
 			xAxis3,
 			yAxis3
 	);
