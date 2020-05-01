@@ -5,14 +5,14 @@ import java.util.ArrayList;
 
 public class Results {
 	// Chart 1
-	private ArrayList<Long> timePerOrder = new ArrayList<Long>();
+	private List<Long> timePerOrder;
 	private long averageTimePerOrder;
 	private long longestTime;
 	// Chart 2
-	private ArrayList<Integer> ordersPerTrip = new ArrayList<Integer>();
+	private List<Integer> ordersPerTrip;
 	private int averageOrdersPerTrip;
 	// Chart 3
-	private ArrayList<Long> distancePerTrip = new ArrayList<Long>();
+	private List<Long> distancePerTrip;
 	private long averageDistancePerTrip;
 	
 	private String simType;
