@@ -54,9 +54,9 @@ public class EditMealModal extends Modal {
 		this.meal = meal;
 
 		nameField.setText(meal.getName());
-		burgerSpinner.getValueFactory().setValue(1);
-		friesSpinner.getValueFactory().setValue(1);
-		drinkSpinner.getValueFactory().setValue(1);
+		burgerSpinner.getValueFactory().setValue(meal.getBurgers());
+		friesSpinner.getValueFactory().setValue(meal.getFries());
+		drinkSpinner.getValueFactory().setValue(meal.getDrinks());
 		percentSlider.setValue(meal.getProbability());
 	}
 
@@ -69,14 +69,14 @@ public class EditMealModal extends Modal {
 		drinkSpinner.getValueFactory().setValue(0);
 		percentSlider.setValue(0.0);
 	}
-	
+
 	private void updateMeal(final Meal meal) {
 		meal.setName(nameField.getText());
 		meal.setBurgers(burgerSpinner.getValue());
 		meal.setDrinks(drinkSpinner.getValue());
 		meal.setFries(friesSpinner.getValue());
 		meal.setProbability(percentSlider.getValue());
-		
+
 		mealXml.update(meal);
 	}
 

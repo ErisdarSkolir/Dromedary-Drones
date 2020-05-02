@@ -4,8 +4,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
+
 import edu.gcc.gui.Gui;
 import edu.gcc.gui.Statistics;
+
+import edu.gcc.drone.Drone;
+import edu.gcc.drone.DroneXml;
+import edu.gcc.drone.DroneXmlDao;
 import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
@@ -19,6 +24,7 @@ import jfxtras.scene.control.LocalTimeTextField;
 
 public class RunConfigurationModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
+	private DroneXmlDao droneXml = DroneXml.getInstance();
 
 	@FXML
 	private LocalTimeTextField timeField;
@@ -32,10 +38,13 @@ public class RunConfigurationModal extends Modal {
 	private Label droneNumber;
 
 	private LoadedMealsModal loadedMealsModalController;
+	private LoadedDronesModal loadedDronesModalController;
 
 	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(
 		true
 	);
+	private ObservableList<Drone> loadedDrones = droneXml
+			.getObservableLoadedDrones(true);
 
 	@FXML
 	private void editLoadedMealsClicked() {
@@ -47,7 +56,10 @@ public class RunConfigurationModal extends Modal {
 
 	@FXML
 	private void editLoadedDronesClicked() {
-
+		loadedDronesModalController.setOnHideListener(
+			() -> droneNumber.setText(Integer.toString(loadedDrones.size()))
+		);
+		loadedDronesModalController.show();
 	}
 
 	@FXML
@@ -57,6 +69,7 @@ public class RunConfigurationModal extends Modal {
 
 	@FXML
 	private void runButtonClicked() {
+
 		//List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
 //		Statistics statsController = 
 //				Gui.getInstance().getControllerForScene("statistics", Statistics.class); 
@@ -68,6 +81,7 @@ public class RunConfigurationModal extends Modal {
 //			return simulation.runSimulation();
 //		}).thenAccept(result-> statsController.sendToAllCharts(result));
 //			
+
 	}
 
 	@Override
@@ -77,11 +91,16 @@ public class RunConfigurationModal extends Modal {
 		mealNumber.setText(Integer.toString(loadedMeals.size()));
 	}
 
-	public void setLoadedMealsModalController(
+	public void setControllers(
 			final LoadedMealsModal loadedMealsModal,
-			final EditMealModal editMealModal
+			final EditMealModal editMealModal,
+			final LoadedDronesModal loadedDronesModal,
+			final EditDroneModal editDroneModal
 	) {
 		loadedMealsModalController = loadedMealsModal;
 		loadedMealsModal.setEditMealModalController(editMealModal);
+
+		loadedDronesModalController = loadedDronesModal;
+		loadedDronesModalController.setEditDroneModalController(editDroneModal);
 	}
 }
