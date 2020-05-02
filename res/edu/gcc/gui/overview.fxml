@@ -97,5 +97,7 @@
       <fx:include fx:id="runConfigurationModal" source="run_configuration_modal.fxml" />
       <fx:include fx:id="mealConfigurationModal" source="edit_loaded_meals_modal.fxml" />
       <fx:include fx:id="editMealModal" source="meal_configuration_modal.fxml" />
+      <fx:include fx:id="droneConfigurationModal" source="edit_loaded_drones_modal.fxml" />
+      <fx:include fx:id="editDroneModal" source="edit_drone_modal.fxml" />
    </children>
 </AnchorPane>

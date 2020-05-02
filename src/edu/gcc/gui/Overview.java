@@ -18,7 +18,9 @@ import edu.gcc.gui.modal.AddCampusModal;
 import edu.gcc.gui.modal.AddDeliveryModal;
 import edu.gcc.gui.modal.EditCampusModal;
 import edu.gcc.gui.modal.EditDeliveryModal;
+import edu.gcc.gui.modal.EditDroneModal;
 import edu.gcc.gui.modal.EditMealModal;
+import edu.gcc.gui.modal.LoadedDronesModal;
 import edu.gcc.gui.modal.LoadedMealsModal;
 import edu.gcc.gui.modal.RunConfigurationModal;
 import edu.gcc.maplocation.Campus;
@@ -67,7 +69,11 @@ public class Overview implements Initializable {
 	@FXML
 	private EditMealModal editMealModalController;
 	@FXML
+	private EditDroneModal editDroneModalController;
+	@FXML
 	private LoadedMealsModal mealConfigurationModalController;
+	@FXML
+	private LoadedDronesModal droneConfigurationModalController;
 
 	@FXML
 	private MapView mapView;
@@ -245,9 +251,11 @@ public class Overview implements Initializable {
 			runSimulationMenuItem
 		);
 
-		runConfigurationModalController.setLoadedMealsModalController(
+		runConfigurationModalController.setControllers(
 			mealConfigurationModalController,
-			editMealModalController
+			editMealModalController,
+			droneConfigurationModalController,
+			editDroneModalController
 		);
 	}
 
