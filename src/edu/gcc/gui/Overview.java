@@ -1,9 +1,7 @@
 package edu.gcc.gui;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.collect.BiMap;
@@ -20,8 +18,8 @@ import edu.gcc.gui.modal.AddCampusModal;
 import edu.gcc.gui.modal.AddDeliveryModal;
 import edu.gcc.gui.modal.EditCampusModal;
 import edu.gcc.gui.modal.EditDeliveryModal;
-import edu.gcc.gui.modal.LoadedMealsModal;
 import edu.gcc.gui.modal.EditMealModal;
+import edu.gcc.gui.modal.LoadedMealsModal;
 import edu.gcc.gui.modal.RunConfigurationModal;
 import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.CampusXml;
@@ -29,7 +27,6 @@ import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
-import edu.gcc.results.Results;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;

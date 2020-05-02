@@ -23,8 +23,16 @@
       </Label>
       <HBox>
          <children>
-            <VBox alignment="TOP_RIGHT">
+            <VBox alignment="TOP_CENTER">
                <children>
+                  <Label text="Loaded">
+                     <VBox.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
                   <ListView fx:id="loadedMealList" prefHeight="250.0" prefWidth="150.0" />
                </children>
                <HBox.margin>
@@ -77,6 +85,14 @@
             </VBox>
             <VBox alignment="TOP_CENTER">
                <children>
+                  <Label text="Unloaded">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" />
+                     </VBox.margin>
+                  </Label>
                   <ListView fx:id="unloadedMealList" prefHeight="250.0" prefWidth="150.0" />
                </children>
                <HBox.margin>

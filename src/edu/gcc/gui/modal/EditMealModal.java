@@ -28,7 +28,7 @@ public class EditMealModal extends Modal {
 	@FXML
 	protected void saveButtonClicked() {
 		if (meal != null)
-			mealXml.update(meal);
+			updateMeal(meal);
 		else
 			mealXml.insert(createNewMeal());
 
@@ -57,17 +57,27 @@ public class EditMealModal extends Modal {
 		burgerSpinner.getValueFactory().setValue(1);
 		friesSpinner.getValueFactory().setValue(1);
 		drinkSpinner.getValueFactory().setValue(1);
-		percentSlider.setValue(meal.getProbability() * 100.0);
+		percentSlider.setValue(meal.getProbability());
 	}
 
 	private void clearFields() {
 		meal = null;
 
-		burgerSpinner.getValue();
+		nameField.clear();
 		burgerSpinner.getValueFactory().setValue(0);
 		friesSpinner.getValueFactory().setValue(0);
 		drinkSpinner.getValueFactory().setValue(0);
 		percentSlider.setValue(0.0);
+	}
+	
+	private void updateMeal(final Meal meal) {
+		meal.setName(nameField.getText());
+		meal.setBurgers(burgerSpinner.getValue());
+		meal.setDrinks(drinkSpinner.getValue());
+		meal.setFries(friesSpinner.getValue());
+		meal.setProbability(percentSlider.getValue());
+		
+		mealXml.update(meal);
 	}
 
 	private void hideAndClose() {

@@ -16,7 +16,7 @@
 
 <VBox fx:id="container" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: #b2bec3;" styleClass="background" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.modal.RunConfigurationModal">
    <children>
-      <MenuBar blendMode="ADD" onMouseDragged="#onMenuDrag" prefHeight="20.0" />
+      <MenuBar blendMode="ADD" onMouseDragged="#onMenuDrag" onMousePressed="#onMenuPressed" prefHeight="20.0" />
       <Label text="Run Configuration">
          <font>
             <Font size="18.0" />
@@ -61,7 +61,7 @@
             </Button>
             <HBox alignment="CENTER_LEFT" GridPane.rowIndex="2">
                <children>
-                  <Label fx:id="mealNumber" text="20">
+                  <Label fx:id="mealNumber" text="0">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -74,7 +74,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
                <children>
-                  <Label fx:id="droneNumber" text="4">
+                  <Label fx:id="droneNumber" text="0">
                      <font>
                         <Font size="18.0" />
                      </font>

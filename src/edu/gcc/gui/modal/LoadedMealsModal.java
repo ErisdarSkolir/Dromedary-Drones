@@ -91,7 +91,7 @@ public class LoadedMealsModal extends Modal {
 	}
 
 	private void updateSelectedLoaded(final boolean loaded) {
-		if (selectedMeal == null)
+		if (selectedMeal == null || selectedMeal.isLoaded() == loaded)
 			return;
 
 		selectedMeal.setLoaded(loaded);
