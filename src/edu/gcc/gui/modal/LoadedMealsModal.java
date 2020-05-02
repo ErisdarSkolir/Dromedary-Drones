@@ -77,7 +77,7 @@ public class LoadedMealsModal extends Modal {
 			selectedMeal = newValue;
 
 			if (unloadedMealProperty.get() != null)
-				loadedMealList.getSelectionModel().clearSelection();
+				unloadedMealList.getSelectionModel().clearSelection();
 		});
 		unloadedMealProperty.addListener((observable, oldValue, newValue) -> {
 			if (newValue == null)
@@ -103,14 +103,4 @@ public class LoadedMealsModal extends Modal {
 	) {
 		this.editMealModalController = editMealModalController;
 	}
-
-	/*
-	 * private void loadedMealListSelectionListener( Observable observable, Meal
-	 * newValue, Meal oldValue ) { if (newValue == null) return;
-	 * 
-	 * selectedMeal = newValue;
-	 * 
-	 * if (unloadedMealList.getSelectionModel() .selectedItemProperty() .get()
-	 * != null) loadedMealList.getSelectionModel().clearSelection(); }
-	 */
 }

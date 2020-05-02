@@ -41,7 +41,7 @@
                         <Mdl2Icon iconCode="E76B" />
                      </graphic>
                   </Button>
-                  <Button fx:id="unloadMealClicked" mnemonicParsing="false">
+                  <Button mnemonicParsing="false" onAction="#unloadMealClicked">
                      <VBox.margin>
                         <Insets bottom="8.0" top="8.0" />
                      </VBox.margin>
