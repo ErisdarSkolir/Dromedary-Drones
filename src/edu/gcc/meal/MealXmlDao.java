@@ -25,4 +25,7 @@ public interface MealXmlDao {
 	
 	@XPathQuery(value = "//Meal", list = true)
 	public List<Meal> getAll();
+	
+	@XPathQuery(value = "//Meal[loaded[text()='{0}']]", list = true, reactive = true)
+	public ObservableList<Meal> getAllLoadedObservable(final boolean loaded);
 }

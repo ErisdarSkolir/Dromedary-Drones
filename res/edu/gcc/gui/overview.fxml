@@ -92,8 +92,10 @@
       </VBox>
       <fx:include fx:id="campusModal" source="add_campus_modal.fxml" />
       <fx:include fx:id="deliveryModal" source="add_dropoff_modal.fxml" />
-      <fx:include fx:id="mealConfigurationModal" source="meal_configuration_modal.fxml" />
       <fx:include fx:id="editDeliveryModal" source="edit_dropoff_modal.fxml" />
       <fx:include fx:id="editCampusModal" source="edit_campus_modal.fxml" />
+      <fx:include fx:id="runConfigurationModal" source="run_configuration_modal.fxml" />
+      <fx:include fx:id="mealConfigurationModal" source="edit_loaded_meals_modal.fxml" />
+      <fx:include fx:id="editMealModal" source="meal_configuration_modal.fxml" />
    </children>
 </AnchorPane>

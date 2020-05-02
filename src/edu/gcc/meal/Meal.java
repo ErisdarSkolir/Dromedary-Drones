@@ -7,10 +7,22 @@ public class Meal {
 	private long id;
 
 	private String name;
+
+	private int burgers;
+	private int fries;
+	private int drinks;
 	private float probability;
 
-	public Meal(final String name, final float probability) {
+	private boolean loaded;
+
+	public Meal(
+			final String name, final int burgers, final int fries,
+			final int drinks, final float probability
+	) {
 		this.name = name;
+		this.burgers = burgers;
+		this.fries = fries;
+		this.drinks= drinks;
 		this.probability = probability;
 	}
 
@@ -30,6 +42,26 @@ public class Meal {
 		this.probability = probability;
 	}
 
+	public void setLoaded(boolean loaded) {
+		this.loaded = loaded;
+	}
+
+	public boolean isLoaded() {
+		return loaded;
+	}
+
+	public int getBurgers() {
+		return burgers;
+	}
+	
+	public int getDrinks() {
+		return drinks;
+	}
+	
+	public int getFries() {
+		return fries;
+	}
+	
 	@Override
 	public String toString() {
 		return name;
@@ -54,7 +86,10 @@ public class Meal {
 			return false;
 
 		Meal meal = (Meal) obj;
-		return meal.id == this.id && meal.name.equals(this.name)
-				&& Float.floatToIntBits(meal.probability) == Float.floatToIntBits(this.probability);
+		return meal.id == this.id &&
+				meal.name.equals(this.name) &&
+				Float.floatToIntBits(meal.probability) == Float.floatToIntBits(
+					this.probability
+				);
 	}
 }
