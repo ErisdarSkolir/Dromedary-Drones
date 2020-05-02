@@ -2,10 +2,15 @@ package edu.gcc.gui.modal;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
+import edu.gcc.gui.Gui;
+import edu.gcc.gui.Statistics;
 import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
+import edu.gcc.results.Results;
+import edu.gcc.simulation.Simulation;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -53,12 +58,16 @@ public class RunConfigurationModal extends Modal {
 	@FXML
 	private void runButtonClicked() {
 		//List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
-		
-		/*CompletableFuture<Results> future = CompletableFuture.supplyAsync(() -> {
-			Simulation simulation = new Simulation();
-			
-			return null;
-		});*/
+//		Statistics statsController = 
+//				Gui.getInstance().getControllerForScene("statistics", Statistics.class); 
+//		
+//		
+//		CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> 
+//		{
+//			Simulation simulation = new Simulation();
+//			return simulation.runSimulation();
+//		}).thenAccept(result-> statsController.sendToAllCharts(result));
+//			
 	}
 
 	@Override

@@ -79,19 +79,12 @@ public class Statistics implements Initializable {
 		// TODO: save to csv file here
 	}
 
-	public void sendToAllCharts(CompletableFuture<Results> results) {
-		// FIXME: CompletableFuture should not block here.
-
-		Results localResults;
-		try {
-			localResults = results.get();
+	public void sendToAllCharts(Results localResults) {
 
 			sendToFirstChart(localResults);
 			sendToSecondChart(localResults);
 			sendToThirdChart(localResults);
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	private void sendToFirstChart(Results results) {
