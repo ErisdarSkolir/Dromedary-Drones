@@ -192,6 +192,8 @@ public class XmlSchema<T> {
 						.removeIf(listValue -> funGetPrimaryKey.apply(listValue).equals(funGetPrimaryKey.apply(value)));
 				rx.getObservable().add(value);
 			}
+			else
+				rx.getObservable().remove(value);
 		}
 
 		return result;
