@@ -20,7 +20,9 @@ import edu.gcc.gui.modal.AddCampusModal;
 import edu.gcc.gui.modal.AddDeliveryModal;
 import edu.gcc.gui.modal.EditCampusModal;
 import edu.gcc.gui.modal.EditDeliveryModal;
-import edu.gcc.gui.modal.MealConfigurationModal;
+import edu.gcc.gui.modal.LoadedMealsModal;
+import edu.gcc.gui.modal.EditMealModal;
+import edu.gcc.gui.modal.RunConfigurationModal;
 import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.CampusXml;
 import edu.gcc.maplocation.CampusXmlDao;
@@ -54,6 +56,9 @@ public class Overview implements Initializable {
 
 	@FXML
 	private WindowBar windowBarController;
+
+	@FXML
+	private RunConfigurationModal runConfigurationModalController;
 	@FXML
 	private AddDeliveryModal deliveryModalController;
 	@FXML
@@ -63,7 +68,9 @@ public class Overview implements Initializable {
 	@FXML
 	private EditCampusModal editCampusModalController;
 	@FXML
-	private MealConfigurationModal mealConfigurationModalController;
+	private EditMealModal editMealModalController;
+	@FXML
+	private LoadedMealsModal mealConfigurationModalController;
 
 	@FXML
 	private MapView mapView;
@@ -163,74 +170,55 @@ public class Overview implements Initializable {
 
 		// mealConfigurationModalController.show();
 
-		if(campusDropdown.getSelectionModel().getSelectedItem() == null)
+		if (campusDropdown.getSelectionModel().getSelectedItem() == null)
 			return;
-		
+
 		/*
 		 * TEST COMPLETABLE FUTURE: DELETE BEFORE SUBMISSION
 		 */
-		ArrayList<Long> timePerOrder = new ArrayList<>();
-		ArrayList<Integer> ordersPerTrip = new ArrayList<>();
-		ArrayList<Long> distancePerTrip = new ArrayList<>();
-		String simType = "test";
-
-		timePerOrder.add((long) 6000);
-		timePerOrder.add((long) 5500);
-		timePerOrder.add((long) 9000);
-		timePerOrder.add((long) 7242);
-		ordersPerTrip.add(4);
-		ordersPerTrip.add(2);
-		ordersPerTrip.add(7);
-		ordersPerTrip.add(1);
-		distancePerTrip.add((long) 450);
-		distancePerTrip.add((long) 520);
-		distancePerTrip.add((long) 190);
-		distancePerTrip.add((long) 487);
-		Results r = new Results(
-				timePerOrder,
-				ordersPerTrip,
-				distancePerTrip,
-				simType
-		);
-		CompletableFuture<Results> f = CompletableFuture.completedFuture(r);
-
-		ArrayList<Long> timePerOrder2 = new ArrayList<>();
-		ArrayList<Integer> ordersPerTrip2 = new ArrayList<>();
-		ArrayList<Long> distancePerTrip2 = new ArrayList<>();
-		String simType2 = "test";
-
-		timePerOrder2.add((long) 6600);
-		timePerOrder2.add((long) 5400);
-		timePerOrder2.add((long) 7400);
-		timePerOrder2.add((long) 7212);
-		ordersPerTrip2.add(1);
-		ordersPerTrip2.add(3);
-		ordersPerTrip2.add(4);
-		ordersPerTrip2.add(2);
-		distancePerTrip2.add((long) 470);
-		distancePerTrip2.add((long) 502);
-		distancePerTrip2.add((long) 100);
-		distancePerTrip2.add((long) 420);
-		Results r2 = new Results(
-				timePerOrder2,
-				ordersPerTrip2,
-				distancePerTrip2,
-				simType2
-		);
-		CompletableFuture<Results> f2 = CompletableFuture.completedFuture(r2);
-
 		/*
-		 * END TEST OBJECT
+		 * ArrayList<Long> timePerOrder = new ArrayList<>(); ArrayList<Integer>
+		 * ordersPerTrip = new ArrayList<>(); ArrayList<Long> distancePerTrip =
+		 * new ArrayList<>(); String simType = "test";
+		 * 
+		 * timePerOrder.add((long) 6000); timePerOrder.add((long) 5500);
+		 * timePerOrder.add((long) 9000); timePerOrder.add((long) 7242);
+		 * ordersPerTrip.add(4); ordersPerTrip.add(2); ordersPerTrip.add(7);
+		 * ordersPerTrip.add(1); distancePerTrip.add((long) 450);
+		 * distancePerTrip.add((long) 520); distancePerTrip.add((long) 190);
+		 * distancePerTrip.add((long) 487); Results r = new Results(
+		 * timePerOrder, ordersPerTrip, distancePerTrip, simType );
+		 * CompletableFuture<Results> f = CompletableFuture.completedFuture(r);
+		 * 
+		 * ArrayList<Long> timePerOrder2 = new ArrayList<>(); ArrayList<Integer>
+		 * ordersPerTrip2 = new ArrayList<>(); ArrayList<Long> distancePerTrip2
+		 * = new ArrayList<>(); String simType2 = "test";
+		 * 
+		 * timePerOrder2.add((long) 6600); timePerOrder2.add((long) 5400);
+		 * timePerOrder2.add((long) 7400); timePerOrder2.add((long) 7212);
+		 * ordersPerTrip2.add(1); ordersPerTrip2.add(3); ordersPerTrip2.add(4);
+		 * ordersPerTrip2.add(2); distancePerTrip2.add((long) 470);
+		 * distancePerTrip2.add((long) 502); distancePerTrip2.add((long) 100);
+		 * distancePerTrip2.add((long) 420); Results r2 = new Results(
+		 * timePerOrder2, ordersPerTrip2, distancePerTrip2, simType2 );
+		 * CompletableFuture<Results> f2 =
+		 * CompletableFuture.completedFuture(r2);
+		 * 
+		 * /* END TEST OBJECT
 		 */
 
-		Statistics statsController = Gui.getInstance()
-				.getControllerForScene("statistics", Statistics.class);
-		// statsController.message("Hello World");
+		/*
+		 * Statistics statsController = Gui.getInstance()
+		 * .getControllerForScene("statistics", Statistics.class); //
+		 * statsController.message("Hello World");
+		 * 
+		 * Gui.getInstance().navigateTo("statistics");
+		 * 
+		 * statsController.sendToAllCharts(f);// TEST
+		 * statsController.sendToAllCharts(f2);// TEST
+		 */
 
-		Gui.getInstance().navigateTo("statistics");
-
-		statsController.sendToAllCharts(f);// TEST
-		statsController.sendToAllCharts(f2);// TEST
+		runConfigurationModalController.show();
 	}
 
 	/**
@@ -258,6 +246,11 @@ public class Overview implements Initializable {
 		windowBarController.setFileMenuItems(
 			addCampusMenuItem,
 			runSimulationMenuItem
+		);
+
+		runConfigurationModalController.setLoadedMealsModalController(
+			mealConfigurationModalController,
+			editMealModalController
 		);
 	}
 

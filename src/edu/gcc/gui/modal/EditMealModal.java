@@ -1,22 +1,15 @@
 package edu.gcc.gui.modal;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 
-public class MealConfigurationModal extends Modal {
+public class EditMealModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
-
-	@FXML
-	private ListView<Meal> mealList;
 
 	@FXML
 	private TextField nameField;
@@ -30,29 +23,36 @@ public class MealConfigurationModal extends Modal {
 	@FXML
 	private Slider percentSlider;
 
-	@FXML
-	protected void addNewMealClicked() {
-		mealXml.insert(new Meal("New meal", 0.0f));
-	}
+	private Meal meal;
 
 	@FXML
-	protected void removeMealClicked() {
-		mealXml.delete(mealList.getSelectionModel().getSelectedItem());
-	}
+	protected void saveButtonClicked() {
+		if (meal != null)
+			mealXml.update(meal);
+		else
+			mealXml.insert(createNewMeal());
 
-	@FXML
-	protected void okButtonClicked() {
-		hide();
-		clearFields();
+		hideAndClose();
 	}
 
 	@FXML
 	protected void cancelButtonClicked() {
-		hide();
-		clearFields();
+		hideAndClose();
+	}
+
+	private Meal createNewMeal() {
+		return new Meal(
+				nameField.getText(),
+				burgerSpinner.getValue(),
+				friesSpinner.getValue(),
+				drinkSpinner.getValue(),
+				(float) percentSlider.getValue()
+		);
 	}
 
 	private void setFields(final Meal meal) {
+		this.meal = meal;
+
 		nameField.setText(meal.getName());
 		burgerSpinner.getValueFactory().setValue(1);
 		friesSpinner.getValueFactory().setValue(1);
@@ -61,6 +61,8 @@ public class MealConfigurationModal extends Modal {
 	}
 
 	private void clearFields() {
+		meal = null;
+
 		burgerSpinner.getValue();
 		burgerSpinner.getValueFactory().setValue(0);
 		friesSpinner.getValueFactory().setValue(0);
@@ -68,16 +70,13 @@ public class MealConfigurationModal extends Modal {
 		percentSlider.setValue(0.0);
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		super.initialize(location, resources);
+	private void hideAndClose() {
+		hide();
+		clearFields();
+	}
 
-		mealList.setItems(mealXml.getAllObservable());
-
-		mealList.getSelectionModel()
-				.selectedItemProperty()
-				.addListener(
-					(observable, oldValue, newValue) -> setFields(newValue)
-				);
+	public void show(final Meal meal) {
+		setFields(meal);
+		super.show();
 	}
 }

@@ -60,5 +60,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Dromedary%20Drones/lib/guava-29.0/guava-29.0-jre-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/jfxtras-all-8.0-r6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
