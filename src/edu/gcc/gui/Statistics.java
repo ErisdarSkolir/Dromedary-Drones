@@ -114,12 +114,11 @@ public class Statistics implements Initializable {
 		
 		if(results.getSimType().equals("FIFO")) {
 			fifoSeries1.getData().add(new XYChart.Data(fifoCounter1++,results.getAverageTimePerOrder()));
-			chart_one.getData().add(fifoSeries1);
+			
 		}
 		else {
 			knapsackSeries1.getData().add(new XYChart.Data(knapsackCounter1++,results.getAverageTimePerOrder()));
-			chart_one.getData().add(knapsackSeries1);
-		}
+					}
 		
 		
 
@@ -137,11 +136,11 @@ public class Statistics implements Initializable {
 		
 		if(results.getSimType().equals("FIFO")) {
 			fifoSeries2.getData().add(new XYChart.Data(fifoCounter2++,results.getAverageTimePerOrder()));
-			chart_two.getData().add(fifoSeries2);
+			
 		}
 		else {
 			knapsackSeries2.getData().add(new XYChart.Data(knapsackCounter2++,results.getAverageTimePerOrder()));
-			chart_two.getData().add(knapsackSeries2);
+			
 		}
 	}
 
@@ -158,15 +157,23 @@ public class Statistics implements Initializable {
 		
 		if(results.getSimType().equals("FIFO")) {
 			fifoSeries3.getData().add(new XYChart.Data(fifoCounter3++,results.getAverageTimePerOrder()));
-			chart_three.getData().add(fifoSeries3);
+			
 		}
 		else {
 			knapsackSeries3.getData().add(new XYChart.Data(knapsackCounter3++,results.getAverageTimePerOrder()));
-			chart_three.getData().add(knapsackSeries3);
-		}
+					}
 
 	}
 
+	//Finalize the chart series by adding to the chart.
+	public void finishCharts() {
+		chart_one.getData().add(fifoSeries1);
+		chart_one.getData().add(knapsackSeries1);
+		chart_two.getData().add(fifoSeries2);
+		chart_two.getData().add(knapsackSeries2);
+		chart_three.getData().add(fifoSeries3);
+		chart_three.getData().add(knapsackSeries3);
+	}
 	private Optional<File> askForFile() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters()
@@ -183,4 +190,6 @@ public class Statistics implements Initializable {
 			event -> Gui.getInstance().navigateTo("overview")
 		);
 	}
+	
+	
 }
