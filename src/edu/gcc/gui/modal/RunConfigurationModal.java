@@ -126,8 +126,8 @@ public class RunConfigurationModal extends Modal {
 				
 			}).thenAccept(result-> statsController.sendToAllCharts(result));
 		}
-		statsController.finishCharts();
 		
+		Gui.getInstance().navigateTo("statistics");
 	}
 
 	@Override

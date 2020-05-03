@@ -46,7 +46,7 @@ public class Statistics implements Initializable {
 	private LineChart<Number, Number> chart_one = new LineChart<>(
 			xAxis1,
 			yAxis1
-		
+
 	);
 	@FXML
 	private LineChart<Number, Number> chart_two = new LineChart<>(
@@ -58,8 +58,6 @@ public class Statistics implements Initializable {
 			xAxis3,
 			yAxis3
 	);
-	
-	
 
 	private XYChart.Series fifoSeries1 = new XYChart.Series();
 	private XYChart.Series knapsackSeries1 = new XYChart.Series();
@@ -67,15 +65,14 @@ public class Statistics implements Initializable {
 	private XYChart.Series knapsackSeries2 = new XYChart.Series();
 	private XYChart.Series fifoSeries3 = new XYChart.Series();
 	private XYChart.Series knapsackSeries3 = new XYChart.Series();
-	
+
 	private int fifoCounter1 = 0;
 	private int knapsackCounter1 = 0;
 	private int fifoCounter2 = 0;
 	private int knapsackCounter2 = 0;
 	private int fifoCounter3 = 0;
 	private int knapsackCounter3 = 0;
-	
-	
+
 	@FXML
 	private WindowBar windowBarController;
 
@@ -100,80 +97,77 @@ public class Statistics implements Initializable {
 	public void sendToAllCharts(Results localResults) {
 
 		sendToFirstChart(localResults);
-			sendToSecondChart(localResults);
-			sendToThirdChart(localResults);
+		sendToSecondChart(localResults);
+		sendToThirdChart(localResults);
 
 	}
 
 	private void sendToFirstChart(Results results) {
-		xAxis1.setLabel("Sim Number");
-		yAxis1.setLabel("Average Delivery Time (minutes/order)"); // creating the chart final
-		chart_one.setTitle("Average Delivery Time");
-		fifoSeries1.setName("FIFO");
-		knapsackSeries1.setName("Knapsack");
-		
-		if(results.getSimType().equals("FIFO")) {
-			fifoSeries1.getData().add(new XYChart.Data(fifoCounter1++,results.getAverageTimePerOrder()));
-			
+		if (results.getSimType().equals("FIFO")) {
+			fifoSeries1.getData()
+					.add(
+						new XYChart.Data(
+								fifoCounter1++,
+								results.getAverageTimePerOrder()
+						)
+					);
+
+		} else {
+			knapsackSeries1.getData()
+					.add(
+						new XYChart.Data(
+								knapsackCounter1++,
+								results.getAverageTimePerOrder()
+						)
+					);
 		}
-		else {
-			knapsackSeries1.getData().add(new XYChart.Data(knapsackCounter1++,results.getAverageTimePerOrder()));
-					}
-		
-		
 
 	}
 
 	private void sendToSecondChart(Results results) {
+		if (results.getSimType().equals("FIFO")) {
+			fifoSeries2.getData()
+					.add(
+						new XYChart.Data(
+								fifoCounter2++,
+								results.getAverageTimePerOrder()
+						)
+					);
 
+		} else {
+			knapsackSeries2.getData()
+					.add(
+						new XYChart.Data(
+								knapsackCounter2++,
+								results.getAverageTimePerOrder()
+						)
+					);
 
-		xAxis2.setLabel("Sim Number");
-		yAxis2.setLabel("Average Orders (Orders/Trip)"); // creating the chart final
-		chart_two.setTitle("Orders per Trip");
-		
-		fifoSeries2.setName("FIFO");
-		knapsackSeries2.setName("Knapsack");
-		
-		if(results.getSimType().equals("FIFO")) {
-			fifoSeries2.getData().add(new XYChart.Data(fifoCounter2++,results.getAverageTimePerOrder()));
-			
-		}
-		else {
-			knapsackSeries2.getData().add(new XYChart.Data(knapsackCounter2++,results.getAverageTimePerOrder()));
-			
 		}
 	}
 
 	private void sendToThirdChart(Results results) {
+		if (results.getSimType().equals("FIFO")) {
+			fifoSeries3.getData()
+					.add(
+						new XYChart.Data(
+								fifoCounter3++,
+								results.getAverageTimePerOrder()
+						)
+					);
 
-
-		xAxis3.setLabel("Sim Number");
-		yAxis3.setLabel("Average Distance (Distance/trip)"); // creating the chart final
-
-		chart_three.setTitle("Distance per Trip");
-
-		fifoSeries3.setName("FIFO");
-		knapsackSeries3.setName("Knapsack");
-		
-		if(results.getSimType().equals("FIFO")) {
-			fifoSeries3.getData().add(new XYChart.Data(fifoCounter3++,results.getAverageTimePerOrder()));
-			
+		} else {
+			knapsackSeries3.getData()
+					.add(
+						new XYChart.Data(
+								knapsackCounter3++,
+								results.getAverageTimePerOrder()
+						)
+					);
 		}
-		else {
-			knapsackSeries3.getData().add(new XYChart.Data(knapsackCounter3++,results.getAverageTimePerOrder()));
-					}
 
 	}
 
-	//Finalize the chart series by adding to the chart.
-	public void finishCharts() {
-		chart_one.getData().add(fifoSeries1);
-		chart_one.getData().add(knapsackSeries1);
-		chart_two.getData().add(fifoSeries2);
-		chart_two.getData().add(knapsackSeries2);
-		chart_three.getData().add(fifoSeries3);
-		chart_three.getData().add(knapsackSeries3);
-	}
 	private Optional<File> askForFile() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters()
@@ -189,7 +183,38 @@ public class Statistics implements Initializable {
 		windowBarController.backButtonEnableAndAction(
 			event -> Gui.getInstance().navigateTo("overview")
 		);
+		
+		xAxis1.setLabel("Sim Number");
+		yAxis1.setLabel("Average Delivery Time (minutes/order)"); // creating
+		// the chart
+		// final
+		chart_one.setTitle("Average Delivery Time");
+		fifoSeries1.setName("FIFO");
+		knapsackSeries1.setName("Knapsack");
+		
+		xAxis2.setLabel("Sim Number");
+		yAxis2.setLabel("Average Orders (Orders/Trip)"); // creating the chart
+		// final
+		chart_two.setTitle("Orders per Trip");
+
+		fifoSeries2.setName("FIFO");
+		knapsackSeries2.setName("Knapsack");
+		
+		xAxis3.setLabel("Sim Number");
+		yAxis3.setLabel("Average Distance (Distance/trip)"); // creating the
+		// chart final
+
+		chart_three.setTitle("Distance per Trip");
+
+		fifoSeries3.setName("FIFO");
+		knapsackSeries3.setName("Knapsack");
+		
+		chart_one.getData().add(fifoSeries1);
+		chart_one.getData().add(knapsackSeries1);
+		chart_two.getData().add(fifoSeries2);
+		chart_two.getData().add(knapsackSeries2);
+		chart_three.getData().add(fifoSeries3);
+		chart_three.getData().add(knapsackSeries3);
 	}
-	
-	
+
 }
