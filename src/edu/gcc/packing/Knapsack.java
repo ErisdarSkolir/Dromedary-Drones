@@ -24,15 +24,23 @@ public class Knapsack implements PackingAlgorithm {
 		for (int i = 0; i < filled.size(); i++) {
 			totalFilledWeight += filled.get(i).getWeight();
 		}
+		
+		//look over items that were passed over last time and try to fit them first
+		for (int i = 0; i < ords.size(); i++) {
+			if (ords.get(i).getTimesPassed() > 0 && ords.get(i).getWeight() + totalFilledWeight <= capWeight) {
+				result = ords.get(i);
+				return result;
+			}
+		}
 
 		//look for the largest item that will fit and set result to that order
 		for (int i = 0; i < ords.size(); i++) {
 			if (ords.get(i).getWeight() + totalFilledWeight <= capWeight) {
 				result = ords.get(i);
-				break;
+				return result;
 			}
 		}
 
-		return result;
+		return null;
 	}
 }

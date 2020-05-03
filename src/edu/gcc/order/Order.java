@@ -17,6 +17,7 @@ public class Order {
 	private List<Order> neighbors = new ArrayList<>();
 	private int weight;
 	private int deliveryTime;
+	private int timesPassed = 0;
 
 	public Order(final String customerName, final MapLocation dropoffLocation, final Meal meal, final long timestamp) {
 		this.customerName = customerName;
@@ -53,6 +54,14 @@ public class Order {
 	public double getDistance() {
 
 		return distance;
+	}
+	
+	public void incTimesPassed() {
+		timesPassed++;
+	}
+	
+	public int getTimesPassed() {
+		return timesPassed;
 	}
 
 	public void setDistance(double d) {

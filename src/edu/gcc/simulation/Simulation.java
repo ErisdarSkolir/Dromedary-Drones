@@ -19,6 +19,9 @@ public class Simulation {
 	private int traveling;
 	private long simulationTime;
 	private MapLocation shopLocation;
+	
+	private static List<Order> bestPath = new ArrayList<>();
+	private static List<Order> btPath = new ArrayList<>();
 
 	private String simType;
 	
@@ -64,6 +67,7 @@ public class Simulation {
 		ArrayList<Long> timesPerOrder = new ArrayList<Long>();
 		ArrayList<Integer> ordersPerTrip = new ArrayList<Integer>();
 		ArrayList<Long> distancePerTrip = new ArrayList<Long>();
+		
 		// 
 		long tripDistance;
 		// Order path
@@ -138,6 +142,95 @@ public class Simulation {
 		}
 		
 		return filled;	
+	}
+	
+	/*
+	 * Method that runs Backtracking algorithm for TSP
+	 */
+	public List<Order> runBT(List<Order> filled){
+		
+		int n = filled.size() + 1; 
+		Order first = filled.get(0);
+		
+		double[][] graph = new double[n][n];
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (i != j) {
+					graph[i][j] = filled.get(i).getDistanceTo(filled.get(j));
+				}
+				else {
+					graph[i][j] = 0;
+				}
+			}
+		}
+
+		// Boolean array to check if a node 
+		// has been visited or not 
+		boolean[] v = new boolean[n]; 
+
+		// Mark 0th node as visited 
+		v[0] = true; 
+		double ans = Double.MAX_VALUE; 
+
+		// Find the minimum weight Hamiltonian Cycle 
+		ans = tsp(graph, v, 0, n, 1, 0.0, ans, filled); 
+
+		// ans is the minimum weight Hamiltonian Cycle 
+		System.out.println(ans); 
+		
+		bestPath.add(0, first);
+		bestPath.add(first);
+		
+		return filled;
+		
+	}
+	
+	/*
+	 * Method that performs backtracking dirty work
+	 *  This code is adapted from Rajput-Ji's implementation of backtracking 
+	 */
+	public double tsp(double[][] graph, boolean[] v,  
+			int currPos, int n,  
+			int count, double cost, double ans, List<Order> filled)  
+	{ 
+
+		// If last node is reached and it has a link 
+		// to the starting node i.e the source then 
+		// keep the minimum value out of the total cost 
+		// of traversal and "ans" 
+		// Finally return to check for more possible values 
+		if (count == n && graph[currPos][0] > 0)  
+		{ 
+			//ans = Math.min(ans, cost + graph[currPos][0]);
+			if (ans > cost + graph[currPos][0]) {
+				ans = cost + graph[currPos][0];
+				bestPath = new ArrayList<>(btPath);
+			}
+			return ans; 
+		} 
+
+		// BACKTRACKING STEP 
+		// Loop to traverse the adjacency list 
+		// of currPos node and increasing the count 
+		// by 1 and cost by graph[currPos,i] value 
+		for (int i = 0; i < n; i++)  
+		{ 
+			if (v[i] == false && graph[currPos][i] > 0)  
+			{ 
+
+				// Mark as visited 
+				v[i] = true; 
+				btPath.add(filled.get(i));
+				ans = tsp(graph, v, i, n, count + 1, 
+						cost + graph[currPos][i], ans, filled); 
+
+				// Mark ith node as unvisited 
+				btPath.remove(filled.get(i));
+				v[i] = false;
+			} 
+		} 
+		return ans; 
 	}
 	
 	
