@@ -1,19 +1,28 @@
 package edu.gcc.gui.modal;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-
+import java.util.stream.Collectors;
 
 import edu.gcc.gui.Gui;
 import edu.gcc.gui.Statistics;
-
+import edu.gcc.maplocation.Campus;
+import edu.gcc.maplocation.MapLocation;
+import edu.gcc.maplocation.MapLocationXml;
+import edu.gcc.maplocation.MapLocationXmlDao;
 import edu.gcc.drone.Drone;
 import edu.gcc.drone.DroneXml;
 import edu.gcc.drone.DroneXmlDao;
 import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
+import edu.gcc.order.Order;
+import edu.gcc.order.OrderGenerator;
+import edu.gcc.packing.Fifo;
+import edu.gcc.packing.Knapsack;
 import edu.gcc.results.Results;
 import edu.gcc.simulation.Simulation;
 import javafx.collections.ObservableList;
@@ -25,7 +34,18 @@ import jfxtras.scene.control.LocalTimeTextField;
 public class RunConfigurationModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
 	private DroneXmlDao droneXml = DroneXml.getInstance();
-
+	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
+	
+	
+	
+	/*
+	 * Simulation args
+	 */
+	private Campus selectedCampus;
+	private MapLocation pickupLocation = locationXml.getPickupLocationForCampus(selectedCampus);
+	private List<MapLocation> dropoffLocations = locationXml.getDropoffReactiveForCampus(selectedCampus);
+	
+	
 	@FXML
 	private LocalTimeTextField timeField;
 
@@ -45,6 +65,7 @@ public class RunConfigurationModal extends Modal {
 	);
 	private ObservableList<Drone> loadedDrones = droneXml
 			.getObservableLoadedDrones(true);
+	private ObservableList<MapLocation> dropoffs = locationXml.getPickupReactiveForCampus(selectedCampus);
 
 	@FXML
 	private void editLoadedMealsClicked() {
@@ -69,19 +90,46 @@ public class RunConfigurationModal extends Modal {
 
 	@FXML
 	private void runButtonClicked() {
-
-		//List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
-//		Statistics statsController = 
-//				Gui.getInstance().getControllerForScene("statistics", Statistics.class); 
-//		
-//		
-//		CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> 
-//		{
-//			Simulation simulation = new Simulation();
-//			return simulation.runSimulation();
-//		}).thenAccept(result-> statsController.sendToAllCharts(result));
-//			
-
+		
+		
+		List<String> customers = new ArrayList<>();
+		List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
+		customers.add("Bob");
+		customers.add("John");
+		customers.add("Jane");
+		customers.add("That random guy over there");
+		
+		
+		//  Generate Order for both packing algorithms
+		List<Order> orders = new ArrayList<>();
+		OrderGenerator orderGen = new OrderGenerator(meals, customers, dropoffLocations);
+		orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
+		//end Generate Orders
+		
+		
+		Statistics statsController = 
+				Gui.getInstance().getControllerForScene("statistics", Statistics.class); 
+		
+		
+		//Run both sims 10 times
+		for(int iteration = 0; iteration < 10; iteration++) {
+			//FIFO Sim
+			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> 
+			{
+				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Fifo(), 1);
+				return simulation.runSimulation();
+				
+			}).thenAccept(result-> statsController.sendToAllCharts(result));
+			
+			//Knapsack Sim
+			CompletableFuture<Void> knapsackFIFO = CompletableFuture.supplyAsync(() -> 
+			{
+				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(), 1);
+				return simulation.runSimulation();
+				
+			}).thenAccept(result-> statsController.sendToAllCharts(result));
+		}
+		
 	}
 
 	@Override
@@ -104,4 +152,11 @@ public class RunConfigurationModal extends Modal {
 		loadedDronesModalController = loadedDronesModal;
 		loadedDronesModalController.setEditDroneModalController(editDroneModal);
 	}
+	
+	public void show(Campus selectedCampus) {
+		this.selectedCampus = selectedCampus;	
+		super.show();
+	}
+
 }
+

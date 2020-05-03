@@ -221,7 +221,7 @@ public class Overview implements Initializable {
 		 * statsController.sendToAllCharts(f2);// TEST
 		 */
 
-		runConfigurationModalController.show();
+		runConfigurationModalController.show(campusDropdown.getSelectionModel().getSelectedItem() );
 	}
 
 	/**

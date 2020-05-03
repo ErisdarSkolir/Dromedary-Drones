@@ -47,6 +47,17 @@ public class Simulation {
 		
 		System.out.println(orders);
 	}
+	
+	//Receive List of orders
+	public Simulation(List<Meal> meals, List <Order> orders, MapLocation shopLocation, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm,
+			int traveling) {
+		this.packingAlgorithm = packingAlgorithm;
+		this.traveling = traveling;
+		this.shopLocation = shopLocation;
+		this.orders = orders;
+		
+		System.out.println(orders);
+	}
 
 	public Results runSimulation() {
 		// Results data to be filled
@@ -179,5 +190,13 @@ public class Simulation {
 
 		return path;
 
+	}
+	
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
+	}
+	
+	public List<Order> getOrders(){
+		return orders;
 	}
 }
