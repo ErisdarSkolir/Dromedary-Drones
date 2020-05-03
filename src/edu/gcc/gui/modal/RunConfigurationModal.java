@@ -126,6 +126,7 @@ public class RunConfigurationModal extends Modal {
 				
 			}).thenAccept(result-> statsController.sendToAllCharts(result));
 		}
+		statsController.finishCharts();
 		
 	}
 
