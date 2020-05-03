@@ -42,8 +42,8 @@ public class RunConfigurationModal extends Modal {
 	 * Simulation args
 	 */
 	private Campus selectedCampus;
-	private MapLocation pickupLocation = locationXml.getPickupLocationForCampus(selectedCampus);
-	private List<MapLocation> dropoffLocations = locationXml.getDropoffReactiveForCampus(selectedCampus);
+	private MapLocation pickupLocation;
+	private List<MapLocation> dropoffLocations;
 	
 	
 	@FXML
@@ -65,7 +65,6 @@ public class RunConfigurationModal extends Modal {
 	);
 	private ObservableList<Drone> loadedDrones = droneXml
 			.getObservableLoadedDrones(true);
-	private ObservableList<MapLocation> dropoffs = locationXml.getPickupReactiveForCampus(selectedCampus);
 
 	@FXML
 	private void editLoadedMealsClicked() {
@@ -151,8 +150,11 @@ public class RunConfigurationModal extends Modal {
 		loadedDronesModalController.setEditDroneModalController(editDroneModal);
 	}
 	
-	public void show(Campus selectedCampus) {
+	
+	public void show(final Campus selectedCampus) {
 		this.selectedCampus = selectedCampus;	
+		this.pickupLocation = locationXml.getPickupLocationForCampus(selectedCampus);
+		this.dropoffLocations = locationXml.getDropoffReactiveForCampus(selectedCampus);
 		super.show();
 	}
 
