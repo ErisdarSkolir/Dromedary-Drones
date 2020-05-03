@@ -89,6 +89,7 @@ public class RunConfigurationModal extends Modal {
 		super.initialize(location, resources);
 
 		mealNumber.setText(Integer.toString(loadedMeals.size()));
+		droneNumber.setText(Integer.toString(loadedDrones.size()));
 	}
 
 	public void setControllers(

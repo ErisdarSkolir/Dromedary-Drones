@@ -1,9 +1,13 @@
 package edu.gcc.gui.modal;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -23,6 +27,9 @@ public class EditMealModal extends Modal {
 	@FXML
 	private Slider percentSlider;
 
+	@FXML
+	private Label percentLabel;
+
 	private Meal meal;
 
 	@FXML
@@ -32,12 +39,25 @@ public class EditMealModal extends Modal {
 		else
 			mealXml.insert(createNewMeal());
 
-		hideAndClose();
+		clearAndHide();
 	}
 
 	@FXML
 	protected void cancelButtonClicked() {
-		hideAndClose();
+		clearAndHide();
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		super.initialize(location, resources);
+
+		percentSlider.valueProperty()
+				.addListener(
+					(observable, oldValue, newValue) -> percentLabel.setText(
+						String.format("Percent: %g", (double) newValue)
+					)
+				);
+
 	}
 
 	private Meal createNewMeal() {
@@ -80,7 +100,7 @@ public class EditMealModal extends Modal {
 		mealXml.update(meal);
 	}
 
-	private void hideAndClose() {
+	private void clearAndHide() {
 		hide();
 		clearFields();
 	}

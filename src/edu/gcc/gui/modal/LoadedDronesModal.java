@@ -48,7 +48,7 @@ public class LoadedDronesModal extends Modal {
 		if (selectedDrone == null)
 			return;
 
-		//editDroneModalController.show(selectedMeal);
+		editDroneModalController.show(selectedDrone);
 	}
 
 	@FXML
