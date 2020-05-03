@@ -13,7 +13,7 @@ import edu.gcc.meal.Meal;
 public class OrderGenerator {
 	private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
-	private final NavigableMap<Float, Meal> meals = new TreeMap<>();
+	private final NavigableMap<Double, Meal> meals = new TreeMap<>();
 	private final List<String> customers;
 	private final List<MapLocation> dropoffLocations;
 
@@ -22,14 +22,14 @@ public class OrderGenerator {
 		this.customers = new ArrayList<>(customers);
 		this.dropoffLocations = new ArrayList<>(dropoffLocations);
 
-		float totalProbability = 0.0f;
+		double totalProbability = 0.0;
 
 		for (Meal meal : meals) {
 			totalProbability += meal.getProbability();
 			this.meals.put(totalProbability, meal);
 		}
-
-		if (totalProbability > 1.0f)
+		
+		if (totalProbability > 100.0)
 			throw new IllegalArgumentException("The total probability of all meals cannoot be over 100%");
 	}
 
@@ -46,7 +46,7 @@ public class OrderGenerator {
 	}
 
 	private Order generateOrder(final long timestamp) {
-		Meal meal = meals.ceilingEntry(random.nextFloat()).getValue();
+		Meal meal = meals.ceilingEntry(random.nextDouble()).getValue();
 		String customer = customers.get(random.nextInt(customers.size()));
 		MapLocation dropoffLocation = dropoffLocations.get(random.nextInt(dropoffLocations.size()));
 
