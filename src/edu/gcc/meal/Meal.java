@@ -76,7 +76,7 @@ public class Meal {
 
 	@Override
 	public String toString() {
-		return name;
+		return String.format("%s - %f%%", name, probability);
 	}
 
 	@Override
