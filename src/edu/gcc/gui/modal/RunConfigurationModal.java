@@ -97,15 +97,7 @@ public class RunConfigurationModal extends Modal {
 		customers.add("Bob");
 		customers.add("John");
 		customers.add("Jane");
-		customers.add("That random guy over there");
-		
-		
-		//  Generate Order for both packing algorithms
-		List<Order> orders = new ArrayList<>();
-		OrderGenerator orderGen = new OrderGenerator(meals, customers, dropoffLocations);
-		orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
-		//end Generate Orders
-		
+		customers.add("That random guy over there");		
 		
 		Statistics statsController = 
 				Gui.getInstance().getControllerForScene("statistics", Statistics.class); 
@@ -113,6 +105,12 @@ public class RunConfigurationModal extends Modal {
 		
 		//Run both sims 10 times
 		for(int iteration = 0; iteration < 10; iteration++) {
+			//  Generate Order for both packing algorithms
+			List<Order> orders = new ArrayList<>();
+			OrderGenerator orderGen = new OrderGenerator(meals, customers, dropoffLocations);
+			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
+			//end Generate Orders
+			
 			//FIFO Sim
 			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> 
 			{
