@@ -46,6 +46,7 @@ public class Statistics implements Initializable {
 	private LineChart<Number, Number> chart_one = new LineChart<>(
 			xAxis1,
 			yAxis1
+		
 	);
 	@FXML
 	private LineChart<Number, Number> chart_two = new LineChart<>(
@@ -57,7 +58,24 @@ public class Statistics implements Initializable {
 			xAxis3,
 			yAxis3
 	);
+	
+	
 
+	private XYChart.Series fifoSeries1 = new XYChart.Series();
+	private XYChart.Series knapsackSeries1 = new XYChart.Series();
+	private XYChart.Series fifoSeries2 = new XYChart.Series();
+	private XYChart.Series knapsackSeries2 = new XYChart.Series();
+	private XYChart.Series fifoSeries3 = new XYChart.Series();
+	private XYChart.Series knapsackSeries3 = new XYChart.Series();
+	
+	private int fifoCounter1 = 0;
+	private int knapsackCounter1 = 0;
+	private int fifoCounter2 = 0;
+	private int knapsackCounter2 = 0;
+	private int fifoCounter3 = 0;
+	private int knapsackCounter3 = 0;
+	
+	
 	@FXML
 	private WindowBar windowBarController;
 
@@ -81,75 +99,71 @@ public class Statistics implements Initializable {
 
 	public void sendToAllCharts(Results localResults) {
 
-			sendToFirstChart(localResults);
+		sendToFirstChart(localResults);
 			sendToSecondChart(localResults);
 			sendToThirdChart(localResults);
 
 	}
 
 	private void sendToFirstChart(Results results) {
-		xAxis1.setLabel("Order Number");
-		yAxis1.setLabel("Time (minutes)"); // creating the chart final
-		chart_one.setTitle("Time per Delivery");
-		XYChart.Series series = new XYChart.Series();
-
-		series.setName(results.getSimType());
-		List<Long> deliveryTimes = results.getTimePerOrder();
-
-		for (int i = 0; i < deliveryTimes.size(); i++) {
-			// Dividing by 60 to get minutes
-			series.getData()
-					.add(new XYChart.Data(i, deliveryTimes.get(i) / 60));
+		xAxis1.setLabel("Sim Number");
+		yAxis1.setLabel("Average Delivery Time (minutes/order)"); // creating the chart final
+		chart_one.setTitle("Average Delivery Time");
+		fifoSeries1.setName("FIFO");
+		knapsackSeries1.setName("Knapsack");
+		
+		if(results.getSimType().equals("FIFO")) {
+			fifoSeries1.getData().add(new XYChart.Data(fifoCounter1++,results.getAverageTimePerOrder()));
+			chart_one.getData().add(fifoSeries1);
 		}
-
-		chart_one.getData().add(series);
+		else {
+			knapsackSeries1.getData().add(new XYChart.Data(knapsackCounter1++,results.getAverageTimePerOrder()));
+			chart_one.getData().add(knapsackSeries1);
+		}
+		
+		
 
 	}
 
 	private void sendToSecondChart(Results results) {
 
-		// TODO Chart Labels
 
-		xAxis2.setLabel("Trip Number");
-		yAxis2.setLabel("Orders"); // creating the chart final
-
+		xAxis2.setLabel("Sim Number");
+		yAxis2.setLabel("Average Orders (Orders/Trip)"); // creating the chart final
 		chart_two.setTitle("Orders per Trip");
-		XYChart.Series series = new XYChart.Series();
-
-		series.setName(results.getSimType());
-		List<Integer> ordersPerTrip = results.getordersPerTrip();
-
-		// TODO change algorithm for chart stats
-		for (int i = 0; i < ordersPerTrip.size(); i++) {
-
-			series.getData().add(new XYChart.Data(i, ordersPerTrip.get(i)));
+		
+		fifoSeries2.setName("FIFO");
+		knapsackSeries2.setName("Knapsack");
+		
+		if(results.getSimType().equals("FIFO")) {
+			fifoSeries2.getData().add(new XYChart.Data(fifoCounter2++,results.getAverageTimePerOrder()));
+			chart_two.getData().add(fifoSeries2);
 		}
-
-		chart_two.getData().add(series);
-
+		else {
+			knapsackSeries2.getData().add(new XYChart.Data(knapsackCounter2++,results.getAverageTimePerOrder()));
+			chart_two.getData().add(knapsackSeries2);
+		}
 	}
 
 	private void sendToThirdChart(Results results) {
 
-		// TODO Chart Labels
 
-		xAxis3.setLabel("Distance");
-		yAxis3.setLabel("Trip Number"); // creating the chart final
+		xAxis3.setLabel("Sim Number");
+		yAxis3.setLabel("Average Distance (Distance/trip)"); // creating the chart final
 
 		chart_three.setTitle("Distance per Trip");
 
-		XYChart.Series series = new XYChart.Series();
-
-		series.setName(results.getSimType());
-		List<Long> tripDistances = results.getDistancePerTrip();
-
-		// TODO change algorithm for chart stats
-		for (int i = 0; i < tripDistances.size(); i++) {
-
-			series.getData().add(new XYChart.Data(i, tripDistances.get(i)));
+		fifoSeries3.setName("FIFO");
+		knapsackSeries3.setName("Knapsack");
+		
+		if(results.getSimType().equals("FIFO")) {
+			fifoSeries3.getData().add(new XYChart.Data(fifoCounter3++,results.getAverageTimePerOrder()));
+			chart_three.getData().add(fifoSeries3);
 		}
-
-		chart_three.getData().add(series);
+		else {
+			knapsackSeries3.getData().add(new XYChart.Data(knapsackCounter3++,results.getAverageTimePerOrder()));
+			chart_three.getData().add(knapsackSeries3);
+		}
 
 	}
 
