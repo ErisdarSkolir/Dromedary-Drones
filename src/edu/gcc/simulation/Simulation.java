@@ -62,10 +62,6 @@ public class Simulation {
 	}
 
 	public Results runSimulation() {
-		// Results data to be filled
-		// Variables for flight safety
-		double distanceChecker = 0.0;
-		boolean isSafe = false;
 		
 		// Init simTime list
 		List<Long> simTime = new ArrayList<>();
@@ -74,10 +70,8 @@ public class Simulation {
 		}
 		long timeOfDrone = 0;
 		
-		// 
+		// Distance of each trip
 		long tripDistance;
-		// List of times for each drone
-		List<Order> droneTimes = new ArrayList<>();
 
 		// Order path
 		List<Order> path = new ArrayList<>();
@@ -146,14 +140,14 @@ public class Simulation {
 					distanceToNext = ConvertLatLongToFeet(path.get(i).getDistanceTo(path.get(i + 1)));
 					timeOfDrone += (distanceToNext / ConvertMphToFps(droneUp.getSpeed()));
 					deliveryTimes.add(timeOfDrone);
-					timesPerOrder.add(deliveryTimes.get(i) - path.get(i).getTime());
+					this.timesPerOrder.add(deliveryTimes.get(i) - path.get(i).getTime());
 					// Distance per trip
 					tripDistance += distanceToNext;
 				}
 				// Order per trip
-				ordersPerTrip.add(filledOrders.size());
+				this.ordersPerTrip.add(filledOrders.size());
 				// Distance per trip
-				distancePerTrip.add(tripDistance);
+				this.distancePerTrip.add(tripDistance);
 				timeOfDrone += droneUp.getTurnAroundTime();
 				
 				for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
@@ -163,15 +157,15 @@ public class Simulation {
 			}
 			// If the drone time is less than the next order set it equal to the next order
 			for (Long time : simTime) {
-				if (orders.size() > 0) {
-					if (time < orders.get(0).getTime()) {
-						time = (long) orders.get(0).getTime();
+				if (this.orders.size() > 0) {
+					if (time < this.orders.get(0).getTime()) {
+						time = (long) this.orders.get(0).getTime();
 					}
 				}
 			}
 		}
 
-		return new Results(timesPerOrder, ordersPerTrip, distancePerTrip, this.simType);
+		return new Results(this.timesPerOrder, this.ordersPerTrip, this.distancePerTrip, this.simType);
 		
 	}
 
