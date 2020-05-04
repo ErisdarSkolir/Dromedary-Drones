@@ -12,6 +12,11 @@ public class Meal {
 	private int fries;
 	private int drinks;
 	private double probability;
+	
+	private transient final static double burgerWeight = 0.375; 
+	private transient final static double friesWeight = 0.25;
+	private transient final static double drinkWeight = 0.875;
+			
 
 	private boolean loaded;
 
@@ -124,5 +129,9 @@ public class Meal {
 		))
 			return false;
 		return true;
+	}
+	
+	public double getWeight() {
+		return (burgerWeight * this.burgers) + (friesWeight * this.fries) +(drinkWeight * this.drinks);
 	}
 }

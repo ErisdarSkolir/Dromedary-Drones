@@ -134,22 +134,7 @@ public class RunConfigurationModal extends Modal {
 			final int index = iteration;
 			
 			// FIFO Simulation
-			CompletableFuture<Results> futureFIFO = CompletableFuture
-					.supplyAsync(
-						() -> runSimulation(
-							loadedDrones,
-							orders,
-							pickupLocation,
-							new Knapsack(),
-							1
-						),
-						Executor.getService()
-					);
-
-			statsController.addSimulationFuture(index, futureFIFO);
-			
-			// Knapsack Sim
-			CompletableFuture<Results> knapsackFIFO = CompletableFuture
+			CompletableFuture<Results> fifoGreedy = CompletableFuture
 					.supplyAsync(
 						() -> runSimulation(
 							loadedDrones,
@@ -161,7 +146,22 @@ public class RunConfigurationModal extends Modal {
 						Executor.getService()
 					);
 
-			statsController.addSimulationFuture(index, knapsackFIFO);
+			statsController.addSimulationFuture(index, fifoGreedy);
+			
+			// Knapsack Sim
+			CompletableFuture<Results> greedyBacktrack = CompletableFuture
+					.supplyAsync(
+						() -> runSimulation(
+							loadedDrones,
+							orders,
+							pickupLocation,
+							new Knapsack(),
+							2
+						),
+						Executor.getService()
+					);
+
+			statsController.addSimulationFuture(index, greedyBacktrack);
 		}
 
 		Gui.getInstance().navigateTo("statistics");

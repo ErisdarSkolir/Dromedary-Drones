@@ -80,6 +80,8 @@ public class Simulation {
 
 			// Init drone to use
 			Drone droneUp = this.drones.get(0);
+			System.out.println(droneUp.getTurnAroundTime());
+			System.out.println(droneUp.getMaxCapacity());
 
 			// Find drone with lowest time
 			for (int indexX = 0; indexX < simTime.size(); indexX++) {
@@ -101,8 +103,7 @@ public class Simulation {
 
 			// Greedy
 			if (traveling == 1) {
-				//path = runGreedyTSP(filledOrders);
-				path = runBT(filledOrders);
+				path = runGreedyTSP(filledOrders);
 			} else {
 				path = runBT(filledOrders);
 			}
@@ -114,56 +115,38 @@ public class Simulation {
 				}
 			}
 
-			// check that the drone can fly the entire path without dying
-			/*
-			 * while (!isSafe) { System.out.println("Is not safe!"); for (int i
-			 * = 0; i < path.size() - 1; i++) { distanceChecker +=
-			 * ConvertLatLongToFeet(path.get(i).getDistanceTo(path.get(i + 1)));
-			 * }
-			 * 
-			 * if (distanceChecker < droneUpNext.getMaxDistance()) { isSafe =
-			 * true; } else { if (path.size() > 2) { Order temp =
-			 * path.remove(path.size() - 2); temp.incTimesPassed();
-			 * orders.add(temp); } else { path.remove(path.size() - 2); } } }
-			 */
-
-			// if (isSafe) {
-			if (true) {
-				// Init trip distance
-				tripDistance = 0;
-				// Set times
-				for (int i = 0; i < path.size()-1; i++) {
-					// Times per order
-					// Returns distance in feet
-					distanceToNext = ConvertLatLongToFeet(
-						path.get(i).getDropoffLocation().getxCoord(),
-						path.get(i).getDropoffLocation().getyCoord(),
-						path.get(i + 1).getDropoffLocation().getxCoord(),
-						path.get(i + 1).getDropoffLocation().getyCoord()
-					);
-					// Multiply by 1000 to make milliseconds
-					timeOfDrone += (distanceToNext / ConvertMphToFps(20) * 1000);
-					deliveryTimes.add(timeOfDrone);
-					this.timesPerOrder.add(
-						((timeOfDrone - path.get(i).getTimestamp())) / 60_000
-					);
-					// Distance per trip
-					tripDistance += distanceToNext;
-				}
-				// Order per trip
-				this.ordersPerTrip.add(path.size()-1);
+			// Init trip distance
+			tripDistance = 0;
+			// Set times
+			for (int i = 0; i < path.size()-1; i++) {
+				// Times per order
+				// Returns distance in feet
+				distanceToNext = ConvertLatLongToFeet(
+					path.get(i).getDropoffLocation().getxCoord(),
+					path.get(i).getDropoffLocation().getyCoord(),
+					path.get(i + 1).getDropoffLocation().getxCoord(),
+					path.get(i + 1).getDropoffLocation().getyCoord()
+				);
+				// Multiply by 1000 to make milliseconds
+				timeOfDrone += (distanceToNext / ConvertMphToFps(20) * 1000);
+				deliveryTimes.add(timeOfDrone);
+				this.timesPerOrder.add(
+					((timeOfDrone - path.get(i).getTimestamp())) / 60_000
+				);
 				// Distance per trip
-				System.out.println(tripDistance);
-				this.distancePerTrip.add(tripDistance);
-				
-				timeOfDrone += 180_000;
-				//timeOfDrone += droneUp.getTurnAroundTime() * 60_000;
-				simTime.set(index, timeOfDrone);
+				tripDistance += distanceToNext;
+			}
+			// Order per trip
+			this.ordersPerTrip.add(path.size()-2);
+			// Distance per trip
+			this.distancePerTrip.add(tripDistance);
+			
+			timeOfDrone += 180_000;
+			//timeOfDrone += droneUp.getTurnAroundTime() * 60_000;
+			simTime.set(index, timeOfDrone);
 
-				for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
-					filledOrders.remove(ind);
-				}
-
+			for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
+				filledOrders.remove(ind);
 			}
 		}
 
@@ -204,7 +187,7 @@ public class Simulation {
 	 * Method that runs Backtracking algorithm for TSP
 	 */
 	public List<Order> runBT(List<Order> filled) {
-		int n = filled.size() + 1;
+		int n = filled.size();
 		Order first = filled.get(0);
 
 		double[][] graph = new double[n][n];
@@ -231,7 +214,6 @@ public class Simulation {
 		ans = tsp(graph, v, 0, n, 1, 0.0, ans, filled);
 
 		// ans is the minimum weight Hamiltonian Cycle
-		System.out.println(ans);
 
 		bestPath.add(0, first);
 		bestPath.add(first);

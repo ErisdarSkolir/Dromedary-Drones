@@ -10,7 +10,7 @@ public class Results {
 	private long longestTime;
 	// Chart 2
 	private List<Integer> ordersPerTrip;
-	private int averageOrdersPerTrip;
+	private double averageOrdersPerTrip;
 	// Chart 3
 	private List<Long> distancePerTrip;
 	private long averageDistancePerTrip;
@@ -45,6 +45,7 @@ public class Results {
 			this.averageOrdersPerTrip += orders;
 		}
 		this.averageOrdersPerTrip = this.averageOrdersPerTrip / this.ordersPerTrip.size();
+		System.out.println(this.averageOrdersPerTrip);
 		
 		// Set average distance traveled per trip
 		this.averageDistancePerTrip = 0;
@@ -78,11 +79,11 @@ public class Results {
 		this.ordersPerTrip = ordersPerTrip;
 	}
 
-	public long getAverageOrdersPerTrip() {
+	public double getAverageOrdersPerTrip() {
 		return averageOrdersPerTrip;
 	}
 
-	public void setAverageOrdersPerTrip(int averageOrdersPerTrip) {
+	public void setAverageOrdersPerTrip(double averageOrdersPerTrip) {
 		this.averageOrdersPerTrip = averageOrdersPerTrip;
 	}
 

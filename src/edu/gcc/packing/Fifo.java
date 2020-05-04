@@ -18,7 +18,7 @@ public class Fifo implements PackingAlgorithm {
 		for (int i = 0; i < ords.size(); i++) {
 			if (ords.get(i).getWeight() + totalFilledWeight <= capWeight) {
 				result = ords.get(i);
-				break;
+				return result;
 			}
 		}
 
@@ -26,6 +26,6 @@ public class Fifo implements PackingAlgorithm {
 			result = ords.get(0);
 		}
 
-		return result;
+		return null;
 	}
 }

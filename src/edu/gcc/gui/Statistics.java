@@ -110,9 +110,9 @@ public class Statistics implements Initializable {
 	private void sendSeriesData(
 			XYChart.Series<Number, Number> series,
 			int index,
-			long result
+			double d
 	) {
-		series.getData().add(new Data<>(index, result));
+		series.getData().add(new Data<>(index, d));
 	}
 
 	private Optional<File> askForFile() {

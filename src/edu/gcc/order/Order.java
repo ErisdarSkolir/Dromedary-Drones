@@ -9,12 +9,12 @@ import edu.gcc.meal.Meal;
 public class Order {
 	private long timestamp;
 	private Meal meal;
-
+	
 	private double distance = 0;
 	public MapLocation dropoffLocation;
 	private boolean examined = false;
 	private List<Order> neighbors = new ArrayList<>();
-	private int weight;
+	private double weight;
 	private int deliveryTime;
 	private int timesPassed = 0;
 
@@ -22,6 +22,11 @@ public class Order {
 		this.meal = meal;
 		this.timestamp = timestamp;
 		this.dropoffLocation = dropoffLocation;
+		this.weight = meal.getWeight();
+	}
+	
+	public Order(final MapLocation shoplocation) {
+		dropoffLocation = shoplocation;
 	}
 
 	public MapLocation getDropoffLocation() {
@@ -31,26 +36,13 @@ public class Order {
 	public void setDropoffLocation(MapLocation dropoffLocation) {
 		this.dropoffLocation = dropoffLocation;
 	}
-
-	public Order(int w, int d) {
-		weight = w;
-		deliveryTime = d;
-	}
-	
-	public Order(final MapLocation shoplocation) {
-		dropoffLocation = shoplocation;
-	}
 	
 	public double getDistanceTo(Order n) {
 		return this.dropoffLocation.distance(n.dropoffLocation);
 	}
 
-	public int getWeight() {
+	public double getWeight() {
 		return weight;
-	}
-
-	public int getTime() {
-		return deliveryTime;
 	}
 
 	public long getTimestamp() {
