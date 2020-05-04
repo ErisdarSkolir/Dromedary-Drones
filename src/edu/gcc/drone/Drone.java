@@ -40,11 +40,11 @@ public class Drone {
 			String name, double speed, double maxCapacity,
 			double turnAroundTime, double deliveryTime, double maxFlightTime
 	) {
-		validateGreaterThanZero(speed, "speed");
-		validateGreaterThanZero(maxCapacity, "max capacity");
-		validateGreaterThanZero(turnAroundTime, "turn around time");
-		validateGreaterThanZero(deliveryTime, "deliery time");
-		validateGreaterThanZero(maxFlightTime, "max flight time");
+		assertGreaterThanZero(speed, "speed");
+		assertGreaterThanZero(maxCapacity, "max capacity");
+		assertGreaterThanZero(turnAroundTime, "turn around time");
+		assertGreaterThanZero(deliveryTime, "deliery time");
+		assertGreaterThanZero(maxFlightTime, "max flight time");
 
 		this.name = name;
 		this.speed = speed;
@@ -119,7 +119,16 @@ public class Drone {
 		return name;
 	}
 
-	private void validateGreaterThanZero(double value, String valueName) {
+	/**
+	 * Asserts that the given value is greater than zero, otherwise an illegal
+	 * argument exception is thrown.
+	 * 
+	 * @param value     The value to check.
+	 * @param valueName The name of the value for the exception message.
+	 * 
+	 * @throws IllegalArgumentException If the given value is less than zero.
+	 */
+	private void assertGreaterThanZero(double value, String valueName) {
 		if (value < 0.0)
 			throw new IllegalArgumentException(
 					String.format("Drone %s cannot be less than 0", valueName)
