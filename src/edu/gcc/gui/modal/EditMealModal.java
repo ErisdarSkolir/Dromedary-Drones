@@ -14,12 +14,10 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 
 /**
- * FXML Modal for editing the contents of an individual Meal Objec
+ * FXML Modal for editing the contents of an individual Meal Object
  * 
- * @author Zack Orlaski
- *
+ * @author Luke Donmoyer, Zack Orlaski
  */
-
 public class EditMealModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
 
