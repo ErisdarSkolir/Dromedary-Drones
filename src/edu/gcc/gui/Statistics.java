@@ -63,7 +63,7 @@ public class Statistics implements Initializable {
 			sendToFirstChart(index, results);
 			sendToSecondChart(index, results);
 			sendToThirdChart(index, results);
-			System.out.println(results.getSimType() + " #" + index + " Received.");
+			//System.out.println(results.getSimType() + " #" + index + " Received.");
 		});
 
 	}

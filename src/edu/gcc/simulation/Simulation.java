@@ -83,8 +83,7 @@ public class Simulation {
 		}
 		else
 			simType = "Knapsack";
-		
-		System.out.println(simType + " run.");
+
 		
 		this.simulationTime = orders.get(0).getTime();
 		ArrayList<Long> deliveryTimes = new ArrayList<Long>();

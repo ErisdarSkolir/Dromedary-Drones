@@ -31,11 +31,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import jfxtras.scene.control.LocalTimeTextField;
 
+/**
+ * This is the Main Run Configuration Modal, where the settings for the
+ * simulation are configured.
+ * 
+ * @author Zack Orlaski
+ *
+ */
 public class RunConfigurationModal extends Modal {
+
+	/*
+	 * XML DAO's
+	 */
 	private MealXmlDao mealXml = MealXml.getInstance();
 	private DroneXmlDao droneXml = DroneXml.getInstance();
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
-
+	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(true);
+	private ObservableList<Drone> loadedDrones = droneXml.getObservableLoadedDrones(true);
 	/*
 	 * Simulation args
 	 */
@@ -54,32 +66,47 @@ public class RunConfigurationModal extends Modal {
 	@FXML
 	private Label droneNumber;
 
+	/*
+	 * Modals
+	 */
 	private LoadedMealsModal loadedMealsModalController;
 	private LoadedDronesModal loadedDronesModalController;
 
-	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(true);
-	private ObservableList<Drone> loadedDrones = droneXml.getObservableLoadedDrones(true);
+	private List<CompletableFuture<Void>> futureList = new ArrayList<>();// Protects CompletableFutures from Java's
+																			// garbage collector
 
-	// Protects CompletableFutures from Java's garbage collector
-	private List<CompletableFuture<Void>> futureList = new ArrayList<>();
-
+	/**
+	 * Event Handler for the edit meals button. Opens the Loaded Meals modal
+	 */
 	@FXML
 	private void editLoadedMealsClicked() {
 		loadedMealsModalController.setOnHideListener(() -> mealNumber.setText(Integer.toString(loadedMeals.size())));
 		loadedMealsModalController.show();
 	}
 
+	/**
+	 * Event Handler for the edit drones button. Opens the loaded drones modal
+	 */
 	@FXML
 	private void editLoadedDronesClicked() {
 		loadedDronesModalController.setOnHideListener(() -> droneNumber.setText(Integer.toString(loadedDrones.size())));
 		loadedDronesModalController.show();
 	}
 
+	/**
+	 * Event Handler for the cancel button. Hides the modal
+	 */
 	@FXML
 	private void cancelButtonClicked() {
 		hide();
 	}
 
+	/**
+	 * Event Handler for the Run Simulation button. This method is where the
+	 * simulations are created and ran. Each simulation type is run and sent
+	 * asynchronously to the statistics page using CompletableFutures, 10 times
+	 * each. After sending all Results, the statistics page is opened.
+	 */
 	@FXML
 	private void runButtonClicked() {
 
@@ -106,33 +133,36 @@ public class RunConfigurationModal extends Modal {
 			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> {
 				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(),
 						1);
-				System.out.println("FIFO # " + index + " Generated");
+				// System.out.println("FIFO # " + index + " Generated");
 				return simulation.runSimulation();
 
 			}).thenAccept(result -> {
 				statsController.sendToAllCharts(index, result);
 				System.out.println("FIFO # " + index + " Sent");
 			});
-			
+
 			futureList.add(futureFIFO);
-			
+
 			// Knapsack Sim
 			CompletableFuture<Void> knapsackFIFO = CompletableFuture.supplyAsync(() -> {
 				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Fifo(), 1);
-				System.out.println("knapsack # " + index + " Generated");
+				// System.out.println("knapsack # " + index + " Generated");
 				return simulation.runSimulation();
 
 			}).thenAccept(result -> {
 				statsController.sendToAllCharts(index, result);
 				System.out.println("knapsack # " + index + " Sent");
 			});
-			
+
 			futureList.add(knapsackFIFO);
 		}
 
 		Gui.getInstance().navigateTo("statistics");
 	}
 
+	/**
+	 * Initializes the Modal and its values
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
@@ -141,6 +171,14 @@ public class RunConfigurationModal extends Modal {
 		droneNumber.setText(Integer.toString(loadedDrones.size()));
 	}
 
+	/**
+	 * Passes the controllers necessary for the modal
+	 * 
+	 * @param loadedMealsModal  a loaded meals modal
+	 * @param editMealModal     an edit meal info modal
+	 * @param loadedDronesModal a loaded drones modal
+	 * @param editDroneModal    an edit drone info modal
+	 */
 	public void setControllers(final LoadedMealsModal loadedMealsModal, final EditMealModal editMealModal,
 			final LoadedDronesModal loadedDronesModal, final EditDroneModal editDroneModal) {
 		loadedMealsModalController = loadedMealsModal;
@@ -150,6 +188,12 @@ public class RunConfigurationModal extends Modal {
 		loadedDronesModalController.setEditDroneModalController(editDroneModal);
 	}
 
+	/**
+	 * Opens the RunConfigurationModal based on the selected campus
+	 * 
+	 * @param selectedCampus the campus selected in the dropdown menu on the
+	 *                       overview
+	 */
 	public void show(final Campus selectedCampus) {
 		this.selectedCampus = selectedCampus;
 		this.pickupLocation = locationXml.getPickupLocationForCampus(selectedCampus);

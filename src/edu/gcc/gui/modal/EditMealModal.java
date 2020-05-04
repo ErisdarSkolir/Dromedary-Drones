@@ -12,6 +12,13 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 
+
+/**
+ * FXML Modal for editing the contents of an individual Meal Objec
+ * @author Zack Orlaski
+ *
+ */
+
 public class EditMealModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
 
@@ -32,6 +39,9 @@ public class EditMealModal extends Modal {
 
 	private Meal meal;
 
+	/**
+	 * Event Handler for the saving the Meal in its current state. Adds the Meal to the list if not already existing
+	 */
 	@FXML
 	protected void saveButtonClicked() {
 		if (meal != null)
@@ -42,11 +52,17 @@ public class EditMealModal extends Modal {
 		clearAndHide();
 	}
 
+	/**
+	 * Event Handler for the cancel button. Closes the modal
+	 */
 	@FXML
 	protected void cancelButtonClicked() {
 		clearAndHide();
 	}
 
+	/**
+	 * Initializes the modal
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
@@ -60,6 +76,9 @@ public class EditMealModal extends Modal {
 
 	}
 
+	/**
+	 * Creates a Meal based on the currently filled fields
+	 */
 	private Meal createNewMeal() {
 		return new Meal(
 				nameField.getText(),
@@ -70,6 +89,10 @@ public class EditMealModal extends Modal {
 		);
 	}
 
+	/**
+	 * Fills the modal fields with a values from the passed Meal
+	 * @param meal the meal to take fill the field data with
+	 */
 	private void setFields(final Meal meal) {
 		this.meal = meal;
 
@@ -80,6 +103,9 @@ public class EditMealModal extends Modal {
 		percentSlider.setValue(meal.getProbability());
 	}
 
+	/**
+	 * Clears field values
+	 */
 	private void clearFields() {
 		meal = null;
 
@@ -90,6 +116,10 @@ public class EditMealModal extends Modal {
 		percentSlider.setValue(0.0);
 	}
 
+	/**
+	 * Updates the values in a meal with the values in the modal fields
+	 * @param meal this meal gets updated 
+	 */
 	private void updateMeal(final Meal meal) {
 		meal.setName(nameField.getText());
 		meal.setBurgers(burgerSpinner.getValue());
@@ -100,11 +130,18 @@ public class EditMealModal extends Modal {
 		mealXml.update(meal);
 	}
 
+	/**
+	 * Close the Modal
+	 */
 	private void clearAndHide() {
 		hide();
 		clearFields();
 	}
 
+	/**
+	 * Open the modal with the specified meal values in the fields
+	 * @param meal the meal with the values to fill the fields with
+	 */
 	public void show(final Meal meal) {
 		setFields(meal);
 		super.show();

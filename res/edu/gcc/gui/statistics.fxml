@@ -38,7 +38,7 @@
                                   <NumberAxis label="Sim Number" minorTickCount="0" side="BOTTOM" fx:id="xAxis2" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis fx:id="yAxis2" label="Average Deliveries/Trip" minorTickVisible="false" opacity="0.56" side="LEFT" upperBound="10.0" />
+                                  <NumberAxis fx:id="yAxis2" label="Average Deliveries/Trip" opacity="0.56" side="LEFT" upperBound="10.0" />
                                 </yAxis>
                               </LineChart>
                               <LineChart fx:id="chart_three">
