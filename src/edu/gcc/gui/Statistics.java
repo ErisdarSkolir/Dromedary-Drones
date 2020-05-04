@@ -68,14 +68,17 @@ public class Statistics implements Initializable {
 			int index,
 			CompletableFuture<Results> simulationFuture
 	) {
-		System.out.println(index);
-
 		futures.add(simulationFuture);
 		simulationFuture.exceptionally(e -> {
-			System.err.println(e);
+			e.printStackTrace();
 			return null;
 		}).thenAcceptAsync(results -> {
-			System.out.println("Adding ---- " + index);
+			if (results == null)
+			{
+				System.err.println("Result was null!");
+				return;
+			}
+
 			Platform.runLater(
 				() -> sendToChart(results.getSimType(), index, results)
 			);
