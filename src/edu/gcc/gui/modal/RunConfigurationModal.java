@@ -115,7 +115,7 @@ public class RunConfigurationModal extends Modal {
 			//FIFO Sim
 			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> 
 			{
-				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Fifo(), 1);
+				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(), 1);
 				return simulation.runSimulation();
 				
 			}).thenAccept(result-> statsController.sendToAllCharts(index, result));
@@ -123,7 +123,7 @@ public class RunConfigurationModal extends Modal {
 			//Knapsack Sim
 			CompletableFuture<Void> knapsackFIFO = CompletableFuture.supplyAsync(() -> 
 			{
-				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(), 1);
+				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Fifo(), 1);
 				return simulation.runSimulation();
 				
 			}).thenAccept(result-> statsController.sendToAllCharts(index, result));
