@@ -48,7 +48,7 @@ public class OrderGenerator {
 		}
 
 		result.sort(Comparator.comparingLong(Order::getTimestamp));
-
+		
 		return result;
 	}
 

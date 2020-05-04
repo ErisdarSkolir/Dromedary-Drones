@@ -33,9 +33,7 @@ public class Simulation {
 		this.packingAlgorithm = packingAlgorithm;
 		this.traveling = traveling;
 		this.shopLocation = shopLocation;
-		this.orders = orders;
-		
-		System.out.println(orders);
+		this.orders = new ArrayList<>(orders);
 	}
 
 	public Results runSimulation() {
@@ -328,5 +326,4 @@ public class Simulation {
 	public double ConvertLatLongToFeet(double latLong) {
 		return (((latLong * 3_280.4) * 10_000) / 90);
 	}
-	
 }
