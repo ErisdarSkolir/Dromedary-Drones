@@ -164,6 +164,7 @@ public class RunConfigurationModal extends Modal {
 			statsController.addSimulationFuture(index, greedyBacktrack);
 		}
 
+		hide();
 		Gui.getInstance().navigateTo("statistics");
 	}
 
