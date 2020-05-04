@@ -19,6 +19,8 @@ import javafx.scene.control.TextField;
  * @author Luke Donmoyer, Zack Orlaski
  */
 public class EditMealModal extends Modal {
+	private static final String PERCENT_LABLE_PATTERN = "Percent: %s%%";
+
 	private MealXmlDao mealXml = MealXml.getInstance();
 
 	@FXML
@@ -82,7 +84,7 @@ public class EditMealModal extends Modal {
 				.addListener(
 					(observable, oldValue, newValue) -> percentLabel.setText(
 						String.format(
-							"Percent: %s%%",
+							PERCENT_LABLE_PATTERN,
 							decimalFormat.format(Math.round((double) newValue))
 						)
 					)
@@ -115,6 +117,13 @@ public class EditMealModal extends Modal {
 		friesSpinner.getValueFactory().setValue(meal.getFries());
 		drinkSpinner.getValueFactory().setValue(meal.getDrinks());
 		percentSlider.setValue(meal.getProbability());
+
+		percentLabel.setText(
+			String.format(
+				PERCENT_LABLE_PATTERN,
+				decimalFormat.format(Math.round(meal.getProbability()))
+			)
+		);
 	}
 
 	/**
@@ -128,6 +137,13 @@ public class EditMealModal extends Modal {
 		friesSpinner.getValueFactory().setValue(0);
 		drinkSpinner.getValueFactory().setValue(0);
 		percentSlider.setValue(0.0);
+
+		percentLabel.setText(
+			String.format(
+				PERCENT_LABLE_PATTERN,
+				decimalFormat.format(Math.round(0.0))
+			)
+		);
 	}
 
 	/**
