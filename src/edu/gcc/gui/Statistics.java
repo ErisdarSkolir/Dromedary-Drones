@@ -6,10 +6,12 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import edu.gcc.results.Results;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
 
@@ -33,13 +35,6 @@ public class Statistics implements Initializable {
 	private XYChart.Series<Number, Number> fifoSeries3 = new XYChart.Series<>();
 	private XYChart.Series<Number, Number> knapsackSeries3 = new XYChart.Series<>();
 
-	private int fifoCounter1 = 0;
-	private int knapsackCounter1 = 0;
-	private int fifoCounter2 = 0;
-	private int knapsackCounter2 = 0;
-	private int fifoCounter3 = 0;
-	private int knapsackCounter3 = 0;
-
 	@FXML
 	private WindowBar windowBarController;
 
@@ -61,20 +56,20 @@ public class Statistics implements Initializable {
 		// TODO: save to csv file here
 	}
 
-	public void sendToAllCharts(Results localResults) {
-
-		sendToFirstChart(localResults);
-		sendToSecondChart(localResults);
-		sendToThirdChart(localResults);
-
+	public void sendToAllCharts(int index, Results results) {
+		Platform.runLater(() -> {
+			sendToFirstChart(index, results);
+			sendToSecondChart(index, results);
+			sendToThirdChart(index, results);
+		});
 	}
-
-	private void sendToFirstChart(Results results) {
+	
+	private void sendToFirstChart(int index, Results results) {
 		if (results.getSimType().equals("FIFO")) {
 			fifoSeries1.getData()
 					.add(
-						new XYChart.Data(
-								fifoCounter1++,
+						new Data<>(
+								index,
 								results.getAverageTimePerOrder()
 						)
 					);
@@ -82,21 +77,20 @@ public class Statistics implements Initializable {
 		} else {
 			knapsackSeries1.getData()
 					.add(
-						new XYChart.Data(
-								knapsackCounter1++,
+						new Data<>(
+								index,
 								results.getAverageTimePerOrder()
 						)
 					);
 		}
-
 	}
 
-	private void sendToSecondChart(Results results) {
+	private void sendToSecondChart(int index, Results results) {
 		if (results.getSimType().equals("FIFO")) {
 			fifoSeries2.getData()
 					.add(
-						new XYChart.Data(
-								fifoCounter2++,
+						new Data<>(
+								index,
 								results.getAverageTimePerOrder()
 						)
 					);
@@ -104,8 +98,8 @@ public class Statistics implements Initializable {
 		} else {
 			knapsackSeries2.getData()
 					.add(
-						new XYChart.Data(
-								knapsackCounter2++,
+						new Data<>(
+								index,
 								results.getAverageTimePerOrder()
 						)
 					);
@@ -113,12 +107,12 @@ public class Statistics implements Initializable {
 		}
 	}
 
-	private void sendToThirdChart(Results results) {
+	private void sendToThirdChart(int index, Results results) {
 		if (results.getSimType().equals("FIFO")) {
 			fifoSeries3.getData()
 					.add(
-						new XYChart.Data(
-								fifoCounter3++,
+						new Data<>(
+								index,
 								results.getAverageTimePerOrder()
 						)
 					);
@@ -126,13 +120,12 @@ public class Statistics implements Initializable {
 		} else {
 			knapsackSeries3.getData()
 					.add(
-						new XYChart.Data(
-								knapsackCounter3++,
+						new Data<>(
+								index,
 								results.getAverageTimePerOrder()
 						)
 					);
 		}
-
 	}
 
 	private Optional<File> askForFile() {
@@ -158,5 +151,4 @@ public class Statistics implements Initializable {
 		chart_three.getData().add(fifoSeries3);
 		chart_three.getData().add(knapsackSeries3);
 	}
-
 }

@@ -110,13 +110,15 @@ public class RunConfigurationModal extends Modal {
 			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
 			//end Generate Orders
 			
+			final int index = iteration;
+			
 			//FIFO Sim
 			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> 
 			{
 				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Fifo(), 1);
 				return simulation.runSimulation();
 				
-			}).thenAccept(result-> statsController.sendToAllCharts(result));
+			}).thenAccept(result-> statsController.sendToAllCharts(index, result));
 			
 			//Knapsack Sim
 			CompletableFuture<Void> knapsackFIFO = CompletableFuture.supplyAsync(() -> 
@@ -124,7 +126,7 @@ public class RunConfigurationModal extends Modal {
 				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(), 1);
 				return simulation.runSimulation();
 				
-			}).thenAccept(result-> statsController.sendToAllCharts(result));
+			}).thenAccept(result-> statsController.sendToAllCharts(index, result));
 		}
 		
 		Gui.getInstance().navigateTo("statistics");
