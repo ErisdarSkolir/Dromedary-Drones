@@ -8,6 +8,7 @@ import edu.gcc.maplocation.MapLocation;
 import edu.gcc.meal.Meal;
 import edu.gcc.order.Order;
 import edu.gcc.order.OrderGenerator;
+import edu.gcc.packing.Fifo;
 import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.results.Results;
 import edu.gcc.salesman.greedy.Graph;
@@ -81,6 +82,11 @@ public class Simulation {
 		// Delivery times to be exported to a Results obj
 		ArrayList<Long> deliveryTimes = new ArrayList<Long>();
 
+		if (this.packingAlgorithm instanceof Fifo)
+			simType = "FIFO";
+		else
+			simType = "Knapsack";
+		
 		while (!this.orders.isEmpty()) {
 			
 			// Init drone to use
@@ -99,12 +105,11 @@ public class Simulation {
 						
 			// FIFO
 			List<Order> filledOrders = runKnapsack(orders, droneUp.getMaxCapacity());
-			this.simType = "FIFO";
+			
 			
 			// Greedy
 			if (traveling == 1) {
 				path = runGreedyTSP(filledOrders);
-				this.simType = "Greedy";
 			}
 			
 			// check that the drone can fly the entire path without dying
@@ -162,7 +167,7 @@ public class Simulation {
 						time = (long) this.orders.get(0).getTime();
 					}
 				}
-			}
+			} 
 		}
 
 		return new Results(this.timesPerOrder, this.ordersPerTrip, this.distancePerTrip, this.simType);
