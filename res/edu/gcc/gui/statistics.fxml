@@ -27,26 +27,26 @@
                            <children>
                               <LineChart fx:id="chart_one">
                                 <xAxis>
-                                  <NumberAxis label="Sim Number" minorTickLength="0.0" minorTickVisible="false" side="BOTTOM" tickLength="3.0" tickUnit="1.0" upperBound="10.0" fx:id="xAxis1" />
+                                  <NumberAxis label="Sim Number" minorTickVisible="false" side="BOTTOM" tickLength="3.0" fx:id="xAxis1" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis fx:id="yAxis1" forceZeroInRange="false" label="Average Wait Time (Minutes)" minorTickVisible="false" side="LEFT" tickUnit="1.0" />
+                                  <NumberAxis fx:id="yAxis1" label="Average Wait Time (Minutes)" side="LEFT" />
                                 </yAxis>
                               </LineChart>
                               <LineChart fx:id="chart_two">
                                 <xAxis>
-                                  <NumberAxis label="Sim Number" minorTickCount="0" minorTickLength="1.0" minorTickVisible="false" side="BOTTOM" tickUnit="1.0" fx:id="xAxis2" />
+                                  <NumberAxis label="Sim Number" minorTickCount="0" side="BOTTOM" fx:id="xAxis2" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis fx:id="yAxis2" forceZeroInRange="false" label="Average Deliveries/Trip" minorTickLength="1.0" minorTickVisible="false" opacity="0.56" side="LEFT" tickUnit="1.0" upperBound="10.0" />
+                                  <NumberAxis fx:id="yAxis2" label="Average Deliveries/Trip" minorTickVisible="false" opacity="0.56" side="LEFT" upperBound="10.0" />
                                 </yAxis>
                               </LineChart>
                               <LineChart fx:id="chart_three">
                                 <xAxis>
-                                  <NumberAxis label="Sim Number" minorTickVisible="false" side="BOTTOM" tickUnit="1.0" upperBound="10.0" fx:id="xAxis3" />
+                                  <NumberAxis label="Sim Number" minorTickVisible="false" side="BOTTOM" fx:id="xAxis3" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis fx:id="yAxis3" forceZeroInRange="false" label="Average Distance Per Delivery" minorTickVisible="false" side="LEFT" tickUnit="1.0" />
+                                  <NumberAxis fx:id="yAxis3" forceZeroInRange="false" label="Average Distance Per Delivery" side="LEFT" />
                                 </yAxis>
                               </LineChart>
                            </children>
