@@ -48,7 +48,7 @@ public class EditCampusModal extends Modal {
 				.forEach(locationXml::delete);
 
 		removeOnHideListeners();
-		
+
 		clearFields();
 		hide();
 	}
@@ -60,7 +60,7 @@ public class EditCampusModal extends Modal {
 	@FXML
 	protected void onCancelButtonClicked() {
 		removeOnHideListeners();
-		
+
 		clearFields();
 		hide();
 	}
@@ -90,6 +90,13 @@ public class EditCampusModal extends Modal {
 		hide();
 	}
 
+	/**
+	 * Shows this modal and sets the fields to the values found in the given
+	 * campus. When this is called this modal will edit the given campus rather
+	 * than creating a new one.
+	 * 
+	 * @param campus The campus to edit.
+	 */
 	public void show(final Campus campus) {
 		currentCampus = campus;
 
@@ -102,7 +109,7 @@ public class EditCampusModal extends Modal {
 		latitudeField.setText(Double.toString(pickupLocation.getxCoord()));
 		longitudeField.setText(Double.toString(pickupLocation.getyCoord()));
 
-		show();
+		super.show();
 	}
 
 	/**

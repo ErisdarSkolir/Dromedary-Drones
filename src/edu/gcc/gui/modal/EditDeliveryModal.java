@@ -6,6 +6,11 @@ import edu.gcc.maplocation.MapLocationXmlDao;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+/**
+ * This modal edits a delivery location.
+ * 
+ * @author Luke Donmoyer
+ */
 public class EditDeliveryModal extends Modal {
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 
@@ -18,16 +23,23 @@ public class EditDeliveryModal extends Modal {
 	@FXML
 	private TextField longitudeTextField;
 
+	/**
+	 * Event handler for when the delete button is clicked. Will delete the
+	 * editing map location and hides this modal.
+	 */
 	@FXML
-	protected void deleteButtonClicked() {
+	private void deleteButtonClicked() {
 		locationXml.delete(editingMapLocation);
-		
-		hide();
-		clear();
+
+		clearAndHide();
 	}
 
+	/**
+	 * Event handler for when the save button is clicked. Will save the changes
+	 * to the currently editing map location and hides this modal.
+	 */
 	@FXML
-	protected void onSaveButtonClicked() {
+	private void onSaveButtonClicked() {
 		editingMapLocation.setName(nameTextField.getText());
 		editingMapLocation.setxCoord(
 			Double.parseDouble(latitudeTextField.getText())
@@ -38,16 +50,41 @@ public class EditDeliveryModal extends Modal {
 
 		locationXml.update(editingMapLocation);
 
-		hide();
-		clear();
+		clearAndHide();
 	}
 
+	/**
+	 * Event handler for when the cancel button is clicked. Hides this modal
+	 * without modifying the map location XML file.
+	 */
 	@FXML
-	protected void onCancelButtonClicked() {
-		hide();
-		clear();
+	private void onCancelButtonClicked() {
+		clearAndHide();
 	}
 
+	/**
+	 * Clears all the text fields for this modal.
+	 */
+	private void clear() {
+		nameTextField.clear();
+		latitudeTextField.clear();
+		longitudeTextField.clear();
+	}
+
+	/**
+	 * Calls the EditDeliveryModal.clear() method and hides this modal.
+	 */
+	private void clearAndHide() {
+		clear();
+		hide();
+	}
+
+	/**
+	 * Sets the currently editing map location to the given location, sets the
+	 * fields to the values from the given map location and shows this modal.
+	 * 
+	 * @param location
+	 */
 	public void show(final MapLocation location) {
 		editingMapLocation = location;
 
@@ -56,11 +93,5 @@ public class EditDeliveryModal extends Modal {
 		longitudeTextField.setText(Double.toString(location.getyCoord()));
 
 		show();
-	}
-
-	private void clear() {
-		nameTextField.clear();
-		latitudeTextField.clear();
-		longitudeTextField.clear();
 	}
 }
