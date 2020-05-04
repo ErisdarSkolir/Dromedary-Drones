@@ -36,7 +36,6 @@ public class Statistics implements Initializable {
 	private XYChart.Series<Number, Number> fifoSeries3 = new XYChart.Series<>();
 	private XYChart.Series<Number, Number> knapsackSeries3 = new XYChart.Series<>();
 
-
 	@FXML
 	private WindowBar windowBarController;
 
@@ -59,81 +58,47 @@ public class Statistics implements Initializable {
 	}
 
 	public void sendToAllCharts(int index, Results results) {
+
 		Platform.runLater(() -> {
 			sendToFirstChart(index, results);
 			sendToSecondChart(index, results);
 			sendToThirdChart(index, results);
+			System.out.println(results.getSimType() + " #" + index + " Received.");
 		});
+
 	}
-	
+
 	private void sendToFirstChart(int index, Results results) {
 		if (results.getSimType().equals("FIFO")) {
-			fifoSeries1.getData()
-					.add(
-						new Data<>(
-								index,
-								results.getAverageTimePerOrder()
-						)
-					);
+			fifoSeries1.getData().add(new Data<>(index, results.getAverageTimePerOrder()));
 
 		} else {
-			knapsackSeries1.getData()
-					.add(
-						new Data<>(
-								index,
-								results.getAverageTimePerOrder()
-						)
-					);
+			knapsackSeries1.getData().add(new Data<>(index, results.getAverageTimePerOrder()));
 		}
 	}
 
 	private void sendToSecondChart(int index, Results results) {
 		if (results.getSimType().equals("FIFO")) {
-			fifoSeries2.getData()
-					.add(
-						new Data<>(
-								index,
-								results.getAverageOrdersPerTrip()
-						)
-					);
+			fifoSeries2.getData().add(new Data<>(index, results.getAverageOrdersPerTrip()));
 
 		} else {
-			knapsackSeries2.getData()
-					.add(
-						new Data<>(
-								index,
-								results.getAverageOrdersPerTrip()
-						)
-					);
+			knapsackSeries2.getData().add(new Data<>(index, results.getAverageOrdersPerTrip()));
 
 		}
 	}
 
 	private void sendToThirdChart(int index, Results results) {
 		if (results.getSimType().equals("FIFO")) {
-			fifoSeries3.getData()
-					.add(
-						new Data<>(
-								index,
-								results.getAverageDistancePerTrip()
-						)
-					);
+			fifoSeries3.getData().add(new Data<>(index, results.getAverageDistancePerTrip()));
 
 		} else {
-			knapsackSeries3.getData()
-					.add(
-						new Data<>(
-								index,
-								results.getAverageDistancePerTrip()
-						)
-					);
+			knapsackSeries3.getData().add(new Data<>(index, results.getAverageDistancePerTrip()));
 		}
 	}
 
 	private Optional<File> askForFile() {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters()
-				.add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(Gui.getInstance().getStage());
 
@@ -142,10 +107,8 @@ public class Statistics implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		windowBarController.backButtonEnableAndAction(
-			event -> Gui.getInstance().navigateTo("overview")
-		);
-		
+		windowBarController.backButtonEnableAndAction(event -> Gui.getInstance().navigateTo("overview"));
+
 		chart_one.getData().add(fifoSeries1);
 		fifoSeries1.setName("FIFO");
 		chart_one.getData().add(knapsackSeries1);

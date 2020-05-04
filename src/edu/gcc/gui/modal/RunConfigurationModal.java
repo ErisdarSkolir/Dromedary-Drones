@@ -35,17 +35,14 @@ public class RunConfigurationModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
 	private DroneXmlDao droneXml = DroneXml.getInstance();
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
-	
-	
-	
+
 	/*
 	 * Simulation args
 	 */
 	private Campus selectedCampus;
 	private MapLocation pickupLocation;
 	private List<MapLocation> dropoffLocations;
-	
-	
+
 	@FXML
 	private LocalTimeTextField timeField;
 
@@ -60,25 +57,21 @@ public class RunConfigurationModal extends Modal {
 	private LoadedMealsModal loadedMealsModalController;
 	private LoadedDronesModal loadedDronesModalController;
 
-	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(
-		true
-	);
-	private ObservableList<Drone> loadedDrones = droneXml
-			.getObservableLoadedDrones(true);
+	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(true);
+	private ObservableList<Drone> loadedDrones = droneXml.getObservableLoadedDrones(true);
+
+	// Protects CompletableFutures from Java's garbage collector
+	private List<CompletableFuture<Void>> futureList = new ArrayList<>();
 
 	@FXML
 	private void editLoadedMealsClicked() {
-		loadedMealsModalController.setOnHideListener(
-			() -> mealNumber.setText(Integer.toString(loadedMeals.size()))
-		);
+		loadedMealsModalController.setOnHideListener(() -> mealNumber.setText(Integer.toString(loadedMeals.size())));
 		loadedMealsModalController.show();
 	}
 
 	@FXML
 	private void editLoadedDronesClicked() {
-		loadedDronesModalController.setOnHideListener(
-			() -> droneNumber.setText(Integer.toString(loadedDrones.size()))
-		);
+		loadedDronesModalController.setOnHideListener(() -> droneNumber.setText(Integer.toString(loadedDrones.size())));
 		loadedDronesModalController.show();
 	}
 
@@ -89,46 +82,54 @@ public class RunConfigurationModal extends Modal {
 
 	@FXML
 	private void runButtonClicked() {
-		
-		
+
 		List<String> customers = new ArrayList<>();
 		List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
 		customers.add("Bob");
 		customers.add("John");
 		customers.add("Jane");
-		customers.add("That random guy over there");		
-		
-		Statistics statsController = 
-				Gui.getInstance().getControllerForScene("statistics", Statistics.class); 
-		
-		
-		//Run both sims 10 times
-		for(int iteration = 0; iteration < 10; iteration++) {
-			//  Generate Order for both packing algorithms
+		customers.add("That random guy over there");
+
+		Statistics statsController = Gui.getInstance().getControllerForScene("statistics", Statistics.class);
+
+		// Run both sims 10 times
+		for (int iteration = 0; iteration < 10; iteration++) {
+			// Generate Order for both packing algorithms
 			List<Order> orders = new ArrayList<>();
 			OrderGenerator orderGen = new OrderGenerator(meals, customers, dropoffLocations);
 			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
-			//end Generate Orders
-			
+			// end Generate Orders
+
 			final int index = iteration;
-			
-			//FIFO Sim
-			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> 
-			{
-				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(), 1);
+
+			// FIFO Simulation
+			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> {
+				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(),
+						1);
+				System.out.println("FIFO # " + index + " Generated");
 				return simulation.runSimulation();
-				
-			}).thenAccept(result-> statsController.sendToAllCharts(index, result));
+
+			}).thenAccept(result -> {
+				statsController.sendToAllCharts(index, result);
+				System.out.println("FIFO # " + index + " Sent");
+			});
 			
-			//Knapsack Sim
-			CompletableFuture<Void> knapsackFIFO = CompletableFuture.supplyAsync(() -> 
-			{
+			futureList.add(futureFIFO);
+			
+			// Knapsack Sim
+			CompletableFuture<Void> knapsackFIFO = CompletableFuture.supplyAsync(() -> {
 				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Fifo(), 1);
+				System.out.println("knapsack # " + index + " Generated");
 				return simulation.runSimulation();
-				
-			}).thenAccept(result-> statsController.sendToAllCharts(index, result));
+
+			}).thenAccept(result -> {
+				statsController.sendToAllCharts(index, result);
+				System.out.println("knapsack # " + index + " Sent");
+			});
+			
+			futureList.add(knapsackFIFO);
 		}
-		
+
 		Gui.getInstance().navigateTo("statistics");
 	}
 
@@ -140,26 +141,20 @@ public class RunConfigurationModal extends Modal {
 		droneNumber.setText(Integer.toString(loadedDrones.size()));
 	}
 
-	public void setControllers(
-			final LoadedMealsModal loadedMealsModal,
-			final EditMealModal editMealModal,
-			final LoadedDronesModal loadedDronesModal,
-			final EditDroneModal editDroneModal
-	) {
+	public void setControllers(final LoadedMealsModal loadedMealsModal, final EditMealModal editMealModal,
+			final LoadedDronesModal loadedDronesModal, final EditDroneModal editDroneModal) {
 		loadedMealsModalController = loadedMealsModal;
 		loadedMealsModal.setEditMealModalController(editMealModal);
 
 		loadedDronesModalController = loadedDronesModal;
 		loadedDronesModalController.setEditDroneModalController(editDroneModal);
 	}
-	
-	
+
 	public void show(final Campus selectedCampus) {
-		this.selectedCampus = selectedCampus;	
+		this.selectedCampus = selectedCampus;
 		this.pickupLocation = locationXml.getPickupLocationForCampus(selectedCampus);
 		this.dropoffLocations = locationXml.getDropoffReactiveForCampus(selectedCampus);
 		super.show();
 	}
 
 }
-
