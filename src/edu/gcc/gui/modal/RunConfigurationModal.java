@@ -140,7 +140,6 @@ public class RunConfigurationModal extends Modal {
 							loadedDrones,
 							orders,
 							pickupLocation,
-							dropoffLocations,
 							new Knapsack(),
 							1
 						),
@@ -156,7 +155,6 @@ public class RunConfigurationModal extends Modal {
 							loadedDrones,
 							orders,
 							pickupLocation,
-							dropoffLocations,
 							new Fifo(),
 							1
 						),
@@ -173,7 +171,6 @@ public class RunConfigurationModal extends Modal {
 			List<Drone> loadedDrones,
 			List<Order> orders,
 			MapLocation pickupLocation,
-			List<MapLocation> dropoffLocations,
 			PackingAlgorithm algorithm,
 			int traveling
 	) {
@@ -181,7 +178,6 @@ public class RunConfigurationModal extends Modal {
 				loadedDrones,
 				orders,
 				pickupLocation,
-				dropoffLocations,
 				algorithm,
 				traveling
 		).runSimulation();
