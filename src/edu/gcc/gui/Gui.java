@@ -131,6 +131,9 @@ public class Gui extends Application {
 		});
 	}
 
+	/**
+	 * Initializes JavaFX window and scenes.
+	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;

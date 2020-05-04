@@ -31,6 +31,10 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 public class WindowBar implements Initializable {
+	/**
+	 * The distance the window has to be dragged when maximizes before it is
+	 * restored down.
+	 */
 	private static final double RESTORE_THRESHOLD = 3.0;
 
 	private double deltaX;
@@ -40,17 +44,25 @@ public class WindowBar implements Initializable {
 
 	private Window window;
 
+	/**
+	 * Boolean property that determines whether custom window controls are
+	 * displayed or not.
+	 */
 	private BooleanProperty windowControls = new SimpleBooleanProperty(true);
+
+	/**
+	 * Boolean property that determines whether the window is draggable or not.
+	 */
 	private BooleanProperty draggable = new SimpleBooleanProperty(true);
 
 	@FXML
 	private Menu backButton;
-
 	@FXML
 	private Menu helpMenu;
-
 	@FXML
 	private Menu fileMenu;
+	@FXML
+	private CheckMenuItem darkModeToggle;
 	@FXML
 	private SeparatorMenuItem fileMenuSeparator;
 
@@ -69,36 +81,56 @@ public class WindowBar implements Initializable {
 	@FXML
 	private Mdl2Icon restoreIcon;
 
+	/**
+	 * Event handler for when the dark mode toggle button is pressed.
+	 * 
+	 * @param event
+	 */
 	@FXML
-	private CheckMenuItem darkModeToggle;
-
-	@FXML
-	protected void toggleDarkMode(ActionEvent event) {
-		Gui.getInstance()
-				.setDarkMode(((CheckMenuItem) event.getSource()).isSelected());
+	private void toggleDarkMode(ActionEvent event) {
+		CheckMenuItem item = (CheckMenuItem) event.getSource();
+		Gui.getInstance().setDarkMode(item.isSelected());
 	}
 
+	/**
+	 * Event handler for when the minimized button is pressed.
+	 */
 	@FXML
-	protected void onMinimizeButtonPressed() {
+	private void onMinimizeButtonPressed() {
 		Gui.getInstance().minimize();
 	}
 
+	/**
+	 * Event handler for when the restore button is pressed. If currently
+	 * maximized, the window will be restored down, if not maximized the window
+	 * will be maximized.
+	 */
 	@FXML
-	protected void onRestoreButtonPressed() {
+	private void onRestoreButtonPressed() {
 		if (maximized)
 			restoreDown();
 		else
 			maximize();
 	}
 
+	/**
+	 * Event handler for when the close button is pressed. This will terminate
+	 * the JavaFX context and tell the JVM to exit with a code of 0.
+	 */
 	@FXML
-	protected void onCloseButtonPressed() {
+	private void onCloseButtonPressed() {
 		Platform.exit();
 		System.exit(0);
 	}
 
+	/**
+	 * Event handler for when the menu bar is double clicked. This will cause
+	 * the window to maximize or restore down depending on maximized state.
+	 * 
+	 * @param event
+	 */
 	@FXML
-	protected void onDoubleClick(MouseEvent event) {
+	private void onDoubleClick(MouseEvent event) {
 		if (!(event.getButton().equals(MouseButton.PRIMARY) &&
 				event.getClickCount() == 2)) {
 			return;
@@ -110,8 +142,14 @@ public class WindowBar implements Initializable {
 			maximize();
 	}
 
+	/**
+	 * Event handler for when the menu bar is pressed. This will set the offsets
+	 * needed for dragging the window.
+	 * 
+	 * @param event
+	 */
 	@FXML
-	protected void onMousePressed(MouseEvent event) {
+	private void onMousePressed(MouseEvent event) {
 		if (!isDraggable())
 			return;
 
@@ -120,10 +158,14 @@ public class WindowBar implements Initializable {
 	}
 
 	/**
+	 * Event handler for when the menu bar is dragged. This will minimize the
+	 * window if it is currently maximized and move the window around the
+	 * screen.
+	 * 
 	 * @param event
 	 */
 	@FXML
-	protected void onMouseDragged(MouseEvent event) {
+	private void onMouseDragged(MouseEvent event) {
 		if (!isDraggable())
 			return;
 
@@ -141,6 +183,9 @@ public class WindowBar implements Initializable {
 		window.setY(event.getScreenY() - deltaY);
 	}
 
+	/**
+	 * Initializes the window bar.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -161,7 +206,7 @@ public class WindowBar implements Initializable {
 		Gui.getInstance()
 				.getDarkModeProperty()
 				.addListener((observable, oldValue, newValue) -> {
-					if (newValue) {
+					if (Boolean.TRUE.equals(newValue)) {
 						toolbar.setBlendMode(BlendMode.ADD);
 						darkModeToggle.setSelected(true);
 					} else {
@@ -171,12 +216,22 @@ public class WindowBar implements Initializable {
 				});
 	}
 
+	/**
+	 * When this method is called the back button is enabled and sets its event
+	 * handler to the given handler.
+	 * 
+	 * @param event
+	 */
 	public void backButtonEnableAndAction(EventHandler<MouseEvent> event) {
 		backButton.setVisible(true);
-
 		backButton.getGraphic().setOnMouseReleased(event);
 	}
 
+	/**
+	 * Sets the context file menu items.
+	 * 
+	 * @param menuItems The {@link MenuItem}s to add to the file menu.
+	 */
 	public void setFileMenuItems(MenuItem... menuItems) {
 		fileMenuSeparator.setVisible(true);
 
@@ -186,10 +241,19 @@ public class WindowBar implements Initializable {
 		}
 	}
 
-	public void setMenuItems(MenuItem... menuItems) {
+	/**
+	 * Sets the context help menu items.
+	 * 
+	 * @param menuItems The items to add to the help menu.
+	 */
+	public void setHelpMenuItems(MenuItem... menuItems) {
 		helpMenu.getItems().addAll(menuItems);
 	}
 
+	/**
+	 * Maximizes the window. Sets the internal state of the window bar and
+	 * replaces the maximize icon to the restore down icon.
+	 */
 	public void maximize() {
 		if (maximized)
 			return;
@@ -199,6 +263,10 @@ public class WindowBar implements Initializable {
 		maximized = true;
 	}
 
+	/**
+	 * Restores down this window. Sets the internal state of the window bar and
+	 * replaces the restore down icon with the maximize icon.
+	 */
 	public void restoreDown() {
 		if (!maximized)
 			return;
@@ -208,18 +276,40 @@ public class WindowBar implements Initializable {
 		maximized = false;
 	}
 
+	/**
+	 * Enables or disables window controls.
+	 * 
+	 * @param enabled
+	 */
 	public void setWindowControls(final boolean enabled) {
 		windowControls.set(enabled);
 	}
 
+	/**
+	 * Returns whether the window is draggable or not.
+	 * 
+	 * @return true if the window is draggable, otherwise false.
+	 */
 	public boolean isDraggable() {
 		return draggable.get();
 	}
 
+	/**
+	 * Sets whether the window is draggable or not.
+	 * 
+	 * @param draggable
+	 */
 	public void setDraggable(boolean draggable) {
 		this.draggable.set(draggable);
 	}
 
+	/**
+	 * Returns true if the current mouse position is outside of the given
+	 * threshold relative to the current drag offsets.
+	 * 
+	 * @param threshold The threshold to compare against.
+	 * @param event
+	 */
 	private boolean dragOutsideRestoreThreshold(
 			double threshold,
 			MouseEvent event
@@ -228,6 +318,10 @@ public class WindowBar implements Initializable {
 				Math.abs(deltaY - event.getY()) > threshold;
 	}
 
+	/**
+	 * Aligns the window to the mouse based on the ratio of the screen size to
+	 * the restored window size.
+	 */
 	private void alignWindowToMouse(final MouseEvent event) {
 		Stage primaryStage = Gui.getInstance().getStage();
 

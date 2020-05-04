@@ -29,7 +29,6 @@ import edu.gcc.maplocation.CampusXmlDao;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -46,8 +45,6 @@ public class Overview implements Initializable {
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
 	private CampusXmlDao campusXml = CampusXml.getInstance();
 
-	private ObservableList<MapLocation> dropOffLocations = FXCollections
-			.observableArrayList();
 	private BiMap<Marker, MapLocation> currentMarkers = HashBiMap.create();
 
 	@FXML
@@ -56,6 +53,7 @@ public class Overview implements Initializable {
 	@FXML
 	private WindowBar windowBarController;
 
+	// Modal controllers
 	@FXML
 	private RunConfigurationModal runConfigurationModalController;
 	@FXML
@@ -81,7 +79,7 @@ public class Overview implements Initializable {
 	/**
 	 * Event handler for when the edit campus button is clicked. This opens the
 	 * modal and then ensures that the edited campus is selected when the modal
-	 * closes. If no campus is currenlty selected, this method returns
+	 * closes. If no campus is currently selected, this method returns
 	 * immediately.
 	 */
 	@FXML
@@ -135,10 +133,9 @@ public class Overview implements Initializable {
 		);
 		mapView.setZoom(17);
 
-		dropOffLocations = locationXml.getDropoffReactiveForCampus(campus);
 		setMapMarkers(
 			locationXml.getPickupLocationForCampus(campus),
-			dropOffLocations
+			locationXml.getDropoffReactiveForCampus(campus)
 		);
 	}
 
@@ -160,68 +157,12 @@ public class Overview implements Initializable {
 	 */
 	@FXML
 	protected void runSimulation() {
-		/*
-		 * System.out.println("run button clicked");
-		 * 
-		 * new Thread(() -> { System.out.println("Simulation run");
-		 * 
-		 * // Simulation sim = new Simulation(meals, shopLocation,
-		 * dropoffLocations, // packingAlgorithm, 1); // sim.runSimulation(); //
-		 * statistics.setSimulation(sim); //
-		 * Gui.getInstance().navigateTo(UiText.STATISTICS_ID); }).start();
-		 */
-
-		// mealConfigurationModalController.show();
-
 		if (campusDropdown.getSelectionModel().getSelectedItem() == null)
 			return;
 
-		/*
-		 * TEST COMPLETABLE FUTURE: DELETE BEFORE SUBMISSION
-		 */
-		/*
-		 * ArrayList<Long> timePerOrder = new ArrayList<>(); ArrayList<Integer>
-		 * ordersPerTrip = new ArrayList<>(); ArrayList<Long> distancePerTrip =
-		 * new ArrayList<>(); String simType = "test";
-		 * 
-		 * timePerOrder.add((long) 6000); timePerOrder.add((long) 5500);
-		 * timePerOrder.add((long) 9000); timePerOrder.add((long) 7242);
-		 * ordersPerTrip.add(4); ordersPerTrip.add(2); ordersPerTrip.add(7);
-		 * ordersPerTrip.add(1); distancePerTrip.add((long) 450);
-		 * distancePerTrip.add((long) 520); distancePerTrip.add((long) 190);
-		 * distancePerTrip.add((long) 487); Results r = new Results(
-		 * timePerOrder, ordersPerTrip, distancePerTrip, simType );
-		 * CompletableFuture<Results> f = CompletableFuture.completedFuture(r);
-		 * 
-		 * ArrayList<Long> timePerOrder2 = new ArrayList<>(); ArrayList<Integer>
-		 * ordersPerTrip2 = new ArrayList<>(); ArrayList<Long> distancePerTrip2
-		 * = new ArrayList<>(); String simType2 = "test";
-		 * 
-		 * timePerOrder2.add((long) 6600); timePerOrder2.add((long) 5400);
-		 * timePerOrder2.add((long) 7400); timePerOrder2.add((long) 7212);
-		 * ordersPerTrip2.add(1); ordersPerTrip2.add(3); ordersPerTrip2.add(4);
-		 * ordersPerTrip2.add(2); distancePerTrip2.add((long) 470);
-		 * distancePerTrip2.add((long) 502); distancePerTrip2.add((long) 100);
-		 * distancePerTrip2.add((long) 420); Results r2 = new Results(
-		 * timePerOrder2, ordersPerTrip2, distancePerTrip2, simType2 );
-		 * CompletableFuture<Results> f2 =
-		 * CompletableFuture.completedFuture(r2);
-		 * 
-		 * /* END TEST OBJECT
-		 */
-
-		/*
-		 * Statistics statsController = Gui.getInstance()
-		 * .getControllerForScene("statistics", Statistics.class); //
-		 * statsController.message("Hello World");
-		 * 
-		 * Gui.getInstance().navigateTo("statistics");
-		 * 
-		 * statsController.sendToAllCharts(f);// TEST
-		 * statsController.sendToAllCharts(f2);// TEST
-		 */
-
-		runConfigurationModalController.show(campusDropdown.getSelectionModel().getSelectedItem() );
+		runConfigurationModalController.show(
+			campusDropdown.getSelectionModel().getSelectedItem()
+		);
 	}
 
 	/**
@@ -240,6 +181,20 @@ public class Overview implements Initializable {
 
 		campusDropdown.setItems(campusXml.getAll());
 
+		setContextMenuItems();
+
+		runConfigurationModalController.setControllers(
+			mealConfigurationModalController,
+			editMealModalController,
+			droneConfigurationModalController,
+			editDroneModalController
+		);
+	}
+
+	/**
+	 * Helper method to create an add context menu items.
+	 */
+	private void setContextMenuItems() {
 		MenuItem addCampusMenuItem = new MenuItem("Add Campus");
 		addCampusMenuItem.setOnAction(event -> this.newCampusButtonClicked());
 
@@ -249,13 +204,6 @@ public class Overview implements Initializable {
 		windowBarController.setFileMenuItems(
 			addCampusMenuItem,
 			runSimulationMenuItem
-		);
-
-		runConfigurationModalController.setControllers(
-			mealConfigurationModalController,
-			editMealModalController,
-			droneConfigurationModalController,
-			editDroneModalController
 		);
 	}
 
