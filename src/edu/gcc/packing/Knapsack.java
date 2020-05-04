@@ -2,9 +2,17 @@ package edu.gcc.packing;
 
 import java.util.List;
 import edu.gcc.order.Order;
-
+/**
+ * A Greedy Knapsack Packing Algorithm
+ * @author Zack Orlaski
+ *
+ */
 public class Knapsack implements PackingAlgorithm {
-	// return the index of the best order to put in next
+	
+	
+	/**
+	 * Return the next order available to fit
+	 */
 	@Override
 	public Order nextFit(List<Order> ords, List<Order> filled, double capWeight) {
 		int totalFilledWeight = 0;

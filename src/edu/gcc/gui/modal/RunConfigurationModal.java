@@ -48,11 +48,8 @@ public class RunConfigurationModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
 	private DroneXmlDao droneXml = DroneXml.getInstance();
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
-	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(
-		true
-	);
-	private ObservableList<Drone> loadedDrones = droneXml
-			.getObservableLoadedDrones(true);
+	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(true);
+	private ObservableList<Drone> loadedDrones = droneXml.getObservableLoadedDrones(true);
 	/*
 	 * Simulation args
 	 */
@@ -82,9 +79,7 @@ public class RunConfigurationModal extends Modal {
 	 */
 	@FXML
 	private void editLoadedMealsClicked() {
-		loadedMealsModalController.setOnHideListener(
-			() -> mealNumber.setText(Integer.toString(loadedMeals.size()))
-		);
+		loadedMealsModalController.setOnHideListener(() -> mealNumber.setText(Integer.toString(loadedMeals.size())));
 		loadedMealsModalController.show();
 	}
 
@@ -93,9 +88,7 @@ public class RunConfigurationModal extends Modal {
 	 */
 	@FXML
 	private void editLoadedDronesClicked() {
-		loadedDronesModalController.setOnHideListener(
-			() -> droneNumber.setText(Integer.toString(loadedDrones.size()))
-		);
+		loadedDronesModalController.setOnHideListener(() -> droneNumber.setText(Integer.toString(loadedDrones.size())));
 		loadedDronesModalController.show();
 	}
 
@@ -117,49 +110,28 @@ public class RunConfigurationModal extends Modal {
 	private void runButtonClicked() {
 		List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
 
-		Statistics statsController = Gui.getInstance()
-				.getControllerForScene("statistics", Statistics.class);
+		Statistics statsController = Gui.getInstance().getControllerForScene("statistics", Statistics.class);
 
 		// Run both sims 10 times
 		for (int iteration = 0; iteration < 10; iteration++) {
 			// Generate Order for both packing algorithms
 			List<Order> orders = new ArrayList<>();
-			OrderGenerator orderGen = new OrderGenerator(
-					meals,
-					dropoffLocations
-			);
+			OrderGenerator orderGen = new OrderGenerator(meals, dropoffLocations);
 			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
 			// end Generate Orders
 
 			final int index = iteration;
-			
+
 			// FIFO Simulation
-			CompletableFuture<Results> fifoGreedy = CompletableFuture
-					.supplyAsync(
-						() -> runSimulation(
-							loadedDrones,
-							orders,
-							pickupLocation,
-							new Fifo(),
-							1
-						),
-						Executor.getService()
-					);
+			CompletableFuture<Results> fifoGreedy = CompletableFuture.supplyAsync(
+					() -> runSimulation(loadedDrones, orders, pickupLocation, new Fifo(), 1), Executor.getService());
 
 			statsController.addSimulationFuture(index, fifoGreedy);
-			
+
 			// Knapsack Sim
-			CompletableFuture<Results> greedyBacktrack = CompletableFuture
-					.supplyAsync(
-						() -> runSimulation(
-							loadedDrones,
-							orders,
-							pickupLocation,
-							new Knapsack(),
-							2
-						),
-						Executor.getService()
-					);
+			CompletableFuture<Results> greedyBacktrack = CompletableFuture.supplyAsync(
+					() -> runSimulation(loadedDrones, orders, pickupLocation, new Knapsack(), 2),
+					Executor.getService());
 
 			statsController.addSimulationFuture(index, greedyBacktrack);
 		}
@@ -168,20 +140,9 @@ public class RunConfigurationModal extends Modal {
 		Gui.getInstance().navigateTo("statistics");
 	}
 
-	public Results runSimulation(
-			List<Drone> loadedDrones,
-			List<Order> orders,
-			MapLocation pickupLocation,
-			PackingAlgorithm algorithm,
-			int traveling
-	) {
-		return new Simulation(
-				loadedDrones,
-				orders,
-				pickupLocation,
-				algorithm,
-				traveling
-		).runSimulation();
+	public Results runSimulation(List<Drone> loadedDrones, List<Order> orders, MapLocation pickupLocation,
+			PackingAlgorithm algorithm, int traveling) {
+		return new Simulation(loadedDrones, orders, pickupLocation, algorithm, traveling).runSimulation();
 	}
 
 	/**
@@ -203,12 +164,8 @@ public class RunConfigurationModal extends Modal {
 	 * @param loadedDronesModal a loaded drones modal
 	 * @param editDroneModal    an edit drone info modal
 	 */
-	public void setControllers(
-			final LoadedMealsModal loadedMealsModal,
-			final EditMealModal editMealModal,
-			final LoadedDronesModal loadedDronesModal,
-			final EditDroneModal editDroneModal
-	) {
+	public void setControllers(final LoadedMealsModal loadedMealsModal, final EditMealModal editMealModal,
+			final LoadedDronesModal loadedDronesModal, final EditDroneModal editDroneModal) {
 		loadedMealsModalController = loadedMealsModal;
 		loadedMealsModal.setEditMealModalController(editMealModal);
 
@@ -224,12 +181,8 @@ public class RunConfigurationModal extends Modal {
 	 */
 	public void show(final Campus selectedCampus) {
 		this.selectedCampus = selectedCampus;
-		this.pickupLocation = locationXml.getPickupLocationForCampus(
-			selectedCampus
-		);
-		this.dropoffLocations = locationXml.getDropoffReactiveForCampus(
-			selectedCampus
-		);
+		this.pickupLocation = locationXml.getPickupLocationForCampus(selectedCampus);
+		this.dropoffLocations = locationXml.getDropoffReactiveForCampus(selectedCampus);
 		super.show();
 	}
 

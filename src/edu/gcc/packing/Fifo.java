@@ -4,7 +4,17 @@ import java.util.List;
 
 import edu.gcc.order.Order;
 
+/**
+ * First In, First Out Packing Algorithm
+ * 
+ * @author Zack Orlaski
+ *
+ */
 public class Fifo implements PackingAlgorithm {
+
+	/**
+	 * Returns the next Order in the sequence
+	 */
 	@Override
 	public Order nextFit(List<Order> ords, List<Order> filled, double capWeight) {
 		double totalFilledWeight = 0;
