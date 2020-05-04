@@ -14,12 +14,11 @@ public class OrderGenerator {
 	private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
 	private final NavigableMap<Double, Meal> meals = new TreeMap<>();
-	private final List<String> customers;
 	private final List<MapLocation> dropoffLocations;
 
-	public OrderGenerator(final List<Meal> meals, final List<String> customers,
-			final List<MapLocation> dropoffLocations) {
-		this.customers = new ArrayList<>(customers);
+	public OrderGenerator(
+			final List<Meal> meals, final List<MapLocation> dropoffLocations
+	) {
 		this.dropoffLocations = new ArrayList<>(dropoffLocations);
 
 		double totalProbability = 0.0;
@@ -28,28 +27,37 @@ public class OrderGenerator {
 			totalProbability += meal.getProbability();
 			this.meals.put(totalProbability, meal);
 		}
-		
+
 		if (totalProbability > 100.0)
-			throw new IllegalArgumentException("The total probability of all meals cannoot be over 100%");
+			throw new IllegalArgumentException(
+					"The total probability of all meals cannoot be over 100%"
+			);
 	}
 
-	public List<Order> getOrdersInInterval(final int numOrders, final long startTimestmp, final long endTimestamp) {
+	public List<Order> getOrdersInInterval(
+			final int numOrders,
+			final long startTimestmp,
+			final long endTimestamp
+	) {
 		List<Order> result = new ArrayList<>(numOrders);
 
 		for (int i = 0; i < numOrders; i++) {
-			result.add(generateOrder(random.nextLong(startTimestmp, endTimestamp + 1)));
+			result.add(
+				generateOrder(random.nextLong(startTimestmp, endTimestamp + 1))
+			);
 		}
 
 		result.sort(Comparator.comparingLong(Order::getTimestamp));
-		
+
 		return result;
 	}
 
 	private Order generateOrder(final long timestamp) {
 		Meal meal = meals.ceilingEntry(random.nextDouble()).getValue();
-		String customer = customers.get(random.nextInt(customers.size()));
-		MapLocation dropoffLocation = dropoffLocations.get(random.nextInt(dropoffLocations.size()));
+		MapLocation dropoffLocation = dropoffLocations.get(
+			random.nextInt(dropoffLocations.size())
+		);
 
-		return new Order(customer, dropoffLocation, meal, timestamp);
+		return new Order(dropoffLocation, meal, timestamp);
 	}
 }

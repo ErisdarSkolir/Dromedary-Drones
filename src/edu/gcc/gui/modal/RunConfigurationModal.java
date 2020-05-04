@@ -115,12 +115,7 @@ public class RunConfigurationModal extends Modal {
 	 */
 	@FXML
 	private void runButtonClicked() {
-		List<String> customers = new ArrayList<>();
 		List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
-		customers.add("Bob");
-		customers.add("John");
-		customers.add("Jane");
-		customers.add("That random guy over there");
 
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
@@ -131,7 +126,6 @@ public class RunConfigurationModal extends Modal {
 			List<Order> orders = new ArrayList<>();
 			OrderGenerator orderGen = new OrderGenerator(
 					meals,
-					customers,
 					dropoffLocations
 			);
 			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
@@ -144,7 +138,7 @@ public class RunConfigurationModal extends Modal {
 					.supplyAsync(
 						() -> runSimulation(
 							loadedDrones,
-							meals,
+							orders,
 							pickupLocation,
 							dropoffLocations,
 							new Knapsack(),
@@ -160,7 +154,7 @@ public class RunConfigurationModal extends Modal {
 					.supplyAsync(
 						() -> runSimulation(
 							loadedDrones,
-							meals,
+							orders,
 							pickupLocation,
 							dropoffLocations,
 							new Fifo(),
@@ -177,7 +171,7 @@ public class RunConfigurationModal extends Modal {
 
 	public Results runSimulation(
 			List<Drone> loadedDrones,
-			List<Meal> meals,
+			List<Order> orders,
 			MapLocation pickupLocation,
 			List<MapLocation> dropoffLocations,
 			PackingAlgorithm algorithm,
@@ -185,7 +179,7 @@ public class RunConfigurationModal extends Modal {
 	) {
 		return new Simulation(
 				loadedDrones,
-				meals,
+				orders,
 				pickupLocation,
 				dropoffLocations,
 				algorithm,

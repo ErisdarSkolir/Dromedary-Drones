@@ -9,7 +9,6 @@ import edu.gcc.meal.Meal;
 public class Order {
 	private long timestamp;
 	private Meal meal;
-	private String customerName;
 
 	private double distance = 0;
 	public MapLocation dropoffLocation;
@@ -19,8 +18,7 @@ public class Order {
 	private int deliveryTime;
 	private int timesPassed = 0;
 
-	public Order(final String customerName, final MapLocation dropoffLocation, final Meal meal, final long timestamp) {
-		this.customerName = customerName;
+	public Order(final MapLocation dropoffLocation, final Meal meal, final long timestamp) {
 		this.meal = meal;
 		this.timestamp = timestamp;
 		this.dropoffLocation = dropoffLocation;

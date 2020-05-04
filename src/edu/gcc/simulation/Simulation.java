@@ -13,7 +13,6 @@ import edu.gcc.results.Results;
 import edu.gcc.salesman.greedy.Graph;
 
 public class Simulation {
-	private OrderGenerator orderGen;
 	private List<Order> orders = new ArrayList<>();
 	private PackingAlgorithm packingAlgorithm;
 	private int traveling;
@@ -27,30 +26,8 @@ public class Simulation {
 	List<Integer> ordersPerTrip = new ArrayList<Integer>();
 	List<Long> distancePerTrip = new ArrayList<Long>();
 	
-	// Orders
-	// Algorithms
-	// Run algorithms on orders
-	public Simulation(List<Drone> drones, List<Meal> meals, MapLocation shopLocation, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm,
-			int traveling) {
-		this.drones = drones;
-		this.packingAlgorithm = packingAlgorithm;
-		this.traveling = traveling;
-		this.shopLocation = shopLocation;
-		
-		ArrayList<String> customers = new ArrayList<>();
-		customers.add("Bob");
-		customers.add("John");
-		customers.add("Jane");
-		customers.add("That random guy over there");
-
-		this.orderGen = new OrderGenerator(meals, customers, dropoffLocations);
-		orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
-		
-		System.out.println(orders);
-	}
-	
 	//Receive List of orders
-	public Simulation(List<Drone> drones, List<Meal> meals, List <Order> orders, MapLocation shopLocation, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm,
+	public Simulation(List<Drone> drones, List <Order> orders, MapLocation shopLocation, List<MapLocation> dropoffLocations, PackingAlgorithm packingAlgorithm,
 			int traveling) {
 		this.drones = drones;
 		this.packingAlgorithm = packingAlgorithm;
