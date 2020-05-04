@@ -1,6 +1,7 @@
 package edu.gcc.gui.modal;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 
 import edu.gcc.meal.Meal;
@@ -12,9 +13,9 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 
-
 /**
  * FXML Modal for editing the contents of an individual Meal Objec
+ * 
  * @author Zack Orlaski
  *
  */
@@ -38,9 +39,11 @@ public class EditMealModal extends Modal {
 	private Label percentLabel;
 
 	private Meal meal;
+	private DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
 	/**
-	 * Event Handler for the saving the Meal in its current state. Adds the Meal to the list if not already existing
+	 * Event Handler for the saving the Meal in its current state. Adds the Meal
+	 * to the list if not already existing
 	 */
 	@FXML
 	protected void saveButtonClicked() {
@@ -61,6 +64,16 @@ public class EditMealModal extends Modal {
 	}
 
 	/**
+	 * Event handler for when the mouse is released from the percent slider.
+	 * This will round the value to the nearest whole number.
+	 */
+	@FXML
+	private void onMouseReleased() {
+		double currentValue = percentSlider.getValue();
+		percentSlider.setValue(Math.round(currentValue));
+	}
+
+	/**
 	 * Initializes the modal
 	 */
 	@Override
@@ -70,10 +83,12 @@ public class EditMealModal extends Modal {
 		percentSlider.valueProperty()
 				.addListener(
 					(observable, oldValue, newValue) -> percentLabel.setText(
-						String.format("Percent: %g", (double) newValue)
+						String.format(
+							"Percent: %s%%",
+							decimalFormat.format(Math.round((double) newValue))
+						)
 					)
 				);
-
 	}
 
 	/**
@@ -91,6 +106,7 @@ public class EditMealModal extends Modal {
 
 	/**
 	 * Fills the modal fields with a values from the passed Meal
+	 * 
 	 * @param meal the meal to take fill the field data with
 	 */
 	private void setFields(final Meal meal) {
@@ -118,7 +134,8 @@ public class EditMealModal extends Modal {
 
 	/**
 	 * Updates the values in a meal with the values in the modal fields
-	 * @param meal this meal gets updated 
+	 * 
+	 * @param meal this meal gets updated
 	 */
 	private void updateMeal(final Meal meal) {
 		meal.setName(nameField.getText());
@@ -140,6 +157,7 @@ public class EditMealModal extends Modal {
 
 	/**
 	 * Open the modal with the specified meal values in the fields
+	 * 
 	 * @param meal the meal with the values to fill the fields with
 	 */
 	public void show(final Meal meal) {
