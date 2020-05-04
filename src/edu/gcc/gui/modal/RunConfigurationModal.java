@@ -7,15 +7,15 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import edu.gcc.drone.Drone;
+import edu.gcc.drone.DroneXml;
+import edu.gcc.drone.DroneXmlDao;
 import edu.gcc.gui.Gui;
 import edu.gcc.gui.Statistics;
 import edu.gcc.maplocation.Campus;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.maplocation.MapLocationXml;
 import edu.gcc.maplocation.MapLocationXmlDao;
-import edu.gcc.drone.Drone;
-import edu.gcc.drone.DroneXml;
-import edu.gcc.drone.DroneXmlDao;
 import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
@@ -23,8 +23,10 @@ import edu.gcc.order.Order;
 import edu.gcc.order.OrderGenerator;
 import edu.gcc.packing.Fifo;
 import edu.gcc.packing.Knapsack;
+import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.results.Results;
 import edu.gcc.simulation.Simulation;
+import edu.gcc.util.Executor;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -46,8 +48,11 @@ public class RunConfigurationModal extends Modal {
 	private MealXmlDao mealXml = MealXml.getInstance();
 	private DroneXmlDao droneXml = DroneXml.getInstance();
 	private MapLocationXmlDao locationXml = MapLocationXml.getInstance();
-	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(true);
-	private ObservableList<Drone> loadedDrones = droneXml.getObservableLoadedDrones(true);
+	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(
+		true
+	);
+	private ObservableList<Drone> loadedDrones = droneXml
+			.getObservableLoadedDrones(true);
 	/*
 	 * Simulation args
 	 */
@@ -72,15 +77,14 @@ public class RunConfigurationModal extends Modal {
 	private LoadedMealsModal loadedMealsModalController;
 	private LoadedDronesModal loadedDronesModalController;
 
-	private List<CompletableFuture<Void>> futureList = new ArrayList<>();// Protects CompletableFutures from Java's
-																			// garbage collector
-
 	/**
 	 * Event Handler for the edit meals button. Opens the Loaded Meals modal
 	 */
 	@FXML
 	private void editLoadedMealsClicked() {
-		loadedMealsModalController.setOnHideListener(() -> mealNumber.setText(Integer.toString(loadedMeals.size())));
+		loadedMealsModalController.setOnHideListener(
+			() -> mealNumber.setText(Integer.toString(loadedMeals.size()))
+		);
 		loadedMealsModalController.show();
 	}
 
@@ -89,7 +93,9 @@ public class RunConfigurationModal extends Modal {
 	 */
 	@FXML
 	private void editLoadedDronesClicked() {
-		loadedDronesModalController.setOnHideListener(() -> droneNumber.setText(Integer.toString(loadedDrones.size())));
+		loadedDronesModalController.setOnHideListener(
+			() -> droneNumber.setText(Integer.toString(loadedDrones.size()))
+		);
 		loadedDronesModalController.show();
 	}
 
@@ -109,7 +115,6 @@ public class RunConfigurationModal extends Modal {
 	 */
 	@FXML
 	private void runButtonClicked() {
-
 		List<String> customers = new ArrayList<>();
 		List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
 		customers.add("Bob");
@@ -117,47 +122,75 @@ public class RunConfigurationModal extends Modal {
 		customers.add("Jane");
 		customers.add("That random guy over there");
 
-		Statistics statsController = Gui.getInstance().getControllerForScene("statistics", Statistics.class);
+		Statistics statsController = Gui.getInstance()
+				.getControllerForScene("statistics", Statistics.class);
 
 		// Run both sims 10 times
 		for (int iteration = 0; iteration < 10; iteration++) {
 			// Generate Order for both packing algorithms
 			List<Order> orders = new ArrayList<>();
-			OrderGenerator orderGen = new OrderGenerator(meals, customers, dropoffLocations);
+			OrderGenerator orderGen = new OrderGenerator(
+					meals,
+					customers,
+					dropoffLocations
+			);
 			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
 			// end Generate Orders
 
 			final int index = iteration;
-
+			
 			// FIFO Simulation
-			CompletableFuture<Void> futureFIFO = CompletableFuture.supplyAsync(() -> {
-				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Knapsack(),
-						1);
-				// System.out.println("FIFO # " + index + " Generated");
-				return simulation.runSimulation();
+			CompletableFuture<Results> futureFIFO = CompletableFuture
+					.supplyAsync(
+						() -> runSimulation(
+							meals,
+							orders,
+							pickupLocation,
+							dropoffLocations,
+							new Knapsack(),
+							1
+						),
+						Executor.getService()
+					);
 
-			}).thenAccept(result -> {
-				statsController.sendToAllCharts(index, result);
-				System.out.println("FIFO # " + index + " Sent");
-			});
-
-			futureList.add(futureFIFO);
+			statsController.addSimulationFuture(index, futureFIFO);
 
 			// Knapsack Sim
-			CompletableFuture<Void> knapsackFIFO = CompletableFuture.supplyAsync(() -> {
-				Simulation simulation = new Simulation(meals, orders, pickupLocation, dropoffLocations, new Fifo(), 1);
-				// System.out.println("knapsack # " + index + " Generated");
-				return simulation.runSimulation();
+			CompletableFuture<Results> knapsackFIFO = CompletableFuture
+					.supplyAsync(
+						() -> runSimulation(
+							meals,
+							orders,
+							pickupLocation,
+							dropoffLocations,
+							new Fifo(),
+							1
+						),
+						Executor.getService()
+					);
 
-			}).thenAccept(result -> {
-				statsController.sendToAllCharts(index, result);
-				System.out.println("knapsack # " + index + " Sent");
-			});
-
-			futureList.add(knapsackFIFO);
+			statsController.addSimulationFuture(index, knapsackFIFO);
 		}
 
 		Gui.getInstance().navigateTo("statistics");
+	}
+
+	public Results runSimulation(
+			List<Meal> meals,
+			List<Order> orders,
+			MapLocation pickupLocation,
+			List<MapLocation> dropoffLocations,
+			PackingAlgorithm algorithm,
+			int traveling
+	) {
+		return new Simulation(
+				meals,
+				orders,
+				pickupLocation,
+				dropoffLocations,
+				algorithm,
+				traveling
+		).runSimulation();
 	}
 
 	/**
@@ -179,8 +212,12 @@ public class RunConfigurationModal extends Modal {
 	 * @param loadedDronesModal a loaded drones modal
 	 * @param editDroneModal    an edit drone info modal
 	 */
-	public void setControllers(final LoadedMealsModal loadedMealsModal, final EditMealModal editMealModal,
-			final LoadedDronesModal loadedDronesModal, final EditDroneModal editDroneModal) {
+	public void setControllers(
+			final LoadedMealsModal loadedMealsModal,
+			final EditMealModal editMealModal,
+			final LoadedDronesModal loadedDronesModal,
+			final EditDroneModal editDroneModal
+	) {
 		loadedMealsModalController = loadedMealsModal;
 		loadedMealsModal.setEditMealModalController(editMealModal);
 
@@ -196,8 +233,12 @@ public class RunConfigurationModal extends Modal {
 	 */
 	public void show(final Campus selectedCampus) {
 		this.selectedCampus = selectedCampus;
-		this.pickupLocation = locationXml.getPickupLocationForCampus(selectedCampus);
-		this.dropoffLocations = locationXml.getDropoffReactiveForCampus(selectedCampus);
+		this.pickupLocation = locationXml.getPickupLocationForCampus(
+			selectedCampus
+		);
+		this.dropoffLocations = locationXml.getDropoffReactiveForCampus(
+			selectedCampus
+		);
 		super.show();
 	}
 

@@ -2,15 +2,20 @@ package edu.gcc.gui;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
 
 import edu.gcc.results.Results;
+import edu.gcc.util.Executor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.ListView;
@@ -23,11 +28,11 @@ public class Statistics implements Initializable {
 	 * LineCharts
 	 */
 	@FXML
-	private LineChart<Number, Number> chart_one;
+	private LineChart<Number, Number> chartOne;
 	@FXML
-	private LineChart<Number, Number> chart_two;
+	private LineChart<Number, Number> chartTwo;
 	@FXML
-	private LineChart<Number, Number> chart_three;
+	private LineChart<Number, Number> chartThree;
 
 	private XYChart.Series<Number, Number> fifoSeries1 = new XYChart.Series<>();
 	private XYChart.Series<Number, Number> knapsackSeries1 = new XYChart.Series<>();
@@ -38,6 +43,8 @@ public class Statistics implements Initializable {
 
 	@FXML
 	private WindowBar windowBarController;
+
+	private List<CompletableFuture<Results>> futures = new ArrayList<>();
 
 	// TODO: change this to whatever run history object we come up with
 	@FXML
@@ -57,48 +64,58 @@ public class Statistics implements Initializable {
 		// TODO: save to csv file here
 	}
 
-	public void sendToAllCharts(int index, Results results) {
+	public void addSimulationFuture(
+			int index,
+			CompletableFuture<Results> simulationFuture
+	) {
+		System.out.println(index);
 
-		Platform.runLater(() -> {
-			sendToFirstChart(index, results);
-			sendToSecondChart(index, results);
-			sendToThirdChart(index, results);
-			//System.out.println(results.getSimType() + " #" + index + " Received.");
-		});
-
+		futures.add(simulationFuture);
+		simulationFuture.exceptionally(e -> {
+			System.err.println(e);
+			return null;
+		}).thenAcceptAsync(results -> {
+			System.out.println("Adding ---- " + index);
+			Platform.runLater(
+				() -> sendToChart(results.getSimType(), index, results)
+			);
+		}, Executor.getService());
 	}
 
-	private void sendToFirstChart(int index, Results results) {
-		if (results.getSimType().equals("FIFO")) {
-			fifoSeries1.getData().add(new Data<>(index, results.getAverageTimePerOrder()));
-
-		} else {
-			knapsackSeries1.getData().add(new Data<>(index, results.getAverageTimePerOrder()));
-		}
+	private void sendToChart(
+			String simulationType,
+			int index,
+			Results results
+	) {
+		sendSeriesData(
+			simulationType.equals("FIFO") ? fifoSeries1 : knapsackSeries1,
+			index,
+			results.getAverageTimePerOrder()
+		);
+		sendSeriesData(
+			simulationType.equals("FIFO") ? fifoSeries2 : knapsackSeries2,
+			index,
+			results.getAverageOrdersPerTrip()
+		);
+		sendSeriesData(
+			simulationType.equals("FIFO") ? fifoSeries3 : knapsackSeries3,
+			index,
+			results.getAverageDistancePerTrip()
+		);
 	}
 
-	private void sendToSecondChart(int index, Results results) {
-		if (results.getSimType().equals("FIFO")) {
-			fifoSeries2.getData().add(new Data<>(index, results.getAverageOrdersPerTrip()));
-
-		} else {
-			knapsackSeries2.getData().add(new Data<>(index, results.getAverageOrdersPerTrip()));
-
-		}
-	}
-
-	private void sendToThirdChart(int index, Results results) {
-		if (results.getSimType().equals("FIFO")) {
-			fifoSeries3.getData().add(new Data<>(index, results.getAverageDistancePerTrip()));
-
-		} else {
-			knapsackSeries3.getData().add(new Data<>(index, results.getAverageDistancePerTrip()));
-		}
+	private void sendSeriesData(
+			XYChart.Series<Number, Number> series,
+			int index,
+			long result
+	) {
+		series.getData().add(new Data<>(index, result));
 	}
 
 	private Optional<File> askForFile() {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+		fileChooser.getExtensionFilters()
+				.add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(Gui.getInstance().getStage());
 
@@ -107,15 +124,17 @@ public class Statistics implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		windowBarController.backButtonEnableAndAction(event -> Gui.getInstance().navigateTo("overview"));
+		windowBarController.backButtonEnableAndAction(
+			event -> Gui.getInstance().navigateTo("overview")
+		);
 
-		chart_one.getData().add(fifoSeries1);
-		fifoSeries1.setName("FIFO");
-		chart_one.getData().add(knapsackSeries1);
-		chart_two.getData().add(fifoSeries2);
-		chart_two.getData().add(knapsackSeries2);
-		chart_three.getData().add(fifoSeries3);
-		chart_three.getData().add(knapsackSeries3);
+		chartOne.getData().add(fifoSeries1);
+		chartOne.getData().add(knapsackSeries1);
+		chartTwo.getData().add(fifoSeries2);
+		chartTwo.getData().add(knapsackSeries2);
+		chartThree.getData().add(fifoSeries3);
+		chartThree.getData().add(knapsackSeries3);
+
 		fifoSeries1.setName("FIFO");
 		fifoSeries2.setName("FIFO");
 		fifoSeries3.setName("FIFO");

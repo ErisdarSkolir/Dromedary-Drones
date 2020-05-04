@@ -25,7 +25,7 @@
                      <content>
                         <VBox>
                            <children>
-                              <LineChart fx:id="chart_one">
+                              <LineChart fx:id="chartOne">
                                 <xAxis>
                                   <NumberAxis label="Sim Number" minorTickVisible="false" side="BOTTOM" tickLength="3.0" fx:id="xAxis1" />
                                 </xAxis>
@@ -33,7 +33,7 @@
                                   <NumberAxis fx:id="yAxis1" label="Average Wait Time (Minutes)" side="LEFT" />
                                 </yAxis>
                               </LineChart>
-                              <LineChart fx:id="chart_two">
+                              <LineChart fx:id="chartTwo">
                                 <xAxis>
                                   <NumberAxis label="Sim Number" minorTickCount="0" side="BOTTOM" fx:id="xAxis2" />
                                 </xAxis>
@@ -41,7 +41,7 @@
                                   <NumberAxis fx:id="yAxis2" label="Average Deliveries/Trip" opacity="0.56" side="LEFT" upperBound="10.0" />
                                 </yAxis>
                               </LineChart>
-                              <LineChart fx:id="chart_three">
+                              <LineChart fx:id="chartThree">
                                 <xAxis>
                                   <NumberAxis label="Sim Number" minorTickVisible="false" side="BOTTOM" fx:id="xAxis3" />
                                 </xAxis>
