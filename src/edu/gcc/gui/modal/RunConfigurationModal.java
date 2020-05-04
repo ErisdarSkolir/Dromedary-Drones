@@ -147,7 +147,7 @@ public class RunConfigurationModal extends Modal {
 					);
 
 			statsController.addSimulationFuture(index, futureFIFO);
-
+			
 			// Knapsack Sim
 			CompletableFuture<Results> knapsackFIFO = CompletableFuture
 					.supplyAsync(

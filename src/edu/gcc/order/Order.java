@@ -24,6 +24,14 @@ public class Order {
 		this.dropoffLocation = dropoffLocation;
 	}
 
+	public MapLocation getDropoffLocation() {
+		return dropoffLocation;
+	}
+
+	public void setDropoffLocation(MapLocation dropoffLocation) {
+		this.dropoffLocation = dropoffLocation;
+	}
+
 	public Order(int w, int d) {
 		weight = w;
 		deliveryTime = d;

@@ -6,6 +6,7 @@ import java.util.List;
 import edu.gcc.drone.Drone;
 import edu.gcc.maplocation.MapLocation;
 import edu.gcc.order.Order;
+import edu.gcc.packing.Fifo;
 import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.results.Results;
 import edu.gcc.salesman.greedy.Graph;
@@ -43,9 +44,10 @@ public class Simulation {
 		// Init simTime list
 		List<Long> simTime = new ArrayList<>();
 		for (int i = 0; i < this.drones.size(); i++) {
-			simTime.add((long) 0);
+			simTime.add((long) this.orders.get(0).getTimestamp());
 		}
-		long timeOfDrone = 0;
+		long timeOfDrone = (long) this.orders.get(0).getTimestamp();
+		int index = 0;
 
 		// Distance of each trip
 		long tripDistance;
@@ -54,22 +56,39 @@ public class Simulation {
 		List<Order> path = new ArrayList<>();
 		// Distance from order to next order
 		double distanceToNext;
+		
+		if (this.packingAlgorithm instanceof Fifo) {
+			this.simType = "FIFO";
+		} else {
+			this.simType = "Knapsack";
+		}
 
 		// Delivery times to be exported to a Results obj
-		ArrayList<Long> deliveryTimes = new ArrayList<Long>();
+		List<Long> deliveryTimes = new ArrayList<>();
 
 		while (!this.orders.isEmpty()) {
+			
+			// If the drone time is less than the next order set it equal to the
+			// next order
+			for (Long time : simTime) {
+				if (this.orders.size() > 0) {
+					if (time < this.orders.get(0).getTimestamp()) {
+						time = this.orders.get(0).getTimestamp();
+					}
+				}
+			}
 
 			// Init drone to use
 			Drone droneUp = this.drones.get(0);
 
-			// FInd drone with lowest time
+			// Find drone with lowest time
 			for (int indexX = 0; indexX < simTime.size(); indexX++) {
 				for (int indexY = 0; indexY < simTime.size(); indexY++) {
-					if (indexY < indexX) {
+					if (simTime.get(indexY) < simTime.get(indexX)) {
 						// Drone with lowest time
 						droneUp = this.drones.get(indexY);
 						timeOfDrone = simTime.get(indexY);
+						index = indexY;
 					}
 				}
 			}
@@ -79,12 +98,20 @@ public class Simulation {
 				orders,
 				droneUp.getMaxCapacity()
 			);
-			this.simType = "FIFO";
 
 			// Greedy
 			if (traveling == 1) {
-				path = runGreedyTSP(filledOrders);
-				this.simType = "Greedy";
+				//path = runGreedyTSP(filledOrders);
+				path = runBT(filledOrders);
+			} else {
+				path = runBT(filledOrders);
+			}
+			
+			// Set leave time for drone
+			for (Order order : path) {
+				if (order.getTimestamp() > timeOfDrone) {
+					timeOfDrone = order.getTimestamp();
+				}
 			}
 
 			// check that the drone can fly the entire path without dying
@@ -105,40 +132,38 @@ public class Simulation {
 				// Init trip distance
 				tripDistance = 0;
 				// Set times
-				for (int i = 0; i < path.size() - 1; i++) {
+				for (int i = 0; i < path.size()-1; i++) {
 					// Times per order
+					// Returns distance in feet
 					distanceToNext = ConvertLatLongToFeet(
-						path.get(i).getDistanceTo(path.get(i + 1))
+						path.get(i).getDropoffLocation().getxCoord(),
+						path.get(i).getDropoffLocation().getyCoord(),
+						path.get(i + 1).getDropoffLocation().getxCoord(),
+						path.get(i + 1).getDropoffLocation().getyCoord()
 					);
-					timeOfDrone += (distanceToNext / ConvertMphToFps(
-						droneUp.getSpeed()
-					));
+					// Multiply by 1000 to make milliseconds
+					timeOfDrone += (distanceToNext / ConvertMphToFps(20) * 1000);
 					deliveryTimes.add(timeOfDrone);
 					this.timesPerOrder.add(
-						deliveryTimes.get(i) - path.get(i).getTime()
+						((timeOfDrone - path.get(i).getTimestamp())) / 60_000
 					);
 					// Distance per trip
 					tripDistance += distanceToNext;
 				}
 				// Order per trip
-				this.ordersPerTrip.add(filledOrders.size());
+				this.ordersPerTrip.add(path.size()-1);
 				// Distance per trip
+				System.out.println(tripDistance);
 				this.distancePerTrip.add(tripDistance);
-				timeOfDrone += droneUp.getTurnAroundTime();
+				
+				timeOfDrone += 180_000;
+				//timeOfDrone += droneUp.getTurnAroundTime() * 60_000;
+				simTime.set(index, timeOfDrone);
 
 				for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
 					filledOrders.remove(ind);
 				}
 
-			}
-			// If the drone time is less than the next order set it equal to the
-			// next order
-			for (Long time : simTime) {
-				if (this.orders.size() > 0) {
-					if (time < this.orders.get(0).getTime()) {
-						time = (long) this.orders.get(0).getTime();
-					}
-				}
 			}
 		}
 
@@ -328,10 +353,19 @@ public class Simulation {
 	}
 
 	public double ConvertMphToFps(double mph) {
-		return ((mph / 3600) * 5280);
+		return (mph * 1.466666);
 	}
 
-	public double ConvertLatLongToFeet(double latLong) {
-		return (((latLong * 3_280.4) * 10_000) / 90);
+	public double ConvertLatLongToFeet(double xcord1, double ycord1, double xcord2, double ycord2) {
+		double lat1 = ycord1 * Math.PI/180;
+		double lon1 = xcord1 * Math.PI/180;
+		double lat2 = ycord2 * Math.PI/180;
+		double lon2 = xcord2 * Math.PI/180;
+		double dlon = lon2 - lon1;
+		double dlat = lat2 - lat1;
+		double a = Math.pow(Math.sin(dlat/2),2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2),2);
+		double c = 2 * Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+		double d = 3961 * 5280 * c; // Radius of the earth in feet
+		return d;
 	}
 }
