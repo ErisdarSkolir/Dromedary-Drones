@@ -18,14 +18,14 @@ public class Results {
 	private String simType;
 	
 	public Results(
-			ArrayList<Long> timePerOrder,
-			ArrayList<Integer> ordersPerTrip,
-			ArrayList<Long> distancePerTrip,
+			List<Long> timesPerOrder,
+			List<Integer> ordersPerTrip2,
+			List<Long> distancePerTrip2,
 			String simType
 			) {
-		this.timePerOrder = timePerOrder;
-		this.ordersPerTrip = ordersPerTrip;
-		this.distancePerTrip = distancePerTrip;
+		this.timePerOrder = timesPerOrder;
+		this.ordersPerTrip = ordersPerTrip2;
+		this.distancePerTrip = distancePerTrip2;
 		this.simType = simType;
 		
 		// Set average time per order

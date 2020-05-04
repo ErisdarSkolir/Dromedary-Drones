@@ -143,8 +143,8 @@ public class RunConfigurationModal extends Modal {
 			CompletableFuture<Results> futureFIFO = CompletableFuture
 					.supplyAsync(
 						() -> runSimulation(
+							loadedDrones,
 							meals,
-							orders,
 							pickupLocation,
 							dropoffLocations,
 							new Knapsack(),
@@ -159,8 +159,8 @@ public class RunConfigurationModal extends Modal {
 			CompletableFuture<Results> knapsackFIFO = CompletableFuture
 					.supplyAsync(
 						() -> runSimulation(
+							loadedDrones,
 							meals,
-							orders,
 							pickupLocation,
 							dropoffLocations,
 							new Fifo(),
@@ -176,16 +176,16 @@ public class RunConfigurationModal extends Modal {
 	}
 
 	public Results runSimulation(
+			List<Drone> loadedDrones,
 			List<Meal> meals,
-			List<Order> orders,
 			MapLocation pickupLocation,
 			List<MapLocation> dropoffLocations,
 			PackingAlgorithm algorithm,
 			int traveling
 	) {
 		return new Simulation(
+				loadedDrones,
 				meals,
-				orders,
 				pickupLocation,
 				dropoffLocations,
 				algorithm,

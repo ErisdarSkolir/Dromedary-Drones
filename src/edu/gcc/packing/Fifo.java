@@ -6,7 +6,7 @@ import edu.gcc.order.Order;
 
 public class Fifo implements PackingAlgorithm {
 	@Override
-	public Order nextFit(List<Order> ords, List<Order> filled, int capWeight) {
+	public Order nextFit(List<Order> ords, List<Order> filled, double capWeight) {
 		double totalFilledWeight = 0;
 		Order result = null;
 

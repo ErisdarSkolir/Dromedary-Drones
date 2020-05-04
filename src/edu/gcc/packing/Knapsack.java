@@ -6,7 +6,7 @@ import edu.gcc.order.Order;
 public class Knapsack implements PackingAlgorithm {
 	// return the index of the best order to put in next
 	@Override
-	public Order nextFit(List<Order> ords, List<Order> filled, int capWeight) {
+	public Order nextFit(List<Order> ords, List<Order> filled, double capWeight) {
 		int totalFilledWeight = 0;
 		Order result = null;
 

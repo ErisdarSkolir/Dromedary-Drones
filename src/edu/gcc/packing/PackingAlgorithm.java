@@ -6,5 +6,5 @@ import edu.gcc.order.Order;
 
 @FunctionalInterface
 public interface PackingAlgorithm {
-	Order nextFit(List<Order> ords, List<Order> filled, int capWeight);
+	Order nextFit(List<Order> ords, List<Order> filled, double maxCapacity);
 }
