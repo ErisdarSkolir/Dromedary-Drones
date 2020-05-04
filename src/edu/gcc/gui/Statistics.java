@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.ListView;
@@ -34,6 +35,7 @@ public class Statistics implements Initializable {
 	private XYChart.Series<Number, Number> knapsackSeries2 = new XYChart.Series<>();
 	private XYChart.Series<Number, Number> fifoSeries3 = new XYChart.Series<>();
 	private XYChart.Series<Number, Number> knapsackSeries3 = new XYChart.Series<>();
+
 
 	@FXML
 	private WindowBar windowBarController;
@@ -145,10 +147,17 @@ public class Statistics implements Initializable {
 		);
 		
 		chart_one.getData().add(fifoSeries1);
+		fifoSeries1.setName("FIFO");
 		chart_one.getData().add(knapsackSeries1);
 		chart_two.getData().add(fifoSeries2);
 		chart_two.getData().add(knapsackSeries2);
 		chart_three.getData().add(fifoSeries3);
 		chart_three.getData().add(knapsackSeries3);
+		fifoSeries1.setName("FIFO");
+		fifoSeries2.setName("FIFO");
+		fifoSeries3.setName("FIFO");
+		knapsackSeries1.setName("Knapsack");
+		knapsackSeries2.setName("Knapsack");
+		knapsackSeries3.setName("Knapsack");
 	}
 }
