@@ -91,7 +91,7 @@ public class Statistics implements Initializable {
 					.add(
 						new Data<>(
 								index,
-								results.getAverageTimePerOrder()
+								results.getAverageOrdersPerTrip()
 						)
 					);
 
@@ -100,7 +100,7 @@ public class Statistics implements Initializable {
 					.add(
 						new Data<>(
 								index,
-								results.getAverageTimePerOrder()
+								results.getAverageOrdersPerTrip()
 						)
 					);
 
@@ -113,7 +113,7 @@ public class Statistics implements Initializable {
 					.add(
 						new Data<>(
 								index,
-								results.getAverageTimePerOrder()
+								results.getAverageDistancePerTrip()
 						)
 					);
 
@@ -122,7 +122,7 @@ public class Statistics implements Initializable {
 					.add(
 						new Data<>(
 								index,
-								results.getAverageTimePerOrder()
+								results.getAverageDistancePerTrip()
 						)
 					);
 		}
