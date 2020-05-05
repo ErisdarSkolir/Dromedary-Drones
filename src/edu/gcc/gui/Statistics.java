@@ -2,7 +2,6 @@ package edu.gcc.gui;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -21,8 +20,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
-import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
 
 /**
@@ -218,53 +215,6 @@ public class Statistics implements Initializable {
 
 	}
 
-	/**
-	 * Sends the given results to the correct charts. The x value of the result data
-	 * will be the given index value.
-	 * 
-	 * @param simulationType Either FIFO or Knapsack. This tells the method which
-	 *                       chart to put the data in.
-	 * @param index          The iteration number of the simulation. This tells the
-	 *                       method the x value for the result data.
-	 * @param results        The actual result data of the simulation.
-	 */
-//	private void sendToChart(
-//			String simulationType,
-//			int index,
-//			Results results
-//	) {
-//		sendSeriesData(
-//			simulationType.equals("FIFO") ? fifoSeries1 : greedySeries1,
-//			index,
-//			results.getAverageTimePerOrder()
-//		);
-//		sendSeriesData(
-//			simulationType.equals("FIFO") ? fifoSeries2 : greedySeries2,
-//			index,
-//			results.getAverageOrdersPerTrip()
-//		);
-//		sendSeriesData(
-//			simulationType.equals("FIFO") ? fifoSeries3 : greedySeries3,
-//			index,
-//			results.getAverageDistancePerTrip()
-//		);
-//	}
-//
-//	/**
-//	 * This method actually adds the given data to the given series.
-//	 * 
-//	 * @param series The series to add the data to.
-//	 * @param index  The x value of the data point.
-//	 * @param d      The y value of the data point.
-//	 */
-//	private void sendSeriesData(
-//			XYChart.Series<Number, Number> series,
-//			int index,
-//			double d
-//	) {
-//		series.getData().add(new Data<>(index, d));
-//	}
-//
 	/**
 	 * Clears all data out of the charts.
 	 */
