@@ -8,15 +8,17 @@ import edu.gcc.order.Order;
  * First In, First Out Packing Algorithm
  * 
  * @author Zack Orlaski
- *
  */
 public class Fifo implements PackingAlgorithm {
-
 	/**
 	 * Returns the next Order in the sequence
 	 */
 	@Override
-	public Order nextFit(List<Order> ords, List<Order> filled, double capWeight) {
+	public Order nextFit(
+			List<Order> ords,
+			List<Order> filled,
+			double capWeight
+	) {
 		double totalFilledWeight = 0;
 		Order result = null;
 
@@ -32,10 +34,9 @@ public class Fifo implements PackingAlgorithm {
 			}
 		}
 
-		if (filled.size() == 0) {
+		if (filled.isEmpty())
 			result = ords.get(0);
-		}
 
-		return null;
+		return result;
 	}
 }
