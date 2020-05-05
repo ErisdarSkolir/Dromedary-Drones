@@ -68,21 +68,27 @@ public class Statistics implements Initializable {
 	 */
 	private void saveCsvFile(final File file) {
 		// TODO: save to csv file here
-		Number[][] twoD = new Number[10][6];
+		Number[][] row1 = new Number[fifoSeries1.getData().size()][2];
+		Number[][] row2 = new Number[fifoSeries2.getData().size()][2];
+		Number[][] row3 = new Number[fifoSeries3.getData().size()][2];
 		String data = "";
 		
 		for (int index = 0; index < fifoSeries1.getData().size(); index++) {
-			twoD[(int) fifoSeries1.getData().get(index).getXValue()][0] = 
+			row1[(int) fifoSeries1.getData().get(index).getXValue()][0] = 
 					fifoSeries1.getData().get(index).getYValue();
-			twoD[(int) greedySeries1.getData().get(index).getXValue()][1] = 
+			row1[(int) greedySeries1.getData().get(index).getXValue()][1] = 
 					greedySeries1.getData().get(index).getYValue();
-			twoD[(int) fifoSeries2.getData().get(index).getXValue()][2] = 
+		}
+		for (int index = 0; index < fifoSeries2.getData().size(); index++) {
+			row2[(int) fifoSeries2.getData().get(index).getXValue()][0] = 
 					fifoSeries2.getData().get(index).getYValue();
-			twoD[(int) greedySeries2.getData().get(index).getXValue()][3] = 
+			row2[(int) greedySeries2.getData().get(index).getXValue()][1] = 
 					greedySeries2.getData().get(index).getYValue();
-			twoD[(int) fifoSeries3.getData().get(index).getXValue()][4] = 
+		}
+		for (int index = 0; index < fifoSeries3.getData().size(); index++) {
+			row3[(int) fifoSeries3.getData().get(index).getXValue()][0] = 
 					fifoSeries3.getData().get(index).getYValue();
-			twoD[(int) greedySeries3.getData().get(index).getXValue()][5] = 
+			row3[(int) greedySeries3.getData().get(index).getXValue()][1] = 
 					greedySeries3.getData().get(index).getYValue();
 		}
 		
@@ -90,12 +96,28 @@ public class Statistics implements Initializable {
 		data += "Average Deliverys/Trip, Fifo with Greedy, Greedy with Backtracking, ";
 		data += "Average Distance/Delivery, Fifo with Greedy, Greedy with Backtracking\n ";
 
-		for (int row = 0; row < 10; row++) {
-			for (int col = 0; col < 6; col++) {
+		for (int row = 0; row < fifoSeries1.getData().size(); row++) {
+			for (int col = 0; col < 2; col++) {
 				if (col % 2 == 0) {
 					data += row+1 + ",";
 				}
-				data += twoD[row][col] + ",";
+				data += row1[row][col] + ",";
+			}
+			if (row < fifoSeries2.getData().size()) {
+				for (int col = 0; col < 2; col++) {
+					if (col % 2 == 0) {
+						data += row+1 + ",";
+					}
+					data += row2[row][col] + ",";
+				}
+			}
+			if (row < fifoSeries3.getData().size()) {
+				for (int col = 0; col < 2; col++) {
+					if (col % 2 == 0) {
+						data += row+1 + ",";
+					}
+					data += row3[row][col] + ",";
+				}
 			}
 			data += "\n";
 		}
