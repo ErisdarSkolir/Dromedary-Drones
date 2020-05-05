@@ -1,6 +1,12 @@
 package edu.gcc.gui;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +71,48 @@ public class Statistics implements Initializable {
 	 */
 	private void saveCsvFile(final File file) {
 		// TODO: save to csv file here
+		Number[][] twoD = new Number[10][6];
+		String data = "";
+		
+		for (int index = 0; index < fifoSeries1.getData().size(); index++) {
+			twoD[(int) fifoSeries1.getData().get(index).getXValue()][0] = 
+					knapsackSeries3.getData().get(index).getYValue();
+			twoD[(int) knapsackSeries1.getData().get(index).getXValue()][1] = 
+					knapsackSeries3.getData().get(index).getYValue();
+			twoD[(int) fifoSeries2.getData().get(index).getXValue()][2] = 
+					knapsackSeries3.getData().get(index).getYValue();
+			twoD[(int) knapsackSeries2.getData().get(index).getXValue()][3] = 
+					knapsackSeries3.getData().get(index).getYValue();
+			twoD[(int) fifoSeries3.getData().get(index).getXValue()][4] = 
+					knapsackSeries3.getData().get(index).getYValue();
+			twoD[(int) knapsackSeries3.getData().get(index).getXValue()][5] = 
+					knapsackSeries3.getData().get(index).getYValue();
+		}
+		
+		data += "Average Time/Delivery, Fifo with Greedy, Greedy with Backtracking, ";
+		data += "Average Deliverys/Trip, Fifo with Greedy, Greedy with Backtracking, ";
+		data += "Average Distance/Delivery, Fifo with Greedy, Greedy with Backtracking\n ";
+
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 6; col++) {
+				if (col % 2 == 0) {
+					data += row+1 + ",";
+				}
+				data += twoD[row][col] + ",";
+			}
+			data += "\n";
+		}
+		
+		try {
+			FileOutputStream is = new FileOutputStream(file);
+			OutputStreamWriter osw = new OutputStreamWriter(is);    
+	        Writer w = new BufferedWriter(osw);
+			w.write(data);
+			w.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	/**

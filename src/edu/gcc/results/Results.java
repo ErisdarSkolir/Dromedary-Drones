@@ -52,9 +52,8 @@ public class Results {
 		for (int orders : this.ordersPerTrip) {
 			this.averageOrdersPerTrip += orders;
 		}
-		this.averageOrdersPerTrip = this.averageOrdersPerTrip
-				/ this.ordersPerTrip.size();
-		System.out.println(this.averageOrdersPerTrip);
+    
+		this.averageOrdersPerTrip = this.averageOrdersPerTrip / this.ordersPerTrip.size();
 
 		// Set average distance traveled per trip
 		this.averageDistancePerTrip = 0;

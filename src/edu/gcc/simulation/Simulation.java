@@ -67,9 +67,6 @@ public class Simulation {
 		List<Long> deliveryTimes = new ArrayList<>();
 
 		while (!this.orders.isEmpty()) {
-
-			// If the drone time is less than the next order set it equal to the
-			// next order
 			for (Long time : simTime) {
 				if (this.orders.size() > 0) {
 					if (time < this.orders.get(0).getTimestamp()) {
@@ -129,6 +126,7 @@ public class Simulation {
 				// Multiply by 1000 to make milliseconds
 				timeOfDrone += (distanceToNext / ConvertMphToFps(20) * 1000);
 				deliveryTimes.add(timeOfDrone);
+				timeOfDrone += droneUp.getDeliveryTime();
 				this.timesPerOrder.add(
 					((timeOfDrone - path.get(i).getTimestamp())) / 60_000
 				);
@@ -139,9 +137,9 @@ public class Simulation {
 			this.ordersPerTrip.add(path.size() - 2);
 			// Distance per trip
 			this.distancePerTrip.add(tripDistance);
-
-			timeOfDrone += 180_000;
-			// timeOfDrone += droneUp.getTurnAroundTime() * 60_000;
+      
+			//timeOfDrone += 180_000;
+			timeOfDrone += droneUp.getTurnAroundTime();
 			simTime.set(index, timeOfDrone);
 
 			for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
