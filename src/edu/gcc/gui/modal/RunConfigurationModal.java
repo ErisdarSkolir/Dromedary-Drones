@@ -40,6 +40,8 @@ import jfxtras.scene.control.LocalTimeTextField;
  * @author Luke Donmoyer, Zack Orlaski
  */
 public class RunConfigurationModal extends Modal {
+	private static final long MILLISECONDS_PER_HOUR = 3_600_000;
+
 	/*
 	 * XML DAO's
 	 */
@@ -57,19 +59,18 @@ public class RunConfigurationModal extends Modal {
 	private List<MapLocation> dropoffLocations;
 
 	@FXML
-	private LocalTimeTextField timeField;
-
-	@FXML
-	private Spinner<Integer> numHoursSpinner;
-
+	private Label hourNumber;
 	@FXML
 	private Label mealNumber;
 	@FXML
 	private Label droneNumber;
 
+	private List<Integer> ordersPerHour;
+
 	// Modal controllers
 	private LoadedMealsModal loadedMealsModalController;
 	private LoadedDronesModal loadedDronesModalController;
+	private EditHourModal editHoursModalController;
 
 	/**
 	 * Event Handler for the edit meals button. Opens the Loaded Meals modal
@@ -91,6 +92,18 @@ public class RunConfigurationModal extends Modal {
 			() -> droneNumber.setText(Integer.toString(loadedDrones.size()))
 		);
 		loadedDronesModalController.show();
+	}
+
+	/**
+	 * Event Handler for the edit hours button. Opens the edit hours modal.
+	 */
+	@FXML
+	private void editHoursButtonClicked() {
+		editHoursModalController.setOnHideListener(() -> {
+			ordersPerHour = editHoursModalController.getOrdersForAllHours();
+			hourNumber.setText(Integer.toString(ordersPerHour.size()));
+		});
+		editHoursModalController.show();
 	}
 
 	/**
@@ -117,14 +130,24 @@ public class RunConfigurationModal extends Modal {
 		// Run both sims 10 times
 		for (int iteration = 0; iteration < 10; iteration++) {
 			final int index = iteration;
-			
+
 			// Generate Order for both packing algorithms
 			List<Order> orders = new ArrayList<>();
 			OrderGenerator orderGen = new OrderGenerator(
 					meals,
 					dropoffLocations
 			);
-			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
+
+			for (int i = 0; i < ordersPerHour.size(); i++) {
+				int numOrders = ordersPerHour.get(i);
+				orders.addAll(
+					orderGen.getOrdersInInterval(
+						numOrders,
+						i * MILLISECONDS_PER_HOUR,
+						(i + 1) * MILLISECONDS_PER_HOUR
+					)
+				);
+			}
 
 			// FIFO Simulation
 			CompletableFuture<Results> fifoGreedy = CompletableFuture
@@ -200,13 +223,18 @@ public class RunConfigurationModal extends Modal {
 			final LoadedMealsModal loadedMealsModal,
 			final EditMealModal editMealModal,
 			final LoadedDronesModal loadedDronesModal,
-			final EditDroneModal editDroneModal
+			final EditDroneModal editDroneModal,
+			final EditHourModal editHoursModal
 	) {
 		loadedMealsModalController = loadedMealsModal;
 		loadedMealsModal.setEditMealModalController(editMealModal);
 
 		loadedDronesModalController = loadedDronesModal;
 		loadedDronesModalController.setEditDroneModalController(editDroneModal);
+
+		editHoursModalController = editHoursModal;
+		ordersPerHour = editHoursModalController.getOrdersForAllHours();
+		hourNumber.setText(Integer.toString(ordersPerHour.size()));
 	}
 
 	/**
