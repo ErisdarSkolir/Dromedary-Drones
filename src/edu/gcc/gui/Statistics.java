@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 import edu.gcc.results.Results;
-import edu.gcc.util.Executor;
+import edu.gcc.util.HalfCoreExecutor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -108,7 +108,7 @@ public class Statistics implements Initializable {
 			Platform.runLater(
 				() -> sendToChart(results.getSimType(), index, results)
 			);
-		}, Executor.getService());
+		}, HalfCoreExecutor.getService());
 	}
 
 	/**

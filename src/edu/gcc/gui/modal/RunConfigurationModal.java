@@ -26,12 +26,10 @@ import edu.gcc.packing.Knapsack;
 import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.results.Results;
 import edu.gcc.simulation.Simulation;
-import edu.gcc.util.Executor;
+import edu.gcc.util.HalfCoreExecutor;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import jfxtras.scene.control.LocalTimeTextField;
 
 /**
  * This is the Main Run Configuration Modal, where the settings for the
@@ -159,7 +157,7 @@ public class RunConfigurationModal extends Modal {
 							new Fifo(),
 							1
 						),
-						Executor.getService()
+						HalfCoreExecutor.getService()
 					);
 
 			statsController.addSimulationFuture(index, fifoGreedy);
@@ -174,7 +172,7 @@ public class RunConfigurationModal extends Modal {
 							new Knapsack(),
 							2
 						),
-						Executor.getService()
+						HalfCoreExecutor.getService()
 					);
 
 			statsController.addSimulationFuture(index, greedyBacktrack);
