@@ -80,8 +80,6 @@ public class Simulation {
 
 			// Init drone to use
 			Drone droneUp = this.drones.get(0);
-			System.out.println(droneUp.getTurnAroundTime());
-			System.out.println(droneUp.getMaxCapacity());
 
 			// Find drone with lowest time
 			for (int indexX = 0; indexX < simTime.size(); indexX++) {
