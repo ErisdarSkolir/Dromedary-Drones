@@ -125,57 +125,49 @@ public class RunConfigurationModal extends Modal {
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
 
+		// Generate Order for both packing algorithms
+		List<Order> orders = new ArrayList<>();
+		OrderGenerator orderGen = new OrderGenerator(meals, dropoffLocations);
 
-			// Generate Order for both packing algorithms
-			List<Order> orders = new ArrayList<>();
-			OrderGenerator orderGen = new OrderGenerator(
-					meals,
-					dropoffLocations
+		for (int i = 0; i < ordersPerHour.size(); i++) {
+			int numOrders = ordersPerHour.get(i);
+			orders.addAll(
+				orderGen.getOrdersInInterval(
+					numOrders,
+					i * MILLISECONDS_PER_HOUR,
+					(i + 1) * MILLISECONDS_PER_HOUR
+				)
 			);
+		}
 
+		// FIFO Simulation
+		CompletableFuture<Results> fifoGreedy = CompletableFuture.supplyAsync(
+			() -> runSimulation(
+				loadedDrones,
+				orders,
+				pickupLocation,
+				new Fifo(),
+				1
+			),
+			HalfCoreExecutor.getService()
+		);
 
-			for (int i = 0; i < ordersPerHour.size(); i++) {
-				int numOrders = ordersPerHour.get(i);
-				orders.addAll(
-					orderGen.getOrdersInInterval(
-						numOrders,
-						i * MILLISECONDS_PER_HOUR,
-						(i + 1) * MILLISECONDS_PER_HOUR
-					)
+		statsController.addSimulationFuture(fifoGreedy);
+
+		// Knapsack Sim
+		CompletableFuture<Results> greedyBacktrack = CompletableFuture
+				.supplyAsync(
+					() -> runSimulation(
+						loadedDrones,
+						orders,
+						pickupLocation,
+						new Knapsack(),
+						2
+					),
+					HalfCoreExecutor.getService()
 				);
-			}
 
-
-			// FIFO Simulation
-			CompletableFuture<Results> fifoGreedy = CompletableFuture
-					.supplyAsync(
-						() -> runSimulation(
-							loadedDrones,
-							orders,
-							pickupLocation,
-							new Fifo(),
-							1
-						),
-						HalfCoreExecutor.getService()
-					);
-
-			statsController.addSimulationFuture(fifoGreedy);
-
-			// Knapsack Sim
-			CompletableFuture<Results> greedyBacktrack = CompletableFuture
-					.supplyAsync(
-						() -> runSimulation(
-							loadedDrones,
-							orders,
-							pickupLocation,
-							new Knapsack(),
-							2
-						),
-						HalfCoreExecutor.getService()
-					);
-
-			statsController.addSimulationFuture(greedyBacktrack);
-		
+		statsController.addSimulationFuture(greedyBacktrack);
 
 		hide();
 		Gui.getInstance().navigateTo("statistics");
