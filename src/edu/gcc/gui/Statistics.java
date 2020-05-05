@@ -102,7 +102,7 @@ public class Statistics implements Initializable {
 
 
 			Platform.runLater(
-				() -> sendToChart(results)
+				() -> sendToAllCharts(results)
 			);
 		}, HalfCoreExecutor.getService());
 
