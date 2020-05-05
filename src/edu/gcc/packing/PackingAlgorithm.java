@@ -7,10 +7,11 @@ import edu.gcc.order.Order;
 /**
  * Interface for Packing Algorithms
  * 
- * @author Zack Orlaski
+ * @author Luke Donmoyer, Lake Pry, Zack Orlaski
  */
 @FunctionalInterface
 public interface PackingAlgorithm {
+
 	/**
 	 * Get the next available Order in the list based on the algorithm
 	 * 
@@ -22,6 +23,7 @@ public interface PackingAlgorithm {
 	public Order nextFit(
 			List<Order> ords,
 			List<Order> filled,
-			double maxCapacity
+			double maxCapacity,
+			double maxDistance
 	);
 }

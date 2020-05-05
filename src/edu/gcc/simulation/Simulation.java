@@ -56,7 +56,7 @@ public class Simulation {
 		List<Order> path = new ArrayList<>();
 		// Distance from order to next order
 		double distanceToNext;
-		
+
 		if (this.packingAlgorithm instanceof Fifo) {
 			this.simType = "FIFO";
 		} else {
@@ -67,7 +67,7 @@ public class Simulation {
 		List<Long> deliveryTimes = new ArrayList<>();
 
 		while (!this.orders.isEmpty()) {
-			
+
 			// If the drone time is less than the next order set it equal to the
 			// next order
 			for (Long time : simTime) {
@@ -96,7 +96,8 @@ public class Simulation {
 			// FIFO
 			List<Order> filledOrders = runKnapsack(
 				orders,
-				droneUp.getMaxCapacity()
+				droneUp.getMaxCapacity(),
+				droneUp.getMaxFlightTime() * 1000 * droneUp.getSpeed()
 			);
 
 			// Greedy
@@ -105,7 +106,7 @@ public class Simulation {
 			} else {
 				path = runBT(filledOrders);
 			}
-			
+
 			// Set leave time for drone
 			for (Order order : path) {
 				if (order.getTimestamp() > timeOfDrone) {
@@ -116,7 +117,7 @@ public class Simulation {
 			// Init trip distance
 			tripDistance = 0;
 			// Set times
-			for (int i = 0; i < path.size()-1; i++) {
+			for (int i = 0; i < path.size() - 1; i++) {
 				// Times per order
 				// Returns distance in feet
 				distanceToNext = ConvertLatLongToFeet(
@@ -135,12 +136,12 @@ public class Simulation {
 				tripDistance += distanceToNext;
 			}
 			// Order per trip
-			this.ordersPerTrip.add(path.size()-2);
+			this.ordersPerTrip.add(path.size() - 2);
 			// Distance per trip
 			this.distancePerTrip.add(tripDistance);
-			
+
 			timeOfDrone += 180_000;
-			//timeOfDrone += droneUp.getTurnAroundTime() * 60_000;
+			// timeOfDrone += droneUp.getTurnAroundTime() * 60_000;
 			simTime.set(index, timeOfDrone);
 
 			for (int ind = filledOrders.size() - 1; ind >= 0; ind--) {
@@ -159,7 +160,11 @@ public class Simulation {
 	/*
 	 * Method that runs FIFO on orders to be packed
 	 */
-	public List<Order> runKnapsack(List<Order> ords, double maxCapacity) {
+	public List<Order> runKnapsack(
+			List<Order> ords,
+			double maxCapacity,
+			double maxDistance
+	) {
 		// Orders filled
 		List<Order> filled = new ArrayList<>();
 
@@ -171,7 +176,12 @@ public class Simulation {
 
 		// Fill orders in FIFO style
 		for (int i = 0; i < orders.size(); i++) {
-			temp = packingAlgorithm.nextFit(orders, filled, maxCapacity);
+			temp = packingAlgorithm.nextFit(
+				orders,
+				filled,
+				maxCapacity,
+				maxDistance
+			);
 			orders.remove(temp);
 			if (temp != null) {
 				filled.add(temp);
@@ -273,7 +283,7 @@ public class Simulation {
 				v[i] = false;
 			}
 		}
-		
+
 		return ans;
 	}
 
@@ -336,15 +346,22 @@ public class Simulation {
 		return (mph * 1.466666);
 	}
 
-	public double ConvertLatLongToFeet(double xcord1, double ycord1, double xcord2, double ycord2) {
-		double lat1 = ycord1 * Math.PI/180;
-		double lon1 = xcord1 * Math.PI/180;
-		double lat2 = ycord2 * Math.PI/180;
-		double lon2 = xcord2 * Math.PI/180;
+	public double ConvertLatLongToFeet(
+			double xcord1,
+			double ycord1,
+			double xcord2,
+			double ycord2
+	) {
+		double lat1 = ycord1 * Math.PI / 180;
+		double lon1 = xcord1 * Math.PI / 180;
+		double lat2 = ycord2 * Math.PI / 180;
+		double lon2 = xcord2 * Math.PI / 180;
 		double dlon = lon2 - lon1;
 		double dlat = lat2 - lat1;
-		double a = Math.pow(Math.sin(dlat/2),2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2),2);
-		double c = 2 * Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+		double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(
+			lat2
+		) * Math.pow(Math.sin(dlon / 2), 2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		double d = 3961 * 5280 * c; // Radius of the earth in feet
 		return d;
 	}
