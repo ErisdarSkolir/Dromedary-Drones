@@ -66,6 +66,11 @@ public class Simulation {
 		// Delivery times to be exported to a Results obj
 		List<Long> deliveryTimes = new ArrayList<>();
 
+		if (this.packingAlgorithm instanceof Fifo)
+			simType = "FIFO";
+		else
+			simType = "Knapsack";
+		
 		while (!this.orders.isEmpty()) {
 			for (Long time : simTime) {
 				if (this.orders.size() > 0) {
@@ -133,6 +138,7 @@ public class Simulation {
 				// Distance per trip
 				tripDistance += distanceToNext;
 			}
+      
 			// Order per trip
 			this.ordersPerTrip.add(path.size() - 2);
 			// Distance per trip
