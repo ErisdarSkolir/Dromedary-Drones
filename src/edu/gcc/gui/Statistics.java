@@ -76,17 +76,17 @@ public class Statistics implements Initializable {
 		
 		for (int index = 0; index < fifoSeries1.getData().size(); index++) {
 			twoD[(int) fifoSeries1.getData().get(index).getXValue()][0] = 
-					knapsackSeries3.getData().get(index).getYValue();
-			twoD[(int) knapsackSeries1.getData().get(index).getXValue()][1] = 
-					knapsackSeries3.getData().get(index).getYValue();
+					fifoSeries1.getData().get(index).getYValue();
+			twoD[(int) greedySeries1.getData().get(index).getXValue()][1] = 
+					greedySeries1.getData().get(index).getYValue();
 			twoD[(int) fifoSeries2.getData().get(index).getXValue()][2] = 
-					knapsackSeries3.getData().get(index).getYValue();
-			twoD[(int) knapsackSeries2.getData().get(index).getXValue()][3] = 
-					knapsackSeries3.getData().get(index).getYValue();
+					fifoSeries2.getData().get(index).getYValue();
+			twoD[(int) greedySeries2.getData().get(index).getXValue()][3] = 
+					greedySeries2.getData().get(index).getYValue();
 			twoD[(int) fifoSeries3.getData().get(index).getXValue()][4] = 
-					knapsackSeries3.getData().get(index).getYValue();
-			twoD[(int) knapsackSeries3.getData().get(index).getXValue()][5] = 
-					knapsackSeries3.getData().get(index).getYValue();
+					fifoSeries3.getData().get(index).getYValue();
+			twoD[(int) greedySeries3.getData().get(index).getXValue()][5] = 
+					greedySeries3.getData().get(index).getYValue();
 		}
 		
 		data += "Average Time/Delivery, Fifo with Greedy, Greedy with Backtracking, ";
