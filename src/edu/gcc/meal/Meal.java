@@ -1,9 +1,28 @@
 package edu.gcc.meal;
 
+import java.text.DecimalFormat;
+
 import edu.gcc.xml.annotation.XmlSerializable;
 
+/**
+ * This class is a container class for all the information about a meal. This
+ * includes its name, the probability of the meal, and the components of the
+ * meal. The weight is then calculated from the components based on static
+ * pre-determined weights.
+ * 
+ * @author Luke Donmoyer, Ethan Harvey
+ */
 @XmlSerializable(value = "id", autogenerate = true)
 public class Meal {
+	private static final transient double BURGER_WEIGHT = 0.375;
+	private static final transient double FRIES_WEIGHT = 0.25;
+	private static final transient double DRINKS_WEIGHT = 0.875;
+
+	private static final transient DecimalFormat decimalFormat = new DecimalFormat(
+			"###.##"
+	);
+
+	// Serialized fields
 	private long id;
 
 	private String name;
@@ -16,8 +35,11 @@ public class Meal {
 	private boolean loaded;
 
 	public Meal(
-			final String name, final int burgers, final int fries,
-			final int drinks, final double probability
+			final String name,
+			final int burgers,
+			final int fries,
+			final int drinks,
+			final double probability
 	) {
 		this.name = name;
 		this.burgers = burgers;
@@ -53,7 +75,7 @@ public class Meal {
 	public void setBurgers(int burgers) {
 		this.burgers = burgers;
 	}
-	
+
 	public int getBurgers() {
 		return burgers;
 	}
@@ -61,7 +83,7 @@ public class Meal {
 	public void setDrinks(int drinks) {
 		this.drinks = drinks;
 	}
-	
+
 	public int getDrinks() {
 		return drinks;
 	}
@@ -69,14 +91,18 @@ public class Meal {
 	public void setFries(int fries) {
 		this.fries = fries;
 	}
-	
+
 	public int getFries() {
 		return fries;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s - %f%%", name, probability);
+		return String.format(
+			"%s - %s%%",
+			name,
+			decimalFormat.format(probability)
+		);
 	}
 
 	@Override
@@ -124,5 +150,17 @@ public class Meal {
 		))
 			return false;
 		return true;
+	}
+
+	/**
+	 * Returns the weight of the meal. This is based on the static
+	 * pre-determined weights of each item multiplied by the number of each
+	 * item.
+	 * 
+	 * @return the total weight of this meal.
+	 */
+	public double getWeight() {
+		return (BURGER_WEIGHT * this.burgers) + (FRIES_WEIGHT * this.fries)
+				+ (DRINKS_WEIGHT * this.drinks);
 	}
 }

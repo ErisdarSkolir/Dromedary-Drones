@@ -76,6 +76,8 @@ public class EditDroneModal extends Modal {
 	}
 
 	private void clearFields() {
+		drone = null;
+		
 		nameField.clear();
 		speedSpinner.getValueFactory().setValue(0.0);
 		maxCapacitySpinner.getValueFactory().setValue(0.0);

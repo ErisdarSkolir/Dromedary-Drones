@@ -7,7 +7,10 @@ import edu.gcc.meal.Meal;
 import edu.gcc.meal.MealXml;
 import edu.gcc.meal.MealXmlDao;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 public class LoadedMealsModal extends Modal {
@@ -19,6 +22,15 @@ public class LoadedMealsModal extends Modal {
 	@FXML
 	private ListView<Meal> unloadedMealList;
 
+	@FXML
+	private Label validateLabel;
+	@FXML
+	private Button okButton;
+
+	private ObservableList<Meal> loadedMeals = mealXml.getAllLoadedObservable(
+		true
+	);
+
 	private EditMealModal editMealModalController;
 
 	private Meal selectedMeal;
@@ -26,21 +38,25 @@ public class LoadedMealsModal extends Modal {
 	@FXML
 	private void loadMealClicked() {
 		updateSelectedLoaded(true);
+		validateProbability();
 	}
 
 	@FXML
 	private void unloadMealClicked() {
 		updateSelectedLoaded(false);
+		validateProbability();
 	}
 
 	@FXML
 	private void addMealClicked() {
+		editMealModalController.setOnHideListener(() -> validateProbability());
 		editMealModalController.show();
 	}
 
 	@FXML
 	private void removeMealClicked() {
 		mealXml.delete(selectedMeal);
+		validateProbability();
 	}
 
 	@FXML
@@ -48,6 +64,7 @@ public class LoadedMealsModal extends Modal {
 		if (selectedMeal == null)
 			return;
 
+		editMealModalController.setOnHideListener(() -> validateProbability());
 		editMealModalController.show(selectedMeal);
 	}
 
@@ -88,6 +105,28 @@ public class LoadedMealsModal extends Modal {
 			if (loadedMealProperty.get() != null)
 				loadedMealList.getSelectionModel().clearSelection();
 		});
+
+		validateProbability();
+	}
+
+	private boolean validateProbability() {
+		if (getProbabilitySum() != 100) {
+			okButton.setDisable(true);
+			validateLabel.setVisible(true);
+
+			return false;
+		} else {
+			okButton.setDisable(false);
+			validateLabel.setVisible(false);
+
+			return true;
+		}
+	}
+
+	private double getProbabilitySum() {
+		return loadedMeals.stream()
+				.map(Meal::getProbability)
+				.reduce(0.0, (accumulator, value) -> accumulator + value);
 	}
 
 	private void updateSelectedLoaded(final boolean loaded) {

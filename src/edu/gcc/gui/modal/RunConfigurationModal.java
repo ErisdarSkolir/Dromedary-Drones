@@ -26,21 +26,19 @@ import edu.gcc.packing.Knapsack;
 import edu.gcc.packing.PackingAlgorithm;
 import edu.gcc.results.Results;
 import edu.gcc.simulation.Simulation;
-import edu.gcc.util.Executor;
+import edu.gcc.util.HalfCoreExecutor;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import jfxtras.scene.control.LocalTimeTextField;
 
 /**
  * This is the Main Run Configuration Modal, where the settings for the
  * simulation are configured.
  * 
- * @author Zack Orlaski
- *
+ * @author Luke Donmoyer, Zack Orlaski
  */
 public class RunConfigurationModal extends Modal {
+	private static final long MILLISECONDS_PER_HOUR = 3_600_000;
 
 	/*
 	 * XML DAO's
@@ -53,29 +51,24 @@ public class RunConfigurationModal extends Modal {
 	);
 	private ObservableList<Drone> loadedDrones = droneXml
 			.getObservableLoadedDrones(true);
-	/*
-	 * Simulation args
-	 */
-	private Campus selectedCampus;
+
+	// Simulation args
 	private MapLocation pickupLocation;
 	private List<MapLocation> dropoffLocations;
 
 	@FXML
-	private LocalTimeTextField timeField;
-
-	@FXML
-	private Spinner<Integer> numHoursSpinner;
-
+	private Label hourNumber;
 	@FXML
 	private Label mealNumber;
 	@FXML
 	private Label droneNumber;
 
-	/*
-	 * Modals
-	 */
+	private List<Integer> ordersPerHour;
+
+	// Modal controllers
 	private LoadedMealsModal loadedMealsModalController;
 	private LoadedDronesModal loadedDronesModalController;
+	private EditHourModal editHoursModalController;
 
 	/**
 	 * Event Handler for the edit meals button. Opens the Loaded Meals modal
@@ -100,6 +93,18 @@ public class RunConfigurationModal extends Modal {
 	}
 
 	/**
+	 * Event Handler for the edit hours button. Opens the edit hours modal.
+	 */
+	@FXML
+	private void editHoursButtonClicked() {
+		editHoursModalController.setOnHideListener(() -> {
+			ordersPerHour = editHoursModalController.getOrdersForAllHours();
+			hourNumber.setText(Integer.toString(ordersPerHour.size()));
+		});
+		editHoursModalController.show();
+	}
+
+	/**
 	 * Event Handler for the cancel button. Hides the modal
 	 */
 	@FXML
@@ -115,79 +120,70 @@ public class RunConfigurationModal extends Modal {
 	 */
 	@FXML
 	private void runButtonClicked() {
-		List<String> customers = new ArrayList<>();
 		List<Meal> meals = loadedMeals.stream().collect(Collectors.toList());
-		customers.add("Bob");
-		customers.add("John");
-		customers.add("Jane");
-		customers.add("That random guy over there");
 
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
 
-		// Run both sims 10 times
-		for (int iteration = 0; iteration < 10; iteration++) {
-			// Generate Order for both packing algorithms
-			List<Order> orders = new ArrayList<>();
-			OrderGenerator orderGen = new OrderGenerator(
-					meals,
-					customers,
-					dropoffLocations
+		// Generate Order for both packing algorithms
+		List<Order> orders = new ArrayList<>();
+		OrderGenerator orderGen = new OrderGenerator(meals, dropoffLocations);
+
+		for (int i = 0; i < ordersPerHour.size(); i++) {
+			int numOrders = ordersPerHour.get(i);
+			orders.addAll(
+				orderGen.getOrdersInInterval(
+					numOrders,
+					i * MILLISECONDS_PER_HOUR,
+					(i + 1) * MILLISECONDS_PER_HOUR
+				)
 			);
-			orders.addAll(orderGen.getOrdersInInterval(10, 0, 3_600_000));
-			// end Generate Orders
-
-			final int index = iteration;
-			
-			// FIFO Simulation
-			CompletableFuture<Results> futureFIFO = CompletableFuture
-					.supplyAsync(
-						() -> runSimulation(
-							loadedDrones,
-							meals,
-							pickupLocation,
-							dropoffLocations,
-							new Knapsack(),
-							1
-						),
-						Executor.getService()
-					);
-
-			statsController.addSimulationFuture(index, futureFIFO);
-
-			// Knapsack Sim
-			CompletableFuture<Results> knapsackFIFO = CompletableFuture
-					.supplyAsync(
-						() -> runSimulation(
-							loadedDrones,
-							meals,
-							pickupLocation,
-							dropoffLocations,
-							new Fifo(),
-							1
-						),
-						Executor.getService()
-					);
-
-			statsController.addSimulationFuture(index, knapsackFIFO);
 		}
 
+		// FIFO Simulation
+		CompletableFuture<Results> fifoGreedy = CompletableFuture.supplyAsync(
+			() -> runSimulation(
+				loadedDrones,
+				orders,
+				pickupLocation,
+				new Fifo(),
+				1
+			),
+			HalfCoreExecutor.getService()
+		);
+
+		statsController.addSimulationFuture(fifoGreedy);
+
+		// Knapsack Sim
+		CompletableFuture<Results> greedyBacktrack = CompletableFuture
+				.supplyAsync(
+					() -> runSimulation(
+						loadedDrones,
+						orders,
+						pickupLocation,
+						new Knapsack(),
+						2
+					),
+					HalfCoreExecutor.getService()
+				);
+
+		statsController.addSimulationFuture(greedyBacktrack);
+
+		hide();
 		Gui.getInstance().navigateTo("statistics");
 	}
 
 	public Results runSimulation(
 			List<Drone> loadedDrones,
-			List<Meal> meals,
+			List<Order> orders,
 			MapLocation pickupLocation,
-			List<MapLocation> dropoffLocations,
 			PackingAlgorithm algorithm,
 			int traveling
 	) {
 		return new Simulation(
 				loadedDrones,
-				meals,
+				orders,
 				pickupLocation,
-				dropoffLocations,
 				algorithm,
 				traveling
 		).runSimulation();
@@ -216,13 +212,18 @@ public class RunConfigurationModal extends Modal {
 			final LoadedMealsModal loadedMealsModal,
 			final EditMealModal editMealModal,
 			final LoadedDronesModal loadedDronesModal,
-			final EditDroneModal editDroneModal
+			final EditDroneModal editDroneModal,
+			final EditHourModal editHoursModal
 	) {
 		loadedMealsModalController = loadedMealsModal;
 		loadedMealsModal.setEditMealModalController(editMealModal);
 
 		loadedDronesModalController = loadedDronesModal;
 		loadedDronesModalController.setEditDroneModalController(editDroneModal);
+
+		editHoursModalController = editHoursModal;
+		ordersPerHour = editHoursModalController.getOrdersForAllHours();
+		hourNumber.setText(Integer.toString(ordersPerHour.size()));
 	}
 
 	/**
@@ -232,14 +233,13 @@ public class RunConfigurationModal extends Modal {
 	 *                       overview
 	 */
 	public void show(final Campus selectedCampus) {
-		this.selectedCampus = selectedCampus;
 		this.pickupLocation = locationXml.getPickupLocationForCampus(
 			selectedCampus
 		);
 		this.dropoffLocations = locationXml.getDropoffReactiveForCampus(
 			selectedCampus
 		);
+
 		super.show();
 	}
-
 }
