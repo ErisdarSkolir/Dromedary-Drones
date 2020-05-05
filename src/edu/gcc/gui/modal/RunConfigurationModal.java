@@ -125,9 +125,6 @@ public class RunConfigurationModal extends Modal {
 		Statistics statsController = Gui.getInstance()
 				.getControllerForScene("statistics", Statistics.class);
 
-		// Run both sims 10 times
-		for (int iteration = 0; iteration < 10; iteration++) {
-			final int index = iteration;
 
 			// Generate Order for both packing algorithms
 			List<Order> orders = new ArrayList<>();
@@ -135,6 +132,7 @@ public class RunConfigurationModal extends Modal {
 					meals,
 					dropoffLocations
 			);
+
 
 			for (int i = 0; i < ordersPerHour.size(); i++) {
 				int numOrders = ordersPerHour.get(i);
@@ -146,6 +144,7 @@ public class RunConfigurationModal extends Modal {
 					)
 				);
 			}
+
 
 			// FIFO Simulation
 			CompletableFuture<Results> fifoGreedy = CompletableFuture
@@ -160,7 +159,7 @@ public class RunConfigurationModal extends Modal {
 						HalfCoreExecutor.getService()
 					);
 
-			statsController.addSimulationFuture(index, fifoGreedy);
+			statsController.addSimulationFuture(fifoGreedy);
 
 			// Knapsack Sim
 			CompletableFuture<Results> greedyBacktrack = CompletableFuture
@@ -175,8 +174,8 @@ public class RunConfigurationModal extends Modal {
 						HalfCoreExecutor.getService()
 					);
 
-			statsController.addSimulationFuture(index, greedyBacktrack);
-		}
+			statsController.addSimulationFuture(greedyBacktrack);
+		
 
 		hide();
 		Gui.getInstance().navigateTo("statistics");

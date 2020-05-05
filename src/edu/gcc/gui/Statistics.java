@@ -40,18 +40,18 @@ public class Statistics implements Initializable {
 	private WindowBar windowBarController;
 
 	private XYChart.Series<Number, Number> fifoSeries1 = new XYChart.Series<>();
-	private XYChart.Series<Number, Number> knapsackSeries1 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> greedySeries1 = new XYChart.Series<>();
 	private XYChart.Series<Number, Number> fifoSeries2 = new XYChart.Series<>();
-	private XYChart.Series<Number, Number> knapsackSeries2 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> greedySeries2 = new XYChart.Series<>();
 	private XYChart.Series<Number, Number> fifoSeries3 = new XYChart.Series<>();
-	private XYChart.Series<Number, Number> knapsackSeries3 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> greedySeries3 = new XYChart.Series<>();
 
 	private List<CompletableFuture<Results>> futures = new ArrayList<>();
 
 	/**
-	 * Event handler for when the export button is clicked. This will open a
-	 * file chooser dialog and then export the current results if a file was
-	 * actually chosen.
+	 * Event handler for when the export button is clicked. This will open a file
+	 * chooser dialog and then export the current results if a file was actually
+	 * chosen.
 	 */
 	@FXML
 	private void onExportButtonClicked() {
@@ -68,16 +68,14 @@ public class Statistics implements Initializable {
 	}
 
 	/**
-	 * This method opens a system file chooser and returns the selected file as
-	 * an optional.
+	 * This method opens a system file chooser and returns the selected file as an
+	 * optional.
 	 * 
-	 * @return an Optional containing a file if the user did indeed choose a
-	 *         file.
+	 * @return an Optional containing a file if the user did indeed choose a file.
 	 */
 	private Optional<File> askForFile() {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters()
-				.add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(Gui.getInstance().getStage());
 
@@ -93,10 +91,7 @@ public class Statistics implements Initializable {
 	 * @param simulationFuture The actual completable future which runs the
 	 *                         simulation.
 	 */
-	public void addSimulationFuture(
-			int index,
-			CompletableFuture<Results> simulationFuture
-	) {
+	public void addSimulationFuture(CompletableFuture<Results> simulationFuture) {
 		futures.add(simulationFuture);
 		simulationFuture.exceptionally(e -> {
 			e.printStackTrace();
@@ -105,69 +100,133 @@ public class Statistics implements Initializable {
 			if (results == null)
 				return;
 
+
 			Platform.runLater(
-				() -> sendToChart(results.getSimType(), index, results)
+				() -> sendToChart(results)
 			);
 		}, HalfCoreExecutor.getService());
+
+	}
+
+	public void sendToAllCharts(Results localResults) {
+
+		sendToFirstChart(localResults);
+		sendToSecondChart(localResults);
+		sendToThirdChart(localResults);
+
+	}
+
+	private void sendToFirstChart(Results results) {
+
+		List<Long> deliveryTimes = results.getTimePerOrder();
+
+		// Dividing by 60 to get minutes
+		if (results.getSimType().equals("FIFO")) {
+			for (int i = 0; i < deliveryTimes.size(); i++) {
+				fifoSeries1.getData().add(new XYChart.Data<Number, Number>(i, deliveryTimes.get(i)));
+				
+			}
+			chartOne.getData().add(fifoSeries1);
+		} else {
+			for (int i = 0; i < deliveryTimes.size(); i++)
+				greedySeries1.getData().add(new XYChart.Data<Number, Number>(i, deliveryTimes.get(i)));
+			chartOne.getData().add(greedySeries1);
+		}
+
+	}
+
+	private void sendToSecondChart(Results results) {
+
+		List<Integer> ordersPerTrip = results.getordersPerTrip();
+
+		if (results.getSimType().equals("FIFO")) {
+			for (int i = 0; i < ordersPerTrip.size(); i++)
+				fifoSeries2.getData().add(new XYChart.Data<Number, Number>(i, ordersPerTrip.get(i)));
+			chartTwo.getData().add(fifoSeries2);
+
+		} else {
+			for (int i = 0; i < ordersPerTrip.size(); i++)
+				greedySeries2.getData().add(new XYChart.Data<Number, Number>(i, ordersPerTrip.get(i)));
+			chartTwo.getData().add(greedySeries2);
+
+		}
+
+	}
+
+	private void sendToThirdChart(Results results) {
+
+		List<Long> tripDistances = results.getDistancePerTrip();
+
+		if (results.getSimType().equals("FIFO")) {
+			for (int i = 0; i < tripDistances.size(); i++)
+				fifoSeries3.getData().add(new XYChart.Data<Number, Number>(i, tripDistances.get(i)));
+			chartThree.getData().add(fifoSeries3);
+
+		} else {
+			for (int i = 0; i < tripDistances.size(); i++)
+				greedySeries3.getData().add(new XYChart.Data<Number, Number>(i, tripDistances.get(i)));
+			chartThree.getData().add(greedySeries3);
+		}
+
 	}
 
 	/**
-	 * Sends the given results to the correct charts. The x value of the result
-	 * data will be the given index value.
+	 * Sends the given results to the correct charts. The x value of the result data
+	 * will be the given index value.
 	 * 
-	 * @param simulationType Either FIFO or Knapsack. This tells the method
-	 *                       which chart to put the data in.
-	 * @param index          The iteration number of the simulation. This tells
-	 *                       the method the x value for the result data.
+	 * @param simulationType Either FIFO or Knapsack. This tells the method which
+	 *                       chart to put the data in.
+	 * @param index          The iteration number of the simulation. This tells the
+	 *                       method the x value for the result data.
 	 * @param results        The actual result data of the simulation.
 	 */
-	private void sendToChart(
-			String simulationType,
-			int index,
-			Results results
-	) {
-		sendSeriesData(
-			simulationType.equals("FIFO") ? fifoSeries1 : knapsackSeries1,
-			index,
-			results.getAverageTimePerOrder()
-		);
-		sendSeriesData(
-			simulationType.equals("FIFO") ? fifoSeries2 : knapsackSeries2,
-			index,
-			results.getAverageOrdersPerTrip()
-		);
-		sendSeriesData(
-			simulationType.equals("FIFO") ? fifoSeries3 : knapsackSeries3,
-			index,
-			results.getAverageDistancePerTrip()
-		);
-	}
-
-	/**
-	 * This method actually adds the given data to the given series.
-	 * 
-	 * @param series The series to add the data to.
-	 * @param index  The x value of the data point.
-	 * @param d      The y value of the data point.
-	 */
-	private void sendSeriesData(
-			XYChart.Series<Number, Number> series,
-			int index,
-			double d
-	) {
-		series.getData().add(new Data<>(index, d));
-	}
-
+//	private void sendToChart(
+//			String simulationType,
+//			int index,
+//			Results results
+//	) {
+//		sendSeriesData(
+//			simulationType.equals("FIFO") ? fifoSeries1 : greedySeries1,
+//			index,
+//			results.getAverageTimePerOrder()
+//		);
+//		sendSeriesData(
+//			simulationType.equals("FIFO") ? fifoSeries2 : greedySeries2,
+//			index,
+//			results.getAverageOrdersPerTrip()
+//		);
+//		sendSeriesData(
+//			simulationType.equals("FIFO") ? fifoSeries3 : greedySeries3,
+//			index,
+//			results.getAverageDistancePerTrip()
+//		);
+//	}
+//
+//	/**
+//	 * This method actually adds the given data to the given series.
+//	 * 
+//	 * @param series The series to add the data to.
+//	 * @param index  The x value of the data point.
+//	 * @param d      The y value of the data point.
+//	 */
+//	private void sendSeriesData(
+//			XYChart.Series<Number, Number> series,
+//			int index,
+//			double d
+//	) {
+//		series.getData().add(new Data<>(index, d));
+//	}
+//
 	/**
 	 * Clears all data out of the charts.
 	 */
 	private void clearSeries() {
 		fifoSeries1.getData().clear();
-		knapsackSeries1.getData().clear();
+		greedySeries1.getData().clear();
 		fifoSeries2.getData().clear();
-		knapsackSeries2.getData().clear();
+		greedySeries2.getData().clear();
 		fifoSeries3.getData().clear();
-		knapsackSeries3.getData().clear();
+		greedySeries3.getData().clear();
 	}
 
 	/**
@@ -180,18 +239,11 @@ public class Statistics implements Initializable {
 			Gui.getInstance().navigateTo("overview");
 		});
 
-		chartOne.getData().add(fifoSeries1);
-		chartOne.getData().add(knapsackSeries1);
-		chartTwo.getData().add(fifoSeries2);
-		chartTwo.getData().add(knapsackSeries2);
-		chartThree.getData().add(fifoSeries3);
-		chartThree.getData().add(knapsackSeries3);
-
 		fifoSeries1.setName("FIFO");
+		greedySeries1.setName("Greedy");
 		fifoSeries2.setName("FIFO");
+		greedySeries2.setName("Greedy");
 		fifoSeries3.setName("FIFO");
-		knapsackSeries1.setName("Knapsack");
-		knapsackSeries2.setName("Knapsack");
-		knapsackSeries3.setName("Knapsack");
+		greedySeries3.setName("Greedy");
 	}
 }
