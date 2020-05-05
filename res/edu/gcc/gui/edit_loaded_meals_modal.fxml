@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import edu.gcc.gui.Mdl2Icon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="container" alignment="CENTER" style="-fx-border-color: #b2bec3;" styleClass="background" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.gcc.gui.modal.LoadedMealsModal">
+   <children>
+      <MenuBar blendMode="ADD" onMouseDragged="#onMenuDrag" onMousePressed="#onMenuPressed" prefHeight="20.0" />
+      <Label text="Meal Configuration">
+         <font>
+            <Font size="18.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="32.0" top="16.0" />
+         </VBox.margin>
+      </Label>
+      <HBox>
+         <children>
+            <VBox alignment="TOP_CENTER">
+               <children>
+                  <Label text="Loaded">
+                     <VBox.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ListView fx:id="loadedMealList" prefHeight="250.0" prefWidth="150.0" />
+               </children>
+               <HBox.margin>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </HBox.margin>
+            </VBox>
+            <VBox alignment="CENTER">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#loadMealClicked">
+                     <VBox.margin>
+                        <Insets bottom="8.0" top="8.0" />
+                     </VBox.margin>
+                     <graphic>
+                        <Mdl2Icon iconCode="E76B" />
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#unloadMealClicked">
+                     <VBox.margin>
+                        <Insets bottom="8.0" top="8.0" />
+                     </VBox.margin>
+                     <graphic>
+                        <Mdl2Icon iconCode="E76C" />
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#addMealClicked">
+                     <graphic>
+                        <Mdl2Icon iconCode="E710" />
+                     </graphic>
+                     <VBox.margin>
+                        <Insets bottom="8.0" top="8.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#removeMealClicked">
+                     <graphic>
+                        <Mdl2Icon iconCode="E738" />
+                     </graphic>
+                     <VBox.margin>
+                        <Insets bottom="8.0" top="8.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#editMealClicked">
+                     <graphic>
+                        <Mdl2Icon iconCode="E70F" />
+                     </graphic>
+                     <VBox.margin>
+                        <Insets bottom="8.0" top="8.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER">
+               <children>
+                  <Label text="Unloaded">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="8.0" left="8.0" right="8.0" />
+                     </VBox.margin>
+                  </Label>
+                  <ListView fx:id="unloadedMealList" prefHeight="250.0" prefWidth="150.0" />
+               </children>
+               <HBox.margin>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+         <VBox.margin>
+            <Insets left="16.0" right="16.0" />
+         </VBox.margin>
+      </HBox>
+      <Label fx:id="validateLabel" text="Probability does not add up to 100%!" visible="false">
+         <VBox.margin>
+            <Insets top="16.0" />
+         </VBox.margin>
+      </Label>
+      <HBox alignment="CENTER" prefWidth="300.0">
+         <children>
+            <Button fx:id="okButton" mnemonicParsing="false" onAction="#okButtonClicked" prefWidth="70.0" text="OK">
+               <HBox.margin>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+         <VBox.margin>
+            <Insets bottom="16.0" top="8.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+</VBox>

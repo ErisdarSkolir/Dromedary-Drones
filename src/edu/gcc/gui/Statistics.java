@@ -1,80 +1,247 @@
 package edu.gcc.gui;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFileChooser;
-import edu.gcc.simulation.Simulation;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+
+import edu.gcc.results.Results;
+import edu.gcc.util.HalfCoreExecutor;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 
-public class Statistics extends GridPane {
-	private Button backButton = new Button("Back");
-	private LineChart<Number, Number> line_chart;
-	private List<Long> times = new ArrayList<Long>();
+/**
+ * This class is the FXML controller for the statistics scene. This is where all
+ * the simulation data is shown
+ * 
+ * @author Luke Donmoyer, Zack Orlaski
+ */
+public class Statistics implements Initializable {
+	/*
+	 * LineCharts
+	 */
+	@FXML
+	private LineChart<Number, Number> chartOne;
+	@FXML
+	private LineChart<Number, Number> chartTwo;
+	@FXML
+	private LineChart<Number, Number> chartThree;
 
-	public Statistics() {
-		setId(UiText.STATISTICS_ID);
+	@FXML
+	private WindowBar windowBarController;
 
-		backButton.setOnAction(e -> {
-			this.line_chart.setVisible(false);
-			Gui.getInstance().navigateTo(UiText.OVERVIEW_ID);
-		});
+	private XYChart.Series<Number, Number> fifoSeries1 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> greedySeries1 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> fifoSeries2 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> greedySeries2 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> fifoSeries3 = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> greedySeries3 = new XYChart.Series<>();
 
-		// Export button
-		Button export_button = new Button("Export");
-		export_button.setOnAction(event -> {
-			String sb = "Order Number, Delivery Time\n";
-			for (int i = 0; i < this.times.size(); i++) {
-				sb += (i+1) + ", " + this.times.get(i) + "\n";
-			}
-			JFileChooser chooser = new JFileChooser();
-			chooser.setCurrentDirectory(new File("/home/me/Desktop"));
-			int retrival = chooser.showSaveDialog(null);
-			if (retrival == JFileChooser.APPROVE_OPTION) {
-				try (FileWriter fw = new FileWriter(chooser.getSelectedFile() + ".csv")) {
-					fw.write(sb);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
+	private List<CompletableFuture<Results>> futures = new ArrayList<>();
+
+	/**
+	 * Event handler for when the export button is clicked. This will open a file
+	 * chooser dialog and then export the current results if a file was actually
+	 * chosen.
+	 */
+	@FXML
+	private void onExportButtonClicked() {
+		askForFile().ifPresent(this::saveCsvFile);
+	}
+
+	/**
+	 * This method does the actual exporting to a csv file.
+	 * 
+	 * @param file The file to write to.
+	 */
+	private void saveCsvFile(final File file) {
+		// TODO: save to csv file here
+		Number[][] twoD = new Number[10][6];
+		String data = "";
 		
-		this.backButton.setId("back");
-		export_button.setId("export");
-		add(this.backButton, 0, 0);
-		add(export_button, 0, 2);
-	}
-
-	public void setSimulation(Simulation sim) {
-		this.times = sim.getTimeStatistics();
-		this.line_chart = createChart(sim.getTimeStatistics());
-		add(this.line_chart, 0, 1);
-	}
-
-	public LineChart<Number, Number> createChart(List<Long> times) { // defining the axes
-		final NumberAxis xAxis2 = new NumberAxis();
-		final NumberAxis yAxis2 = new NumberAxis();
-		xAxis2.setLabel("Order Number");
-		yAxis2.setLabel("Time (minutes)"); // creating the chart final
-		LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis2, yAxis2);
-
-		lineChart.setTitle("Drone Data");
-		lineChart.setMaxWidth(500);
-		lineChart.setMaxHeight(300);
-
-		// defining a series
-		XYChart.Series series = new XYChart.Series();
-		series.setName("Delivery time for each order");
-		for (int i = 0; i < times.size(); i++) {
-			// Dividing by 60 to get minutes
-			series.getData().add(new XYChart.Data(i, times.get(i)/60));
+		for (int index = 0; index < fifoSeries1.getData().size(); index++) {
+			twoD[(int) fifoSeries1.getData().get(index).getXValue()][0] = 
+					fifoSeries1.getData().get(index).getYValue();
+			twoD[(int) greedySeries1.getData().get(index).getXValue()][1] = 
+					greedySeries1.getData().get(index).getYValue();
+			twoD[(int) fifoSeries2.getData().get(index).getXValue()][2] = 
+					fifoSeries2.getData().get(index).getYValue();
+			twoD[(int) greedySeries2.getData().get(index).getXValue()][3] = 
+					greedySeries2.getData().get(index).getYValue();
+			twoD[(int) fifoSeries3.getData().get(index).getXValue()][4] = 
+					fifoSeries3.getData().get(index).getYValue();
+			twoD[(int) greedySeries3.getData().get(index).getXValue()][5] = 
+					greedySeries3.getData().get(index).getYValue();
 		}
-		lineChart.getData().add(series);
-		return lineChart;
+		
+		data += "Average Time/Delivery, Fifo with Greedy, Greedy with Backtracking, ";
+		data += "Average Deliverys/Trip, Fifo with Greedy, Greedy with Backtracking, ";
+		data += "Average Distance/Delivery, Fifo with Greedy, Greedy with Backtracking\n ";
+
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 6; col++) {
+				if (col % 2 == 0) {
+					data += row+1 + ",";
+				}
+				data += twoD[row][col] + ",";
+			}
+			data += "\n";
+		}
+		
+		try {
+			FileOutputStream is = new FileOutputStream(file);
+			OutputStreamWriter osw = new OutputStreamWriter(is);    
+	        Writer w = new BufferedWriter(osw);
+			w.write(data);
+			w.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	/**
+	 * This method opens a system file chooser and returns the selected file as an
+	 * optional.
+	 * 
+	 * @return an Optional containing a file if the user did indeed choose a file.
+	 */
+	private Optional<File> askForFile() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+
+		File file = fileChooser.showSaveDialog(Gui.getInstance().getStage());
+
+		return Optional.ofNullable(file);
+	}
+
+	/**
+	 * Adds the given simulation future to the statistics page and instructs the
+	 * completable future to push its results to the correct charts when it
+	 * completes.
+	 * 
+	 * @param index            The iteration of this completable future.
+	 * @param simulationFuture The actual completable future which runs the
+	 *                         simulation.
+	 */
+	public void addSimulationFuture(CompletableFuture<Results> simulationFuture) {
+		futures.add(simulationFuture);
+		simulationFuture.exceptionally(e -> {
+			e.printStackTrace();
+			return null;
+		}).thenAcceptAsync(results -> {
+			if (results == null)
+				return;
+
+
+			Platform.runLater(
+				() -> sendToAllCharts(results)
+			);
+		}, HalfCoreExecutor.getService());
+
+	}
+
+	public void sendToAllCharts(Results localResults) {
+
+		sendToFirstChart(localResults);
+		sendToSecondChart(localResults);
+		sendToThirdChart(localResults);
+
+	}
+
+	private void sendToFirstChart(Results results) {
+
+		List<Long> deliveryTimes = results.getTimePerOrder();
+
+		// Dividing by 60 to get minutes
+		if (results.getSimType().equals("FIFO")) {
+			for (int i = 0; i < deliveryTimes.size(); i++) {
+				fifoSeries1.getData().add(new XYChart.Data<Number, Number>(i, deliveryTimes.get(i)));
+				
+			}
+			chartOne.getData().add(fifoSeries1);
+		} else {
+			for (int i = 0; i < deliveryTimes.size(); i++)
+				greedySeries1.getData().add(new XYChart.Data<Number, Number>(i, deliveryTimes.get(i)));
+			chartOne.getData().add(greedySeries1);
+		}
+
+	}
+
+	private void sendToSecondChart(Results results) {
+
+		List<Integer> ordersPerTrip = results.getordersPerTrip();
+
+		if (results.getSimType().equals("FIFO")) {
+			for (int i = 0; i < ordersPerTrip.size(); i++)
+				fifoSeries2.getData().add(new XYChart.Data<Number, Number>(i, ordersPerTrip.get(i)));
+			chartTwo.getData().add(fifoSeries2);
+
+		} else {
+			for (int i = 0; i < ordersPerTrip.size(); i++)
+				greedySeries2.getData().add(new XYChart.Data<Number, Number>(i, ordersPerTrip.get(i)));
+			chartTwo.getData().add(greedySeries2);
+
+		}
+
+	}
+
+	private void sendToThirdChart(Results results) {
+
+		List<Long> tripDistances = results.getDistancePerTrip();
+
+		if (results.getSimType().equals("FIFO")) {
+			for (int i = 0; i < tripDistances.size(); i++)
+				fifoSeries3.getData().add(new XYChart.Data<Number, Number>(i, tripDistances.get(i)));
+			chartThree.getData().add(fifoSeries3);
+
+		} else {
+			for (int i = 0; i < tripDistances.size(); i++)
+				greedySeries3.getData().add(new XYChart.Data<Number, Number>(i, tripDistances.get(i)));
+			chartThree.getData().add(greedySeries3);
+		}
+
+	}
+
+	/**
+	 * Clears all data out of the charts.
+	 */
+	private void clearSeries() {
+		fifoSeries1.getData().clear();
+		greedySeries1.getData().clear();
+		fifoSeries2.getData().clear();
+		greedySeries2.getData().clear();
+		fifoSeries3.getData().clear();
+		greedySeries3.getData().clear();
+	}
+
+	/**
+	 * Sets up the back button and adds all the series to the charts.
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		windowBarController.backButtonEnableAndAction(event -> {
+			clearSeries();
+			Gui.getInstance().navigateTo("overview");
+		});
+
+		fifoSeries1.setName("FIFO");
+		greedySeries1.setName("Greedy");
+		fifoSeries2.setName("FIFO");
+		greedySeries2.setName("Greedy");
+		fifoSeries3.setName("FIFO");
+		greedySeries3.setName("Greedy");
 	}
 }

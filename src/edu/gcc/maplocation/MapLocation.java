@@ -3,6 +3,8 @@
  */
 package edu.gcc.maplocation;
 
+import com.sothawo.mapjfx.Coordinate;
+
 import edu.gcc.xml.annotation.XmlSerializable;
 
 /**
@@ -32,11 +34,24 @@ public class MapLocation {
 		this.name = n;
 		this.campus = campus;
 	}
-	
+
 	public MapLocation(double x, double y, int type) {
 		this.xCoord = x;
 		this.yCoord = y;
 		this.type = type;
+	}
+
+	public static MapLocation fromCoordinate(final Coordinate coordinate,
+			final int type) {
+		return new MapLocation(
+				coordinate.getLatitude(),
+				coordinate.getLongitude(),
+				type
+		);
+	}
+
+	public Coordinate toCoordinate() {
+		return new Coordinate(getxCoord(), getyCoord());
 	}
 
 	// calculates the length of a vector between 2 points on Map
@@ -88,7 +103,7 @@ public class MapLocation {
 
 	@Override
 	public String toString() {
-		return "MapLocation [type=" + type + ", xCoord=" + xCoord + ", yCoord=" + yCoord + ", name=" + name
-				+ ", campus=" + campus + "]";
+		return "MapLocation [type=" + type + ", xCoord=" + xCoord + ", yCoord="
+				+ yCoord + ", name=" + name + ", campus=" + campus + "]";
 	}
 }
