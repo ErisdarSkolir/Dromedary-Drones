@@ -99,5 +99,6 @@
       <fx:include fx:id="editMealModal" source="edit_meal_modal.fxml" />
       <fx:include fx:id="droneConfigurationModal" source="edit_loaded_drones_modal.fxml" />
       <fx:include fx:id="editDroneModal" source="edit_drone_modal.fxml" />
+      <fx:include fx:id="editHoursModal" source="edit_hours_modal.fxml" />
    </children>
 </AnchorPane>

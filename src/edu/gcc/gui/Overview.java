@@ -19,6 +19,7 @@ import edu.gcc.gui.modal.AddDeliveryModal;
 import edu.gcc.gui.modal.EditCampusModal;
 import edu.gcc.gui.modal.EditDeliveryModal;
 import edu.gcc.gui.modal.EditDroneModal;
+import edu.gcc.gui.modal.EditHourModal;
 import edu.gcc.gui.modal.EditMealModal;
 import edu.gcc.gui.modal.LoadedDronesModal;
 import edu.gcc.gui.modal.LoadedMealsModal;
@@ -72,6 +73,8 @@ public class Overview implements Initializable {
 	private LoadedMealsModal mealConfigurationModalController;
 	@FXML
 	private LoadedDronesModal droneConfigurationModalController;
+	@FXML
+	private EditHourModal editHoursModalController;
 
 	@FXML
 	private MapView mapView;
@@ -187,7 +190,8 @@ public class Overview implements Initializable {
 			mealConfigurationModalController,
 			editMealModalController,
 			droneConfigurationModalController,
-			editDroneModalController
+			editDroneModalController,
+			editHoursModalController
 		);
 	}
 
