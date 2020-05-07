@@ -68,27 +68,36 @@ public class Statistics implements Initializable {
 	 */
 	private void saveCsvFile(final File file) {
 		// TODO: save to csv file here
-		Number[][] row1 = new Number[fifoSeries1.getData().size()][2];
-		Number[][] row2 = new Number[fifoSeries2.getData().size()][2];
-		Number[][] row3 = new Number[fifoSeries3.getData().size()][2];
+		Number[][] row1 = new Number[fifoSeries1.getData().size()][1];
+		Number[][] row2 = new Number[fifoSeries2.getData().size()][1];
+		Number[][] row3 = new Number[fifoSeries3.getData().size()][1];		
+		Number[][] row4 = new Number[greedySeries1.getData().size()][1];
+		Number[][] row5 = new Number[greedySeries2.getData().size()][1];
+		Number[][] row6 = new Number[greedySeries3.getData().size()][1];
 		String data = "";
 		
 		for (int index = 0; index < fifoSeries1.getData().size(); index++) {
 			row1[(int) fifoSeries1.getData().get(index).getXValue()][0] = 
 					fifoSeries1.getData().get(index).getYValue();
-			row1[(int) greedySeries1.getData().get(index).getXValue()][1] = 
+		}
+		for (int index = 0; index < greedySeries1.getData().size(); index++) {
+			row1[(int) greedySeries1.getData().get(index).getXValue()][0] = 
 					greedySeries1.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < fifoSeries2.getData().size(); index++) {
-			row2[(int) fifoSeries2.getData().get(index).getXValue()][0] = 
+			row1[(int) fifoSeries2.getData().get(index).getXValue()][0] = 
 					fifoSeries2.getData().get(index).getYValue();
-			row2[(int) greedySeries2.getData().get(index).getXValue()][1] = 
+		}
+		for (int index = 0; index < greedySeries2.getData().size(); index++) {
+			row1[(int) greedySeries2.getData().get(index).getXValue()][0] = 
 					greedySeries2.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < fifoSeries3.getData().size(); index++) {
-			row3[(int) fifoSeries3.getData().get(index).getXValue()][0] = 
+			row1[(int) fifoSeries3.getData().get(index).getXValue()][0] = 
 					fifoSeries3.getData().get(index).getYValue();
-			row3[(int) greedySeries3.getData().get(index).getXValue()][1] = 
+		}
+		for (int index = 0; index < greedySeries3.getData().size(); index++) {
+			row1[(int) greedySeries3.getData().get(index).getXValue()][0] = 
 					greedySeries3.getData().get(index).getYValue();
 		}
 		
@@ -96,28 +105,39 @@ public class Statistics implements Initializable {
 		data += "Average Deliverys/Trip, Fifo with Greedy, Greedy with Backtracking, ";
 		data += "Average Distance/Delivery, Fifo with Greedy, Greedy with Backtracking\n ";
 
-		for (int row = 0; row < fifoSeries1.getData().size(); row++) {
-			for (int col = 0; col < 2; col++) {
-				if (col % 2 == 0) {
-					data += row+1 + ",";
-				}
-				data += row1[row][col] + ",";
+		int greatest = fifoSeries1.getData().size();
+		if (greedySeries1.getData().size() > greatest) {
+			greatest = greedySeries1.getData().size();
+		} else if (fifoSeries2.getData().size() > greatest) {
+			greatest = fifoSeries2.getData().size();
+		} else if (greedySeries2.getData().size() > greatest) {
+			greatest = greedySeries2.getData().size();
+		} else if (fifoSeries3.getData().size() > greatest) {
+			greatest = fifoSeries3.getData().size();
+		} else if (greedySeries3.getData().size() > greatest) {
+			greatest = greedySeries3.getData().size();
+		}
+		for (int item = 0; item < greatest; item++) {
+			data += item+1 + ",";
+			if (item < fifoSeries1.getData().size()) {
+				data += row1[item] + ",";
 			}
-			if (row < fifoSeries2.getData().size()) {
-				for (int col = 0; col < 2; col++) {
-					if (col % 2 == 0) {
-						data += row+1 + ",";
-					}
-					data += row2[row][col] + ",";
-				}
+			if (item < greedySeries1.getData().size()) {
+				data += row1[item] + ",";
 			}
-			if (row < fifoSeries3.getData().size()) {
-				for (int col = 0; col < 2; col++) {
-					if (col % 2 == 0) {
-						data += row+1 + ",";
-					}
-					data += row3[row][col] + ",";
-				}
+			data += item+1 + ",";
+			if (item < fifoSeries2.getData().size()) {
+				data += row1[item] + ",";
+			}
+			if (item < greedySeries2.getData().size()) {
+				data += row1[item] + ",";
+			}
+			data += item+1 + ",";
+			if (item < fifoSeries3.getData().size()) {
+				data += row1[item] + ",";
+			}
+			if (item < greedySeries3.getData().size()) {
+				data += row1[item] + ",";
 			}
 			data += "\n";
 		}
