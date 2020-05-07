@@ -239,10 +239,10 @@ public class Simulation {
 		ans = tsp(graph, v, 0, n, 1, 0.0, ans, filled);
 
 		// ans is the minimum weight Hamiltonian Cycle
+		bestPath.add(0, new Order(shopLocation));
+		bestPath.add(new Order(shopLocation));
 
-		filled.add(new Order(shopLocation));
-
-		return filled;
+		return bestPath;
 	}
 
 	/*
