@@ -144,9 +144,11 @@ public class Simulation {
 				System.out.println("T: " + path.get(i).getTimestamp() + " Mili: " + (distanceToNext / ConvertMphToFps(droneUp.getSpeed()) * 1000));
 				timeOfDrone += (distanceToNext / ConvertMphToFps(droneUp.getSpeed()) * 1000);
 				deliveryTimes.add(timeOfDrone);
-				this.timesPerOrder.add(
-					(timeOfDrone - path.get(i).getTimestamp()) / 60_000
-				);
+				if (path.get(i).getTimestamp()!=(long) 0) {
+					this.timesPerOrder.add(
+						(timeOfDrone - path.get(i).getTimestamp()) / 60_000
+					);
+				}
 				timeOfDrone += droneUp.getDeliveryTime();
 				// Distance per trip
 				tripDistance += distanceToNext;
