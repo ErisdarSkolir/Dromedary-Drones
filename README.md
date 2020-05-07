@@ -15,7 +15,7 @@ Once all these steps are completed the project should have no compilation errors
 To run the program, in the package explorer navigiate to "Dromedary Drones" > src > edu.gcc.main > Main.java. Right click Main.java and select "Run As" > "Java Application"
 
 
-#Instructions
+# Instructions
 To add a delivery location directly from the map, right click to autofill coodinates.
 
 Everything else should be easily figured out from the application itself.
