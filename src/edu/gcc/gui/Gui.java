@@ -138,8 +138,8 @@ public class Gui extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 
-		setDarkMode(Config.get().getBoolean(Config.DARK_MODE_KEY, false));
 		darkModeProperty.addListener(this::darkModeChangeListener);
+		setDarkMode(Config.get().getBoolean(Config.DARK_MODE_KEY, false));
 
 		if (SystemUtils.IS_OS_WINDOWS)
 			primaryStage.initStyle(StageStyle.UNDECORATED);
