@@ -123,22 +123,15 @@ public class Simulation {
 			}
 			
 			// Init trip distance
-			int start;
-			if (traveling == 1) {
-				tripDistance = (long) (ConvertLatLongToFeet(
-						path.get(0).getDropoffLocation().getxCoord(),
-						path.get(0).getDropoffLocation().getyCoord(),
-						path.get(1).getDropoffLocation().getxCoord(),
-						path.get(1).getDropoffLocation().getyCoord()
-					) / ConvertMphToFps(droneUp.getSpeed()) * 1000);
-				start = 1;
-			} else {
-				tripDistance = 0;
-				start = 0;
-			}
+			tripDistance = (long) (ConvertLatLongToFeet(
+					path.get(0).getDropoffLocation().getxCoord(),
+					path.get(0).getDropoffLocation().getyCoord(),
+					path.get(1).getDropoffLocation().getxCoord(),
+					path.get(1).getDropoffLocation().getyCoord()
+				) / ConvertMphToFps(droneUp.getSpeed()) * 1000);
 			
 			// Set times
-			for (int i = start; i < path.size() - 1; i++) {
+			for (int i = 1; i < path.size() - 1; i++) {
 				// Times per order
 				// Returns distance in feet
 				distanceToNext = ConvertLatLongToFeet(
@@ -247,8 +240,7 @@ public class Simulation {
 
 		// ans is the minimum weight Hamiltonian Cycle
 
-		//bestPath.add(0, first);
-		//bestPath.add(first);
+		filled.add(new Order(shopLocation));
 
 		return filled;
 	}
