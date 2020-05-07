@@ -41,6 +41,7 @@ public class Simulation {
 	}
 
 	public Results runSimulation() {
+
 		// Init simTime list
 		List<Long> simTime = new ArrayList<>();
 		for (int i = 0; i < this.drones.size(); i++) {
@@ -94,6 +95,11 @@ public class Simulation {
 					}
 				}
 			}
+			
+			for (Long time : simTime) {
+				System.out.print("["+time+"]");
+			}
+			System.out.println();
 
 			// FIFO
 			List<Order> filledOrders = runKnapsack(
@@ -115,11 +121,24 @@ public class Simulation {
 					timeOfDrone = order.getTimestamp();
 				}
 			}
-
+			
 			// Init trip distance
-			tripDistance = 0;
+			int start;
+			if (traveling == 1) {
+				tripDistance = (long) (ConvertLatLongToFeet(
+						path.get(0).getDropoffLocation().getxCoord(),
+						path.get(0).getDropoffLocation().getyCoord(),
+						path.get(1).getDropoffLocation().getxCoord(),
+						path.get(1).getDropoffLocation().getyCoord()
+					) / ConvertMphToFps(droneUp.getSpeed()) * 1000);
+				start = 1;
+			} else {
+				tripDistance = 0;
+				start = 0;
+			}
+			
 			// Set times
-			for (int i = 0; i < path.size() - 1; i++) {
+			for (int i = start; i < path.size() - 1; i++) {
 				// Times per order
 				// Returns distance in feet
 				distanceToNext = ConvertLatLongToFeet(
@@ -129,12 +148,13 @@ public class Simulation {
 					path.get(i + 1).getDropoffLocation().getyCoord()
 				);
 				// Multiply by 1000 to make milliseconds
-				timeOfDrone += (distanceToNext / ConvertMphToFps(20) * 1000);
+				System.out.println("T: " + path.get(i).getTimestamp() + " Mili: " + (distanceToNext / ConvertMphToFps(droneUp.getSpeed()) * 1000));
+				timeOfDrone += (distanceToNext / ConvertMphToFps(droneUp.getSpeed()) * 1000);
 				deliveryTimes.add(timeOfDrone);
-				timeOfDrone += droneUp.getDeliveryTime();
 				this.timesPerOrder.add(
-					((timeOfDrone - path.get(i).getTimestamp())) / 60_000
+					(timeOfDrone - path.get(i).getTimestamp()) / 60_000
 				);
+				timeOfDrone += droneUp.getDeliveryTime();
 				// Distance per trip
 				tripDistance += distanceToNext;
 			}
@@ -227,8 +247,8 @@ public class Simulation {
 
 		// ans is the minimum weight Hamiltonian Cycle
 
-		bestPath.add(0, first);
-		bestPath.add(first);
+		//bestPath.add(0, first);
+		//bestPath.add(first);
 
 		return filled;
 	}

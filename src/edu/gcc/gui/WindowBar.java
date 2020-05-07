@@ -203,6 +203,14 @@ public class WindowBar implements Initializable {
 			setDraggable(false);
 		}
 
+		if (Gui.getInstance().isDarkMode()) {
+			toolbar.setBlendMode(BlendMode.ADD);
+			darkModeToggle.setSelected(true);
+		} else {
+			toolbar.setBlendMode(BlendMode.MULTIPLY);
+			darkModeToggle.setSelected(false);
+		}
+		
 		Gui.getInstance()
 				.getDarkModeProperty()
 				.addListener((observable, oldValue, newValue) -> {
