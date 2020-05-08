@@ -52,9 +52,9 @@ public class Statistics implements Initializable {
 	private List<CompletableFuture<Results>> futures = new ArrayList<>();
 
 	/**
-	 * Event handler for when the export button is clicked. This will open a file
-	 * chooser dialog and then export the current results if a file was actually
-	 * chosen.
+	 * Event handler for when the export button is clicked. This will open a
+	 * file chooser dialog and then export the current results if a file was
+	 * actually chosen.
 	 */
 	@FXML
 	private void onExportButtonClicked() {
@@ -67,40 +67,33 @@ public class Statistics implements Initializable {
 	 * @param file The file to write to.
 	 */
 	private void saveCsvFile(final File file) {
-		// TODO: save to csv file here
-		Number[][] row1 = new Number[fifoSeries1.getData().size()][1];
-		Number[][] row2 = new Number[fifoSeries2.getData().size()][1];
-		Number[][] row3 = new Number[fifoSeries3.getData().size()][1];		
-		Number[][] row4 = new Number[greedySeries1.getData().size()][1];
-		Number[][] row5 = new Number[greedySeries2.getData().size()][1];
-		Number[][] row6 = new Number[greedySeries3.getData().size()][1];
+		Number[] row1 = new Number[fifoSeries1.getData().size()];
+		Number[] row2 = new Number[fifoSeries2.getData().size()];
+		Number[] row3 = new Number[fifoSeries3.getData().size()];
+		Number[] row4 = new Number[greedySeries1.getData().size()];
+		Number[] row5 = new Number[greedySeries2.getData().size()];
+		Number[] row6 = new Number[greedySeries3.getData().size()];
 		String data = "";
-		
+
 		for (int index = 0; index < fifoSeries1.getData().size(); index++) {
-			row1[(int) fifoSeries1.getData().get(index).getXValue()][0] = 
-					fifoSeries1.getData().get(index).getYValue();
+			row1[index] = fifoSeries1.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < greedySeries1.getData().size(); index++) {
-			row1[(int) greedySeries1.getData().get(index).getXValue()][0] = 
-					greedySeries1.getData().get(index).getYValue();
+			row1[index] = greedySeries1.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < fifoSeries2.getData().size(); index++) {
-			row1[(int) fifoSeries2.getData().get(index).getXValue()][0] = 
-					fifoSeries2.getData().get(index).getYValue();
+			row1[index] = fifoSeries2.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < greedySeries2.getData().size(); index++) {
-			row1[(int) greedySeries2.getData().get(index).getXValue()][0] = 
-					greedySeries2.getData().get(index).getYValue();
+			row1[index] = greedySeries2.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < fifoSeries3.getData().size(); index++) {
-			row1[(int) fifoSeries3.getData().get(index).getXValue()][0] = 
-					fifoSeries3.getData().get(index).getYValue();
+			row1[index] = fifoSeries3.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < greedySeries3.getData().size(); index++) {
-			row1[(int) greedySeries3.getData().get(index).getXValue()][0] = 
-					greedySeries3.getData().get(index).getYValue();
+			row1[index] = greedySeries3.getData().get(index).getYValue();
 		}
-		
+
 		data += "Average Time/Delivery, Fifo with Greedy, Greedy with Backtracking, ";
 		data += "Average Deliverys/Trip, Fifo with Greedy, Greedy with Backtracking, ";
 		data += "Average Distance/Delivery, Fifo with Greedy, Greedy with Backtracking\n ";
@@ -118,51 +111,64 @@ public class Statistics implements Initializable {
 			greatest = greedySeries3.getData().size();
 		}
 		for (int item = 0; item < greatest; item++) {
-			data += item+1 + ",";
+			data += item + 1 + ",";
 			if (item < fifoSeries1.getData().size()) {
 				data += row1[item] + ",";
+			} else {
+				data += " ,";
 			}
 			if (item < greedySeries1.getData().size()) {
 				data += row1[item] + ",";
+			} else {
+				data += " ,";
 			}
-			data += item+1 + ",";
+			data += item + 1 + ",";
 			if (item < fifoSeries2.getData().size()) {
 				data += row1[item] + ",";
+			} else {
+				data += " ,";
 			}
 			if (item < greedySeries2.getData().size()) {
 				data += row1[item] + ",";
+			} else {
+				data += " ,";
 			}
-			data += item+1 + ",";
+			data += item + 1 + ",";
 			if (item < fifoSeries3.getData().size()) {
 				data += row1[item] + ",";
+			} else {
+				data += " ,";
 			}
 			if (item < greedySeries3.getData().size()) {
 				data += row1[item] + ",";
+			} else {
+				data += " ,";
 			}
 			data += "\n";
 		}
-		
+
 		try {
 			FileOutputStream is = new FileOutputStream(file);
-			OutputStreamWriter osw = new OutputStreamWriter(is);    
-	        Writer w = new BufferedWriter(osw);
+			OutputStreamWriter osw = new OutputStreamWriter(is);
+			Writer w = new BufferedWriter(osw);
 			w.write(data);
 			w.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
 
 	/**
-	 * This method opens a system file chooser and returns the selected file as an
-	 * optional.
+	 * This method opens a system file chooser and returns the selected file as
+	 * an optional.
 	 * 
-	 * @return an Optional containing a file if the user did indeed choose a file.
+	 * @return an Optional containing a file if the user did indeed choose a
+	 *         file.
 	 */
 	private Optional<File> askForFile() {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+		fileChooser.getExtensionFilters()
+				.add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(Gui.getInstance().getStage());
 
@@ -178,7 +184,9 @@ public class Statistics implements Initializable {
 	 * @param simulationFuture The actual completable future which runs the
 	 *                         simulation.
 	 */
-	public void addSimulationFuture(CompletableFuture<Results> simulationFuture) {
+	public void addSimulationFuture(
+			CompletableFuture<Results> simulationFuture
+	) {
 		futures.add(simulationFuture);
 		simulationFuture.exceptionally(e -> {
 			e.printStackTrace();
@@ -187,74 +195,93 @@ public class Statistics implements Initializable {
 			if (results == null)
 				return;
 
-
-			Platform.runLater(
-				() -> sendToAllCharts(results)
-			);
+			Platform.runLater(() -> sendToAllCharts(results));
 		}, HalfCoreExecutor.getService());
-
 	}
 
 	public void sendToAllCharts(Results localResults) {
-
 		sendToFirstChart(localResults);
 		sendToSecondChart(localResults);
 		sendToThirdChart(localResults);
-
 	}
 
 	private void sendToFirstChart(Results results) {
-
 		List<Long> deliveryTimes = results.getTimePerOrder();
 
 		// Dividing by 60 to get minutes
 		if (results.getSimType().equals("FIFO")) {
 			for (int i = 0; i < deliveryTimes.size(); i++) {
-				fifoSeries1.getData().add(new XYChart.Data<Number, Number>(i, deliveryTimes.get(i)));
-				
+				fifoSeries1.getData()
+						.add(
+							new XYChart.Data<Number, Number>(
+									i,
+									deliveryTimes.get(i)
+							)
+						);
 			}
-			chartOne.getData().add(fifoSeries1);
 		} else {
-			for (int i = 0; i < deliveryTimes.size(); i++)
-				greedySeries1.getData().add(new XYChart.Data<Number, Number>(i, deliveryTimes.get(i)));
-			chartOne.getData().add(greedySeries1);
+			for (int i = 0; i < deliveryTimes.size(); i++) {
+				greedySeries1.getData()
+						.add(
+							new XYChart.Data<Number, Number>(
+									i,
+									deliveryTimes.get(i)
+							)
+						);
+			}
 		}
-
 	}
 
 	private void sendToSecondChart(Results results) {
-
 		List<Integer> ordersPerTrip = results.getordersPerTrip();
 
 		if (results.getSimType().equals("FIFO")) {
-			for (int i = 0; i < ordersPerTrip.size(); i++)
-				fifoSeries2.getData().add(new XYChart.Data<Number, Number>(i, ordersPerTrip.get(i)));
-			chartTwo.getData().add(fifoSeries2);
-
+			for (int i = 0; i < ordersPerTrip.size(); i++) {
+				fifoSeries2.getData()
+						.add(
+							new XYChart.Data<Number, Number>(
+									i,
+									ordersPerTrip.get(i)
+							)
+						);
+			}
 		} else {
-			for (int i = 0; i < ordersPerTrip.size(); i++)
-				greedySeries2.getData().add(new XYChart.Data<Number, Number>(i, ordersPerTrip.get(i)));
-			chartTwo.getData().add(greedySeries2);
-
+			for (int i = 0; i < ordersPerTrip.size(); i++) {
+				greedySeries2.getData()
+						.add(
+							new XYChart.Data<Number, Number>(
+									i,
+									ordersPerTrip.get(i)
+							)
+						);
+			}
 		}
-
 	}
 
 	private void sendToThirdChart(Results results) {
-
 		List<Long> tripDistances = results.getDistancePerTrip();
 
 		if (results.getSimType().equals("FIFO")) {
-			for (int i = 0; i < tripDistances.size(); i++)
-				fifoSeries3.getData().add(new XYChart.Data<Number, Number>(i, tripDistances.get(i)));
-			chartThree.getData().add(fifoSeries3);
-
+			for (int i = 0; i < tripDistances.size(); i++) {
+				fifoSeries3.getData()
+						.add(
+							new XYChart.Data<Number, Number>(
+									i,
+									tripDistances.get(i)
+							)
+						);
+			}
 		} else {
-			for (int i = 0; i < tripDistances.size(); i++)
-				greedySeries3.getData().add(new XYChart.Data<Number, Number>(i, tripDistances.get(i)));
-			chartThree.getData().add(greedySeries3);
+			for (int i = 0; i < tripDistances.size(); i++) {
+				greedySeries3.getData()
+						.add(
+							new XYChart.Data<Number, Number>(
+									i,
+									tripDistances.get(i)
+							)
+						);
+			}
 		}
-
 	}
 
 	/**
@@ -285,5 +312,12 @@ public class Statistics implements Initializable {
 		greedySeries2.setName("Greedy");
 		fifoSeries3.setName("FIFO");
 		greedySeries3.setName("Greedy");
+
+		chartOne.getData().add(fifoSeries1);
+		chartOne.getData().add(greedySeries1);
+		chartTwo.getData().add(fifoSeries2);
+		chartTwo.getData().add(greedySeries2);
+		chartThree.getData().add(fifoSeries3);
+		chartThree.getData().add(greedySeries3);
 	}
 }

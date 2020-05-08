@@ -47,8 +47,11 @@ import javafx.collections.ObservableList;
  * @param <T> The object type to be stored in the {@link XmlFile}
  */
 public class XmlSchema<T> {
-	private static final String DATABASE_FOLDER = String.format("%s/DromedaryDrones/db/",
-			SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : System.getProperty("user.home"));
+	private static final String DATABASE_FOLDER = String.format(
+		"%s/DromedaryDrones/db/",
+		SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA")
+				: System.getProperty("user.home")
+	);
 
 	private boolean autogenerate;
 
@@ -78,29 +81,36 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Static initializer class that provides type safety that overrides file name.
+	 * Static initializer class that provides type safety that overrides file
+	 * name.
 	 * 
 	 * @param <A>      The class type.
 	 * @param clazz    The class type
 	 * @param fileName The name of the XML file.
 	 * @return A new Schema with the generic parameter <A>
 	 */
-	public static <A> XmlSchema<A> of(final Class<A> clazz, final String fileName) {
+	public static <A> XmlSchema<A> of(
+			final Class<A> clazz,
+			final String fileName
+	) {
 		return new XmlSchema<>(clazz, fileName);
 	}
 
 	/**
-	 * Private constructor. Creates a new schema for the provided object type. The
-	 * directory that the XML files should be stored in will be created if it does
-	 * not already exist.
+	 * Private constructor. Creates a new schema for the provided object type.
+	 * The directory that the XML files should be stored in will be created if
+	 * it does not already exist.
 	 * 
 	 * @param clazz The object type to be stored in this schema.
 	 */
 	private XmlSchema(final Class<T> clazz) {
 		if (!clazz.isAnnotationPresent(XmlSerializable.class))
-			throw new IllegalArgumentException("Class must be annotated with XmlSerializable");
+			throw new IllegalArgumentException(
+					"Class must be annotated with XmlSerializable"
+			);
 
-		autogenerate = clazz.getAnnotation(XmlSerializable.class).autogenerate();
+		autogenerate = clazz.getAnnotation(XmlSerializable.class)
+				.autogenerate();
 
 		elementName = clazz.getSimpleName();
 		primaryKeyName = clazz.getAnnotation(XmlSerializable.class).value();
@@ -110,21 +120,24 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Private constructor. Creates a new schema for the provided object type. The
-	 * directory that the XML files should be stored in will be created if it does
-	 * not already exist. The name of the file will be as specified
+	 * Private constructor. Creates a new schema for the provided object type.
+	 * The directory that the XML files should be stored in will be created if
+	 * it does not already exist. The name of the file will be as specified
 	 * 
 	 * @param clazz    The object type to be stored in this schema.
 	 * @param fileName The name of XML file.
 	 */
 	private XmlSchema(final Class<T> clazz, final String fileName) {
 		if (!clazz.isAnnotationPresent(XmlSerializable.class))
-			throw new IllegalArgumentException("Class must be annotated with XmlSerializable");
+			throw new IllegalArgumentException(
+					"Class must be annotated with XmlSerializable"
+			);
 
 		if (fileName.isEmpty())
 			throw new IllegalArgumentException("File name cannot be empty");
 
-		autogenerate = clazz.getAnnotation(XmlSerializable.class).autogenerate();
+		autogenerate = clazz.getAnnotation(XmlSerializable.class)
+				.autogenerate();
 
 		elementName = clazz.getSimpleName();
 		primaryKeyName = clazz.getAnnotation(XmlSerializable.class).value();
@@ -151,7 +164,9 @@ public class XmlSchema<T> {
 		}
 
 		if (xmlFile.containsElement(getPrimaryKeyQuery(value)))
-			throw new IllegalArgumentException("Cannot insert element that already exists");
+			throw new IllegalArgumentException(
+					"Cannot insert element that already exists"
+			);
 
 		String element = funObjectToXml.apply(value);
 		xmlFile.insertElementAtEnd(element);
@@ -169,15 +184,18 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Updates the given object that is already in the XML file. Any reactives that
-	 * match the given object will also be updated.
+	 * Updates the given object that is already in the XML file. Any reactives
+	 * that match the given object will also be updated.
 	 * 
 	 * @param value The object to be updated.
 	 * @return True if the update was successful, otherwise false.
 	 */
 	public final boolean update(final T value) {
 		String element = funObjectToXml.apply(value);
-		boolean result = xmlFile.updateElement(getPrimaryKeyQuery(value), element);
+		boolean result = xmlFile.updateElement(
+			getPrimaryKeyQuery(value),
+			element
+		);
 
 		// Update reactives
 		for (XmlReactive<SimpleObjectProperty<T>> rx : singleReactives) {
@@ -186,14 +204,20 @@ public class XmlSchema<T> {
 		}
 
 		for (XmlReactive<ObservableList<T>> rx : listReactives) {
-			if (rx.matches(element))
-			{
+			if (rx.matches(element)) {
 				rx.getObservable()
-						.removeIf(listValue -> funGetPrimaryKey.apply(listValue).equals(funGetPrimaryKey.apply(value)));
+						.removeIf(
+							listValue -> funGetPrimaryKey.apply(listValue)
+									.equals(funGetPrimaryKey.apply(value))
+						);
 				rx.getObservable().add(value);
+			} else {
+				rx.getObservable()
+						.removeIf(
+							listValue -> funGetPrimaryKey.apply(listValue)
+									.equals(funGetPrimaryKey.apply(value))
+						);
 			}
-			else
-				rx.getObservable().remove(value);
 		}
 
 		return result;
@@ -220,34 +244,46 @@ public class XmlSchema<T> {
 			if (rx.matches(element))
 				rx.getObservable().remove(value);
 		}
-		
+
 		return result;
 	}
 
 	/**
-	 * Returns an {@link XmlReactive} with a single object in it that matches the
-	 * given xPath query.
+	 * Returns an {@link XmlReactive} with a single object in it that matches
+	 * the given xPath query.
 	 * 
 	 * @param xPath The xPath query to evaluate.
 	 * @return An {@link XmlReactive} with the object.
 	 */
-	public final XmlReactive<SimpleObjectProperty<T>> getSingleReactive(final String xPath) {
-		SimpleObjectProperty<T> observable = new SimpleObjectProperty<>(get(xPath));
-		XmlReactive<SimpleObjectProperty<T>> rx = new XmlReactive<>(observable, xPath);
+	public final XmlReactive<SimpleObjectProperty<T>> getSingleReactive(
+			final String xPath
+	) {
+		SimpleObjectProperty<T> observable = new SimpleObjectProperty<>(
+				get(xPath)
+		);
+		XmlReactive<SimpleObjectProperty<T>> rx = new XmlReactive<>(
+				observable,
+				xPath
+		);
 		singleReactives.add(rx);
 		return rx;
 	}
 
 	/**
-	 * Returns an {@link XmlReactive} with a list of objects that match the given
-	 * xPath query.
+	 * Returns an {@link XmlReactive} with a list of objects that match the
+	 * given xPath query.
 	 * 
 	 * @param xPath The xPath query to evaluate.
 	 * @return An {@link XmlReactive} with a list of objects.
 	 */
-	public final XmlReactive<ObservableList<T>> getListReactive(final String xPath) {
+	public final XmlReactive<ObservableList<T>> getListReactive(
+			final String xPath
+	) {
 		ObservableList<T> observableList = FXCollections.observableArrayList();
-		XmlReactive<ObservableList<T>> rx = new XmlReactive<>(observableList, xPath);
+		XmlReactive<ObservableList<T>> rx = new XmlReactive<>(
+				observableList,
+				xPath
+		);
 
 		observableList.addAll(getList(xPath));
 		listReactives.add(rx);
@@ -267,7 +303,12 @@ public class XmlSchema<T> {
 		if (iterator.hasNext())
 			return funXmlToObject.apply(iterator.next());
 
-		throw new IllegalArgumentException(String.format("XmlFile does not contian element that matches %s", xPath));
+		throw new IllegalArgumentException(
+				String.format(
+					"XmlFile does not contian element that matches %s",
+					xPath
+				)
+		);
 	}
 
 	/**
@@ -279,7 +320,8 @@ public class XmlSchema<T> {
 	public final List<T> getList(final String xPath) {
 		Iterable<Map<String, String>> iterable = () -> xmlFile.iterator(xPath);
 
-		return StreamSupport.stream(iterable.spliterator(), false).map(funXmlToObject::apply)
+		return StreamSupport.stream(iterable.spliterator(), false)
+				.map(funXmlToObject::apply)
 				.collect(Collectors.toList());
 	}
 
@@ -291,19 +333,29 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Returns an xPath query that matches an object with the given object's primary
-	 * key. Thus the query returned by this method only works for the specified
-	 * object since primary keys are unique.
+	 * Returns an xPath query that matches an object with the given object's
+	 * primary key. Thus the query returned by this method only works for the
+	 * specified object since primary keys are unique.
 	 * 
 	 * @param value The object to get an xPath query for.
 	 * @return An xPath query that matches the given object.
 	 */
 	private final String getPrimaryKeyQuery(final T value) {
-		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, funSerializePrimaryKey.apply(value));
+		return String.format(
+			"//%s[%s[text()='%s']]",
+			elementName,
+			primaryKeyName,
+			funSerializePrimaryKey.apply(value)
+		);
 	}
 
 	private final String getPrimaryKeyQueryLong(final long value) {
-		return String.format("//%s[%s[text()='%s']]", elementName, primaryKeyName, value);
+		return String.format(
+			"//%s[%s[text()='%s']]",
+			elementName,
+			primaryKeyName,
+			value
+		);
 	}
 
 	/**
@@ -323,13 +375,16 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Creates the {@link XmlFile} object and checks whether the directory exists.
+	 * Creates the {@link XmlFile} object and checks whether the directory
+	 * exists.
 	 * 
 	 * @param fileName
 	 */
 	private final void createFile(final String fileName) {
 		Path directory = Paths.get(DATABASE_FOLDER);
-		Path file = Paths.get(String.format("%s%s.xml", DATABASE_FOLDER, fileName));
+		Path file = Paths.get(
+			String.format("%s%s.xml", DATABASE_FOLDER, fileName)
+		);
 
 		try {
 			if (Files.notExists(directory))
@@ -337,46 +392,60 @@ public class XmlSchema<T> {
 
 			xmlFile = new XmlFile(file.toString());
 		} catch (IOException | ModifyException e) {
-			throw new XmlSchemaCreationException("Could not create xml file or directory");
+			throw new XmlSchemaCreationException(
+					"Could not create xml file or directory"
+			);
 		}
 	}
 
 	/**
-	 * Creates a function that accepts an object and returns the primary key as a
-	 * string for serialization. The primary key must be a primitive, primitive
-	 * wrapper, or a string. Any objects will only be turned into a string but they
-	 * will not be able to be retrieved.
+	 * Creates a function that accepts an object and returns the primary key as
+	 * a string for serialization. The primary key must be a primitive,
+	 * primitive wrapper, or a string. Any objects will only be turned into a
+	 * string but they will not be able to be retrieved.
 	 * 
 	 * @param clazz The type of the object to be serialized.
-	 * @return A function that turns an object into a string containing its primary
-	 *         key.
+	 * @return A function that turns an object into a string containing its
+	 *         primary key.
 	 */
 	private final Function<T, String> curryGetPrimaryKey(final Class<T> clazz) {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 
 		try {
-			MethodHandle getter = ReflectionUtils.getFieldGetter(clazz, primaryKeyName, lookup);
+			MethodHandle getter = ReflectionUtils.getFieldGetter(
+				clazz,
+				primaryKeyName,
+				lookup
+			);
 			return instance -> {
 				try {
 					return getter.invoke(instance).toString();
 				} catch (Throwable e) {
-					throw new XmlSerializationException("Failed to get primary key", e);
+					throw new XmlSerializationException(
+							"Failed to get primary key",
+							e
+					);
 				}
 			};
 		} catch (Exception e) {
-			throw new XmlSchemaCreationException("Could not access primary key, it may not exist or is named wrong", e);
+			throw new XmlSchemaCreationException(
+					"Could not access primary key, it may not exist or is named wrong",
+					e
+			);
 		}
 	}
 
 	/**
-	 * Creates a function that accepts an object and returns a string that represent
-	 * the class as an XML element. Any transient fields will be ignored and the
-	 * reset must be primitives, primitive wrappers, or strings.
+	 * Creates a function that accepts an object and returns a string that
+	 * represent the class as an XML element. Any transient fields will be
+	 * ignored and the reset must be primitives, primitive wrappers, or strings.
 	 * 
 	 * @param clazz The type of the object to be serialized.
 	 * @return A function that turns an object into an XML element.
 	 */
-	private final Function<T, String> curryFunObjectToXml(final Class<T> clazz) {
+	private final Function<T, String> curryFunObjectToXml(
+			final Class<T> clazz
+	) {
 		XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
 		Map<String, MethodHandle> getters = new HashMap<>();
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -385,7 +454,10 @@ public class XmlSchema<T> {
 			for (Field field : clazz.getDeclaredFields()) {
 				if (!Modifier.isTransient(field.getModifiers())) {
 					String fieldName = field.getName();
-					getters.put(fieldName, ReflectionUtils.getFieldGetter(clazz, fieldName, lookup));
+					getters.put(
+						fieldName,
+						ReflectionUtils.getFieldGetter(clazz, fieldName, lookup)
+					);
 				}
 			}
 		} catch (Exception e) {
@@ -396,19 +468,30 @@ public class XmlSchema<T> {
 			StringWriter stringWriter = new StringWriter();
 
 			try {
-				XMLStreamWriter xmlWriter = xmlFactory.createXMLStreamWriter(stringWriter);
+				XMLStreamWriter xmlWriter = xmlFactory.createXMLStreamWriter(
+					stringWriter
+				);
 				xmlWriter.writeStartElement(elementName);
 
-				for (Map.Entry<String, MethodHandle> entry : getters.entrySet()) {
+				for (Map.Entry<String, MethodHandle> entry : getters
+						.entrySet()) {
 					xmlWriter.writeStartElement(entry.getKey());
-					xmlWriter.writeCharacters(entry.getValue().invoke(instance).toString());
+					xmlWriter.writeCharacters(
+						entry.getValue().invoke(instance).toString()
+					);
 					xmlWriter.writeEndElement();
 				}
 
 				xmlWriter.writeEndElement();
 				xmlWriter.close();
 			} catch (Throwable e) {
-				throw new XmlSerializationException(String.format("Failed to created xml for class %s", clazz), e);
+				throw new XmlSerializationException(
+						String.format(
+							"Failed to created xml for class %s",
+							clazz
+						),
+						e
+				);
 			}
 
 			return stringWriter.toString();
@@ -416,30 +499,45 @@ public class XmlSchema<T> {
 	}
 
 	/**
-	 * Creates a function that accepts a map of field names to values and returns an
-	 * object with those values. Any fields must be primitives, primitive wrappers,
-	 * or strings. Nested objects are not supported.
+	 * Creates a function that accepts a map of field names to values and
+	 * returns an object with those values. Any fields must be primitives,
+	 * primitive wrappers, or strings. Nested objects are not supported.
 	 * 
 	 * @param clazz The type of the object to be deserialized.
 	 * @return A function that deserializes an object.
 	 */
-	private final Function<Map<String, String>, T> curryFunXmlToObject(final Class<T> clazz) {
+	private final Function<Map<String, String>, T> curryFunXmlToObject(
+			final Class<T> clazz
+	) {
 		Map<String, BiConsumer<String, Object>> setters = new HashMap<>();
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		ObjectInstantiator<T> instantiator = new ObjenesisStd().getInstantiatorOf(clazz);
+		ObjectInstantiator<T> instantiator = new ObjenesisStd()
+				.getInstantiatorOf(clazz);
 
 		try {
 			for (Field field : clazz.getDeclaredFields()) {
 				if (!Modifier.isTransient(field.getModifiers())) {
 					String fieldName = field.getName();
-					MethodHandle setter = ReflectionUtils.getFieldSetter(clazz, fieldName, lookup);
-					Function<String, Object> deserializer = curryFieldDeserializer(clazz, fieldName);
+					MethodHandle setter = ReflectionUtils.getFieldSetter(
+						clazz,
+						fieldName,
+						lookup
+					);
+					Function<String, Object> deserializer = curryFieldDeserializer(
+						clazz,
+						fieldName
+					);
 
 					setters.put(fieldName, (input, instance) -> {
 						try {
 							setter.invoke(instance, deserializer.apply(input));
 						} catch (Throwable e) {
-							throw new XmlSchemaCreationException(String.format("Failed to set field %s", fieldName));
+							throw new XmlSchemaCreationException(
+									String.format(
+										"Failed to set field %s",
+										fieldName
+									)
+							);
 						}
 					});
 				}
@@ -453,17 +551,23 @@ public class XmlSchema<T> {
 				T result = instantiator.newInstance();
 
 				for (Map.Entry<String, String> entry : values.entrySet()) {
-					setters.get(entry.getKey()).accept(entry.getValue(), result);
+					setters.get(entry.getKey())
+							.accept(entry.getValue(), result);
 				}
 
 				return result;
 			} catch (Exception e) {
-				throw new XmlDeserializeException(String.format("Failed to deserialize object %s", clazz), e);
+				throw new XmlDeserializeException(
+						String.format("Failed to deserialize object %s", clazz),
+						e
+				);
 			}
 		};
 	}
 
-	private final Function<T, Long> curryFunGetPrimaryKey(final Class<T> clazz) {
+	private final Function<T, Long> curryFunGetPrimaryKey(
+			final Class<T> clazz
+	) {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 
 		try {
@@ -471,15 +575,24 @@ public class XmlSchema<T> {
 			Class<?> fieldType = field.getType();
 
 			if (!(fieldType.equals(Long.class) || fieldType.equals(long.class)))
-				throw new IllegalArgumentException("Primary key has to be long to autogenerate");
+				throw new IllegalArgumentException(
+						"Primary key has to be long to autogenerate"
+				);
 
-			MethodHandle getter = ReflectionUtils.getFieldGetter(clazz, primaryKeyName, lookup);
+			MethodHandle getter = ReflectionUtils.getFieldGetter(
+				clazz,
+				primaryKeyName,
+				lookup
+			);
 
 			return obj -> {
 				try {
 					return (Long) getter.invoke(obj);
 				} catch (Throwable e) {
-					throw new XmlSchemaCreationException("Could not get primary key", e);
+					throw new XmlSchemaCreationException(
+							"Could not get primary key",
+							e
+					);
 				}
 			};
 		} catch (Exception e) {
@@ -487,7 +600,9 @@ public class XmlSchema<T> {
 		}
 	}
 
-	private final BiFunction<T, Long, Void> currySetPrimaryKey(final Class<T> clazz) {
+	private final BiFunction<T, Long, Void> currySetPrimaryKey(
+			final Class<T> clazz
+	) {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 
 		try {
@@ -495,15 +610,24 @@ public class XmlSchema<T> {
 			Class<?> fieldType = field.getType();
 
 			if (!(fieldType.equals(Long.class) || fieldType.equals(long.class)))
-				throw new IllegalArgumentException("Primary key has to be long to autogenerate");
+				throw new IllegalArgumentException(
+						"Primary key has to be long to autogenerate"
+				);
 
-			MethodHandle setter = ReflectionUtils.getFieldSetter(clazz, primaryKeyName, lookup);
+			MethodHandle setter = ReflectionUtils.getFieldSetter(
+				clazz,
+				primaryKeyName,
+				lookup
+			);
 
 			return (instance, value) -> {
 				try {
 					setter.invoke(instance, value);
 				} catch (Throwable e) {
-					throw new XmlSchemaCreationException("Could not get primary key", e);
+					throw new XmlSchemaCreationException(
+							"Could not get primary key",
+							e
+					);
 				}
 
 				return null;
@@ -522,28 +646,41 @@ public class XmlSchema<T> {
 	 * @param fieldName The field to create a parser for.
 	 * @return A parser from a string to the given field's type.
 	 */
-	private final Function<String, Object> curryFieldDeserializer(final Class<T> clazz, final String fieldName) {
+	private final Function<String, Object> curryFieldDeserializer(
+			final Class<T> clazz,
+			final String fieldName
+	) {
 		try {
 			Class<?> fieldType = clazz.getDeclaredField(fieldName).getType();
-			return ClassUtils.isPrimitiveOrWrapper(fieldType) ? curryStringParse(fieldType) : s -> s;
+			return ClassUtils.isPrimitiveOrWrapper(fieldType)
+					? curryStringParse(fieldType)
+					: s -> s;
 		} catch (NoSuchFieldException e) {
 			throw new XmlSchemaCreationException(
-					String.format("Could not create field getter for class: %s field: %s", clazz, fieldName), e);
+					String.format(
+						"Could not create field getter for class: %s field: %s",
+						clazz,
+						fieldName
+					),
+					e
+			);
 		}
 	}
 
 	/**
 	 * Determines the type of the given class and returns the respective string
-	 * parsing function. Given class must be a primitive, primitive wrapper. Other
-	 * object types are not supported.
+	 * parsing function. Given class must be a primitive, primitive wrapper.
+	 * Other object types are not supported.
 	 * 
 	 * @param clazz The class to find a parsing function for.
 	 * @return The parsing function for the given type.
 	 * 
-	 * @throws IllegalArgumentException If the given class is not a primitive or a
-	 *                                  primitive wrapper.
+	 * @throws IllegalArgumentException If the given class is not a primitive or
+	 *                                  a primitive wrapper.
 	 */
-	private final Function<String, Object> curryStringParse(final Class<?> clazz) {
+	private final Function<String, Object> curryStringParse(
+			final Class<?> clazz
+	) {
 		if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
 			return Integer::parseInt;
 		} else if (clazz.equals(Double.class) || clazz.equals(double.class)) {
@@ -561,7 +698,9 @@ public class XmlSchema<T> {
 		} else if (clazz.equals(Character.class) || clazz.equals(char.class)) {
 			return s -> s.charAt(0);
 		} else {
-			throw new IllegalArgumentException(clazz.getName() + " is not a primitive or wrapper class");
+			throw new IllegalArgumentException(
+					clazz.getName() + " is not a primitive or wrapper class"
+			);
 		}
 	}
 }
