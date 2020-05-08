@@ -68,10 +68,10 @@ public class Statistics implements Initializable {
 	 */
 	private void saveCsvFile(final File file) {
 		Number[] row1 = new Number[fifoSeries1.getData().size()];
-		Number[] row2 = new Number[fifoSeries2.getData().size()];
-		Number[] row3 = new Number[fifoSeries3.getData().size()];
-		Number[] row4 = new Number[greedySeries1.getData().size()];
-		Number[] row5 = new Number[greedySeries2.getData().size()];
+		Number[] row3 = new Number[fifoSeries2.getData().size()];
+		Number[] row5 = new Number[fifoSeries3.getData().size()];
+		Number[] row2 = new Number[greedySeries1.getData().size()];
+		Number[] row4 = new Number[greedySeries2.getData().size()];
 		Number[] row6 = new Number[greedySeries3.getData().size()];
 		String data = "";
 
@@ -79,19 +79,19 @@ public class Statistics implements Initializable {
 			row1[index] = fifoSeries1.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < greedySeries1.getData().size(); index++) {
-			row1[index] = greedySeries1.getData().get(index).getYValue();
+			row2[index] = greedySeries1.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < fifoSeries2.getData().size(); index++) {
-			row1[index] = fifoSeries2.getData().get(index).getYValue();
+			row3[index] = fifoSeries2.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < greedySeries2.getData().size(); index++) {
-			row1[index] = greedySeries2.getData().get(index).getYValue();
+			row4[index] = greedySeries2.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < fifoSeries3.getData().size(); index++) {
-			row1[index] = fifoSeries3.getData().get(index).getYValue();
+			row5[index] = fifoSeries3.getData().get(index).getYValue();
 		}
 		for (int index = 0; index < greedySeries3.getData().size(); index++) {
-			row1[index] = greedySeries3.getData().get(index).getYValue();
+			row6[index] = greedySeries3.getData().get(index).getYValue();
 		}
 
 		data += "Average Time/Delivery, Fifo with Greedy, Greedy with Backtracking, ";
@@ -118,29 +118,29 @@ public class Statistics implements Initializable {
 				data += " ,";
 			}
 			if (item < greedySeries1.getData().size()) {
-				data += row1[item] + ",";
+				data += row2[item] + ",";
 			} else {
 				data += " ,";
 			}
 			data += item + 1 + ",";
 			if (item < fifoSeries2.getData().size()) {
-				data += row1[item] + ",";
+				data += row3[item] + ",";
 			} else {
 				data += " ,";
 			}
 			if (item < greedySeries2.getData().size()) {
-				data += row1[item] + ",";
+				data += row4[item] + ",";
 			} else {
 				data += " ,";
 			}
 			data += item + 1 + ",";
 			if (item < fifoSeries3.getData().size()) {
-				data += row1[item] + ",";
+				data += row5[item] + ",";
 			} else {
 				data += " ,";
 			}
 			if (item < greedySeries3.getData().size()) {
-				data += row1[item] + ",";
+				data += row6[item] + ",";
 			} else {
 				data += " ,";
 			}
